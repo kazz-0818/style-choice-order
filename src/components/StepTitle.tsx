@@ -11,7 +11,7 @@ export function StepTitle({ step, children }: StepTitleProps) {
   const number = STEP_NUMBERS[step - 1] ?? `${step}.`
 
   return (
-    <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
+    <h3 className="text-sm font-medium tracking-wide text-warm-gray uppercase sm:text-base">
       <span className="mr-1 text-gold">{number}</span>
       {children}
     </h3>

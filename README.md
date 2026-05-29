@@ -42,19 +42,31 @@ git init
 git add .
 git commit -m "initial build: custom bag order page"
 git branch -M main
-git remote add origin https://github.com/<YOUR_ORG>/style-choice-order.git
+git remote add origin https://github.com/kazz-0818/style-choice-order.git
 git push -u origin main
 ```
 
-※ リポジトリ URL はご利用の GitHub 組織・ユーザー名に合わせて変更してください。
+**リポジトリ（作成済み）:** https://github.com/kazz-0818/style-choice-order
 
 ## Vercel デプロイ方法
 
-1. [Vercel](https://vercel.com) にログイン
-2. **Add New Project** → GitHub リポジトリをインポート
-3. Framework Preset: **Vite**（自動検出される想定）
-4. Build Command: `npm run build` / Output Directory: `dist`
-5. Deploy
+### ダッシュボードから（推奨・初回）
+
+1. [Vercel Dashboard](https://vercel.com/new) を開く
+2. **Import Git Repository** → `kazz-0818/style-choice-order` を選択
+3. Framework Preset: **Vite**（自動検出）
+4. Build Command: `npm run build` / Output Directory: `dist`（デフォルトのまま）
+5. **Deploy** をクリック
+
+以降、`main` への push で自動デプロイされます。
+
+### CLI から
+
+```bash
+npx vercel login
+npx vercel link
+npx vercel --prod
+```
 
 デプロイ後、プレビュー URL でクライアント確認 → 問題なければカスタムドメインを接続します。
 

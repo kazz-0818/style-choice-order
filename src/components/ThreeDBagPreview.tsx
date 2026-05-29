@@ -176,7 +176,7 @@ function R3FScene({
         <BagModel customization={customization} />
         <SceneReadyMarker onReady={onReady} />
       </Suspense>
-      <OrbitControls enablePan={false} minDistance={2.2} maxDistance={7} target={[0, 0, 0]} />
+      <OrbitControls enablePan={false} minDistance={3} maxDistance={8.5} target={[0, 0, 0]} />
     </>
   )
 }
@@ -214,7 +214,7 @@ export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
         <GlbErrorBoundary onError={() => setUseFallback(true)}>
           <Canvas
             className="three-d-canvas"
-            camera={{ position: [0, 0.15, 4.2], fov: 42 }}
+            camera={{ position: [0, 0.1, 5.6], fov: 40 }}
             gl={{ antialias: true, alpha: true }}
             dpr={[1, 2]}
           >

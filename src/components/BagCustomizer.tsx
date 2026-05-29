@@ -1,3 +1,4 @@
+import { StepCard } from './StepCard'
 import { BagPreview } from './BagPreview'
 import { ColorSelector } from './ColorSelector'
 import { OptionSummary } from './OptionSummary'
@@ -81,17 +82,17 @@ export function BagCustomizer({
             </p>
             <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 sm:flex-col sm:gap-10 sm:overflow-visible sm:pb-0">
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                <StepCard>
                   <TemplateSelector
                     step={1}
                     value={customization.templateId}
                     onChange={handleTemplateChange}
                   />
-                </div>
+                </StepCard>
               </div>
 
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                <StepCard>
                   <PartOptionGroup
                     step={2}
                     label="本体素材"
@@ -99,11 +100,11 @@ export function BagCustomizer({
                     value={customization.materialId}
                     onChange={(id) => update({ materialId: id })}
                   />
-                </div>
+                </StepCard>
               </div>
 
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                <StepCard>
                   <PartOptionGroup
                     step={3}
                     label="取手タイプ"
@@ -111,11 +112,11 @@ export function BagCustomizer({
                     value={customization.handleTypeId}
                     onChange={(id) => update({ handleTypeId: id })}
                   />
-                </div>
+                </StepCard>
               </div>
 
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                <StepCard>
                   <PartOptionGroup
                     step={4}
                     label="金具カラー"
@@ -123,11 +124,11 @@ export function BagCustomizer({
                     value={customization.hardwareColorId}
                     onChange={handleHardwareChange}
                   />
-                </div>
+                </StepCard>
               </div>
 
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                <StepCard>
                   <PartOptionGroup
                     step={5}
                     label="装飾オプション"
@@ -135,11 +136,11 @@ export function BagCustomizer({
                     value={customization.decorationId}
                     onChange={(id) => update({ decorationId: id })}
                   />
-                </div>
+                </StepCard>
               </div>
 
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                <StepCard>
                   <ColorSelector
                     step={6}
                     activeLayer={activeLayer}
@@ -147,11 +148,13 @@ export function BagCustomizer({
                     onLayerChange={onActiveLayerChange}
                     onColorSelect={updateLayerColor}
                   />
-                </div>
+                </StepCard>
               </div>
 
               <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
-                <OptionSummary step={7} customization={customization} />
+                <StepCard>
+                  <OptionSummary step={7} customization={customization} bare />
+                </StepCard>
               </div>
             </div>
           </div>

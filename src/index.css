@@ -33,3 +33,18 @@ body {
 .customizer-steps::-webkit-scrollbar {
   display: none;
 }
+
+.step-card-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-stone) transparent;
+}
+
+.step-card-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.step-card-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-stone);
+  border-radius: 999px;
+}

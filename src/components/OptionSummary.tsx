@@ -15,9 +15,10 @@ import { calculatePrice, formatYen } from '../utils/price'
 interface OptionSummaryProps {
   customization: BagCustomization
   step?: number
+  bare?: boolean
 }
 
-export function OptionSummary({ customization, step }: OptionSummaryProps) {
+export function OptionSummary({ customization, step, bare = false }: OptionSummaryProps) {
   const [copied, setCopied] = useState(false)
   const price = calculatePrice(customization)
 
@@ -44,8 +45,8 @@ export function OptionSummary({ customization, step }: OptionSummaryProps) {
     }
   }
 
-  return (
-    <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+  const content = (
+    <>
       {step ? (
         <StepTitle step={step}>選択内容の確認</StepTitle>
       ) : (
@@ -74,6 +75,14 @@ export function OptionSummary({ customization, step }: OptionSummaryProps) {
           コピーしました
         </p>
       )}
+    </>
+  )
+
+  if (bare) return content
+
+  return (
+    <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+      {content}
     </div>
   )
 }

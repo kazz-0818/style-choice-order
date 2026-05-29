@@ -6,7 +6,7 @@ export function Hero() {
         <p className="mb-4 text-xs tracking-[0.35em] text-gold uppercase">
           Style Choice LLC — Custom Bags
         </p>
-        <h1 className="max-w-2xl font-serif text-3xl leading-snug font-light text-charcoal sm:text-4xl lg:text-5xl">
+        <h1 className="max-w-2xl font-serif text-2xl leading-snug font-light text-charcoal sm:text-4xl lg:text-5xl">
           <span className="block whitespace-nowrap sm:whitespace-normal">
             世界にひとつ、自分だけの
           </span>

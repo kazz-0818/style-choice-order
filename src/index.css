@@ -36,3 +36,160 @@ body {
 .customizer-steps::-webkit-scrollbar {
   display: none;
 }
+
+.three-d-model-viewer {
+  --poster-color: transparent;
+  --progress-bar-color: #b8956a;
+}
+
+.three-d-scene__stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+}
+
+.three-d-scene__object {
+  transform-style: preserve-3d;
+  transition: transform 0.05s linear;
+}
+
+.three-d-bag {
+  position: relative;
+  width: 88px;
+  height: 104px;
+  transform-style: preserve-3d;
+}
+
+@media (min-width: 640px) {
+  .three-d-bag {
+    width: 108px;
+    height: 128px;
+  }
+}
+
+.three-d-bag__face {
+  position: absolute;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.three-d-bag__face--front,
+.three-d-bag__face--back {
+  width: 88px;
+  height: 104px;
+}
+
+@media (min-width: 640px) {
+  .three-d-bag__face--front,
+  .three-d-bag__face--back {
+    width: 108px;
+    height: 128px;
+  }
+}
+
+.three-d-bag__face--left,
+.three-d-bag__face--right {
+  width: 36px;
+  height: 104px;
+  left: 26px;
+}
+
+@media (min-width: 640px) {
+  .three-d-bag__face--left,
+  .three-d-bag__face--right {
+    width: 44px;
+    height: 128px;
+    left: 32px;
+  }
+}
+
+.three-d-bag__face--top,
+.three-d-bag__face--bottom {
+  width: 88px;
+  height: 36px;
+  left: 0;
+}
+
+@media (min-width: 640px) {
+  .three-d-bag__face--top,
+  .three-d-bag__face--bottom {
+    width: 108px;
+    height: 44px;
+  }
+}
+
+.three-d-bag__face--front {
+  transform: translateZ(18px);
+}
+
+.three-d-bag__face--back {
+  transform: rotateY(180deg) translateZ(18px);
+}
+
+.three-d-bag__face--left {
+  transform: rotateY(-90deg) translateZ(44px);
+}
+
+.three-d-bag__face--right {
+  transform: rotateY(90deg) translateZ(44px);
+}
+
+@media (min-width: 640px) {
+  .three-d-bag__face--front {
+    transform: translateZ(22px);
+  }
+
+  .three-d-bag__face--back {
+    transform: rotateY(180deg) translateZ(22px);
+  }
+
+  .three-d-bag__face--left {
+    transform: rotateY(-90deg) translateZ(54px);
+  }
+
+  .three-d-bag__face--right {
+    transform: rotateY(90deg) translateZ(54px);
+  }
+}
+
+.three-d-bag__face--top {
+  top: 0;
+  transform: rotateX(90deg) translateZ(0);
+}
+
+.three-d-bag__face--bottom {
+  bottom: 0;
+  transform: rotateX(-90deg) translateZ(104px);
+}
+
+@media (min-width: 640px) {
+  .three-d-bag__face--bottom {
+    transform: rotateX(-90deg) translateZ(128px);
+  }
+}
+
+.three-d-bag__handle {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 56px;
+  height: 14px;
+  margin-left: -28px;
+  border-radius: 999px;
+  transform: translateZ(24px);
+  box-shadow: 0 6px 14px rgba(26, 26, 26, 0.15);
+}
+
+.three-d-bag__metal {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  width: 32px;
+  height: 4px;
+  margin-left: -16px;
+  border-radius: 999px;
+  transform: translateZ(26px);
+}

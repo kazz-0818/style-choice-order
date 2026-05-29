@@ -1,5 +1,5 @@
 import { StepCard } from './StepCard'
-import { BagPreview } from './BagPreview'
+import { ThreeDBagPreview } from './ThreeDBagPreview'
 import { ColorSelector } from './ColorSelector'
 import { OptionSummary } from './OptionSummary'
 import { PartOptionGroup, DECORATIONS, HANDLE_TYPES, HARDWARE_COLORS, MATERIALS } from './PartSelector'
@@ -66,17 +66,15 @@ export function BagCustomizer({
           <div className="order-1 min-w-0 overflow-visible lg:sticky lg:top-24 lg:self-start">
             <div className="mb-6 hidden max-w-2xl lg:block">{customizerIntro}</div>
             <div className="relative mx-auto w-fit overflow-visible sm:mx-0 sm:w-full">
-              <p className="absolute top-3 left-3 z-10 hidden text-xs tracking-widest text-warm-gray uppercase lg:block">
-                プレビュー
+              <p className="absolute top-3 left-3 z-10 hidden text-xs tracking-widest text-gold uppercase lg:block">
+                3D Preview β
               </p>
-              <BagPreview
+              <ThreeDBagPreview
                 templateId={customization.templateId}
                 layerColors={customization.layerColors}
-                handleTypeId={customization.handleTypeId}
-                decorationId={customization.decorationId}
               />
-              <p className="absolute bottom-0 left-full ml-2 whitespace-nowrap text-[10px] tracking-widest text-warm-gray uppercase sm:hidden">
-                プレビュー
+              <p className="absolute bottom-0 left-full ml-2 whitespace-nowrap text-[10px] tracking-widest text-gold uppercase sm:hidden">
+                3D Preview β
               </p>
             </div>
           </div>

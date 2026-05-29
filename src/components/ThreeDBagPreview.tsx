@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { getColorHex } from '../data/colors'
 import type { BagCustomization } from '../types/bag'
+import { isChainHandleId } from '../data/handlesByTemplate'
 import { getPreviewCssModifiers, getPreviewVisualConfig } from '../utils/preview/previewVisualConfig'
 import { MESH_LAYER_NAMES } from '../utils/threeD/modelConfig'
 import { BagModel } from './three/BagModel'
@@ -128,7 +129,7 @@ function Css3dBagScene({ customization }: { customization: BagCustomization }) {
             <div
               className="three-d-bag__handle"
               style={{
-                background: customization.handleTypeId === 'chain-handle'
+                background: isChainHandleId(customization.handleTypeId)
                   ? `linear-gradient(135deg, ${getColorHex(layerColors.metal)}, ${getColorHex(layerColors.handle)})`
                   : getColorHex(layerColors.handle),
               }}

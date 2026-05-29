@@ -72,7 +72,7 @@ export const DEFAULT_LAYER_COLORS: LayerColors = {
 export const DEFAULT_CUSTOMIZATION: BagCustomization = {
   templateId: 'tote',
   materialId: 'smooth-leather',
-  handleTypeId: 'short-handle',
+  handleTypeId: 'tote-long',
   hardwareColorId: 'gold',
   decorationId: 'none',
   layerColors: { ...DEFAULT_LAYER_COLORS },

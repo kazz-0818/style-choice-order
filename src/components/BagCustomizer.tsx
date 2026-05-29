@@ -2,9 +2,14 @@ import { StepCard } from './StepCard'
 import { ThreeDBagPreview } from './ThreeDBagPreview'
 import { ColorSelector } from './ColorSelector'
 import { OptionSummary } from './OptionSummary'
-import { PartOptionGroup, DECORATIONS, HANDLE_TYPES, HARDWARE_COLORS, MATERIALS } from './PartSelector'
+import { PartOptionGroup, DECORATIONS, HARDWARE_COLORS, MATERIALS } from './PartSelector'
 import { TemplateSelector } from './TemplateSelector'
-import { hardwareMap } from '../data/parts'
+import {
+  getHandleStepLabel,
+  getHandlesForTemplate,
+  hardwareMap,
+  resolveHandleForTemplate,
+} from '../data/parts'
 import type { BagCustomization, BagLayer, BagTemplateId } from '../types/bag'
 
 interface BagCustomizerProps {
@@ -32,8 +37,15 @@ export function BagCustomizer({
   }
 
   const handleTemplateChange = (id: BagTemplateId) => {
-    update({ templateId: id })
+    onCustomizationChange({
+      ...customization,
+      templateId: id,
+      handleTypeId: resolveHandleForTemplate(id, customization.handleTypeId),
+    })
   }
+
+  const templateHandles = getHandlesForTemplate(customization.templateId)
+  const handleStepLabel = getHandleStepLabel(customization.templateId)
 
   const handleHardwareChange = (id: string) => {
     const metalColorId = hardwareMap[id]?.metalColorId
@@ -110,8 +122,8 @@ export function BagCustomizer({
                 <StepCard>
                   <PartOptionGroup
                     step={3}
-                    label="取手タイプ"
-                    options={HANDLE_TYPES}
+                    label={handleStepLabel}
+                    options={templateHandles}
                     value={customization.handleTypeId}
                     onChange={(id) => update({ handleTypeId: id })}
                   />

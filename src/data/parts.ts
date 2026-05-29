@@ -1,4 +1,14 @@
 import type { PartOption } from '../types/bag'
+import { handleMap as templateHandleMap } from './handlesByTemplate'
+
+export {
+  getDefaultHandleForTemplate,
+  getHandleStepLabel,
+  getHandlesForTemplate,
+  handleMap,
+  isChainHandleId,
+  resolveHandleForTemplate,
+} from './handlesByTemplate'
 
 export const MATERIALS: PartOption[] = [
   {
@@ -27,32 +37,8 @@ export const MATERIALS: PartOption[] = [
   },
 ]
 
-export const HANDLE_TYPES: PartOption[] = [
-  {
-    id: 'short-handle',
-    name: 'Short Handle',
-    description: 'ハンドバッグ向けの短い取手。',
-    priceModifier: 0,
-  },
-  {
-    id: 'long-handle',
-    name: 'Long Handle',
-    description: 'トート向けの長めの取手。',
-    priceModifier: 500,
-  },
-  {
-    id: 'shoulder-strap',
-    name: 'Shoulder Strap',
-    description: 'ショルダーストラップ。斜め掛け仕様に対応。',
-    priceModifier: 800,
-  },
-  {
-    id: 'chain-handle',
-    name: 'Chain Handle',
-    description: 'チェーン取手。ミニバッグで華やかな印象に。',
-    priceModifier: 1200,
-  },
-]
+/** @deprecated 全取手一覧。テンプレート別は getHandlesForTemplate を使用 */
+export const HANDLE_TYPES = Object.values(templateHandleMap)
 
 export const HARDWARE_COLORS: PartOption[] = [
   {
@@ -110,6 +96,5 @@ export const DECORATIONS: PartOption[] = [
 ]
 
 export const materialMap = Object.fromEntries(MATERIALS.map((p) => [p.id, p]))
-export const handleMap = Object.fromEntries(HANDLE_TYPES.map((p) => [p.id, p]))
 export const hardwareMap = Object.fromEntries(HARDWARE_COLORS.map((p) => [p.id, p]))
 export const decorationMap = Object.fromEntries(DECORATIONS.map((p) => [p.id, p]))

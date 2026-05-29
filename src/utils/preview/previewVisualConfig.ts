@@ -1,4 +1,5 @@
 import type { BagCustomization, BagTemplateId } from '../../types/bag'
+import { isChainHandleId } from '../../data/handlesByTemplate'
 
 export interface PreviewMeshTransform {
   scale: [number, number, number]
@@ -44,28 +45,61 @@ const DEFAULT_MESH: PreviewMeshTransform = {
 }
 
 const HANDLE_MESH: Record<string, PreviewMeshTransform> = {
-  'short-handle': {
-    scale: [1, 1, 1],
-    position: [0, 0, 0],
-    rotation: [0, 0, 0],
-    visible: true,
-  },
-  'long-handle': {
+  // Tote Bag
+  'tote-long': {
     scale: [1.15, 1.45, 1],
     position: [0, 0.22, 0],
     rotation: [0, 0, 0],
     visible: true,
   },
-  'shoulder-strap': {
+  'tote-rope': {
+    scale: [0.82, 1.18, 0.82],
+    position: [0, 0.16, 0],
+    rotation: [0, 0, 0],
+    visible: true,
+  },
+  'tote-short': {
+    scale: [0.95, 0.88, 1],
+    position: [0, -0.02, 0],
+    rotation: [0, 0, 0],
+    visible: true,
+  },
+  // Mini Hand Bag
+  'mini-short': {
+    scale: [0.92, 0.85, 1],
+    position: [0, 0, 0],
+    rotation: [0, 0, 0],
+    visible: true,
+  },
+  'mini-chain': {
+    scale: [1.05, 0.55, 1],
+    position: [0, 0.12, 0],
+    rotation: [0, 0, 0],
+    visible: true,
+  },
+  'mini-bow': {
+    scale: [1.25, 0.72, 1],
+    position: [0, 0.06, 0],
+    rotation: [0, 0, 0],
+    visible: true,
+  },
+  // Shoulder Bag
+  'shoulder-standard': {
     scale: [1.55, 0.7, 0.65],
     position: [0, 0.08, -0.12],
     rotation: [0.85, 0, 0],
     visible: true,
   },
-  'chain-handle': {
-    scale: [1.05, 0.55, 1],
-    position: [0, 0.12, 0],
-    rotation: [0, 0, 0],
+  'shoulder-wide': {
+    scale: [1.85, 0.78, 0.7],
+    position: [0, 0.06, -0.1],
+    rotation: [0.75, 0, 0],
+    visible: true,
+  },
+  'shoulder-chain': {
+    scale: [1.45, 0.62, 0.6],
+    position: [0, 0.1, -0.08],
+    rotation: [0.9, 0, 0],
     visible: true,
   },
 }
@@ -89,10 +123,10 @@ const DECORATION_ACCENT: Record<
 export function getPreviewVisualConfig(customization: BagCustomization): PreviewVisualConfig {
   const templateScale = TEMPLATE_SCALE[customization.templateId]
   const bodyMaterial = MATERIAL_STYLE[customization.materialId] ?? MATERIAL_STYLE['smooth-leather']
-  const handleMesh = HANDLE_MESH[customization.handleTypeId] ?? HANDLE_MESH['short-handle']
+  const handleMesh = HANDLE_MESH[customization.handleTypeId] ?? HANDLE_MESH['tote-long']
   const decoration = DECORATION_ACCENT[customization.decorationId] ?? DECORATION_ACCENT.none
 
-  const isChainHandle = customization.handleTypeId === 'chain-handle'
+  const isChainHandle = isChainHandleId(customization.handleTypeId)
   const handleMaterial: PreviewMaterialStyle = isChainHandle
     ? { roughness: 0.22, metalness: 0.88 }
     : bodyMaterial

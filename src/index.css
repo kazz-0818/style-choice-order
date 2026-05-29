@@ -253,21 +253,38 @@ body {
   transform: translateZ(18px);
 }
 
-.three-d-bag.handle-shoulder-strap .three-d-bag__handle {
-  width: 72px;
-  top: -8px;
-  transform: translateZ(24px) rotateZ(28deg);
-}
-
-.three-d-bag.handle-long-handle .three-d-bag__handle {
+.three-d-bag.handle-tote-long .three-d-bag__handle,
+.three-d-bag.handle-shoulder-standard .three-d-bag__handle,
+.three-d-bag.handle-shoulder-wide .three-d-bag__handle {
   width: 64px;
   height: 16px;
   top: -22px;
 }
 
-.three-d-bag.handle-chain-handle .three-d-bag__handle {
+.three-d-bag.handle-tote-rope .three-d-bag__handle {
+  width: 48px;
+  height: 12px;
+  top: -16px;
+}
+
+.three-d-bag.handle-shoulder-standard .three-d-bag__handle,
+.three-d-bag.handle-shoulder-wide .three-d-bag__handle,
+.three-d-bag.handle-shoulder-chain .three-d-bag__handle {
+  width: 72px;
+  top: -8px;
+  transform: translateZ(24px) rotateZ(28deg);
+}
+
+.three-d-bag.handle-mini-chain .three-d-bag__handle,
+.three-d-bag.handle-shoulder-chain .three-d-bag__handle {
   height: 10px;
   box-shadow: 0 0 8px rgba(184, 149, 106, 0.45);
+}
+
+.three-d-bag.handle-mini-bow .three-d-bag__handle {
+  width: 68px;
+  height: 12px;
+  top: -14px;
 }
 
 .three-d-bag.material-canvas .three-d-bag__face,

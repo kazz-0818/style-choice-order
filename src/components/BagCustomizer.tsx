@@ -46,20 +46,25 @@ export function BagCustomizer({
     })
   }
 
+  const customizerIntro = (
+    <>
+      <h2 className="font-serif text-2xl font-light text-charcoal sm:text-3xl">
+        バッグをカスタマイズ
+      </h2>
+      <p className="mt-2 text-sm text-warm-gray sm:mt-3">
+        型・パーツ・カラーを選び、プレビューで完成イメージをご確認ください。
+      </p>
+    </>
+  )
+
   return (
     <section id="customizer" className="border-b border-stone bg-cream py-10 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mb-6 max-w-2xl sm:mb-10">
-          <h2 className="font-serif text-2xl font-light text-charcoal sm:text-3xl">
-            バッグをカスタマイズ
-          </h2>
-          <p className="mt-2 text-sm text-warm-gray sm:mt-3">
-            型・パーツ・カラーを選び、プレビューで完成イメージをご確認ください。
-          </p>
-        </div>
+        <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
 
         <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
-          <div className="order-1 min-w-0 overflow-visible lg:sticky lg:top-24 lg:self-start">
+          <div className="order-1 min-w-0 space-y-6 overflow-visible lg:sticky lg:top-24 lg:self-start">
+            <div className="hidden max-w-2xl lg:block">{customizerIntro}</div>
             <div className="relative mx-auto w-fit overflow-visible sm:mx-0 sm:w-full">
               <p className="absolute top-3 left-3 z-10 hidden text-xs tracking-widest text-warm-gray uppercase lg:block">
                 プレビュー

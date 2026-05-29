@@ -43,14 +43,14 @@ export function OptionSummary({ customization }: OptionSummaryProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-stone bg-white p-6">
-      <h3 className="font-serif text-lg text-charcoal">選択内容の確認</h3>
-      <p className="mt-1 text-xs text-warm-gray">
+    <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+      <h3 className="font-serif text-base text-charcoal sm:text-lg">選択内容の確認</h3>
+      <p className="mt-1 text-[10px] text-warm-gray sm:text-xs">
         参考価格（税抜・目安）：{formatYen(price.total)}
       </p>
-      <dl className="mt-5 divide-y divide-stone text-sm">
+      <dl className="mt-3 divide-y divide-stone text-xs sm:mt-5 sm:text-sm">
         {rows.map((row) => (
-          <div key={row.label} className="flex justify-between gap-4 py-2.5">
+          <div key={row.label} className="flex justify-between gap-3 py-2 sm:gap-4 sm:py-2.5">
             <dt className="text-warm-gray">{row.label}</dt>
             <dd className="text-right font-medium text-charcoal">{row.value}</dd>
           </div>
@@ -59,7 +59,7 @@ export function OptionSummary({ customization }: OptionSummaryProps) {
       <button
         type="button"
         onClick={handleCopy}
-        className="mt-6 w-full rounded-full border border-kogicha bg-kogicha py-3 text-sm tracking-wide text-cream transition hover:bg-kogicha-dark"
+        className="mt-4 w-full rounded-full border border-kogicha bg-kogicha py-2.5 text-xs tracking-wide text-cream transition hover:bg-kogicha-dark sm:mt-6 sm:py-3 sm:text-sm"
       >
         問い合わせ用テキストをコピー
       </button>

@@ -68,15 +68,15 @@ export function BagCustomizer({
             />
           </div>
 
-          <div className="order-2 flex flex-col gap-6 sm:gap-10">
-            <div className="rounded-2xl border border-stone bg-white p-6">
+          <div className="order-2 flex flex-col gap-4 sm:gap-10">
+            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
               <TemplateSelector
                 value={customization.templateId}
                 onChange={handleTemplateChange}
               />
             </div>
 
-            <div className="rounded-2xl border border-stone bg-white p-6">
+            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
               <PartOptionGroup
                 label="本体素材"
                 options={MATERIALS}
@@ -85,7 +85,7 @@ export function BagCustomizer({
               />
             </div>
 
-            <div className="rounded-2xl border border-stone bg-white p-6">
+            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
               <PartOptionGroup
                 label="取手タイプ"
                 options={HANDLE_TYPES}
@@ -94,7 +94,7 @@ export function BagCustomizer({
               />
             </div>
 
-            <div className="rounded-2xl border border-stone bg-white p-6">
+            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
               <PartOptionGroup
                 label="金具カラー"
                 options={HARDWARE_COLORS}
@@ -103,7 +103,7 @@ export function BagCustomizer({
               />
             </div>
 
-            <div className="rounded-2xl border border-stone bg-white p-6">
+            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
               <PartOptionGroup
                 label="装飾オプション"
                 options={DECORATIONS}
@@ -112,7 +112,7 @@ export function BagCustomizer({
               />
             </div>
 
-            <div className="rounded-2xl border border-stone bg-white p-6">
+            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
               <ColorSelector
                 activeLayer={activeLayer}
                 layerColors={customization.layerColors}

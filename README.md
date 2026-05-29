@@ -58,7 +58,9 @@ git push -u origin main
 4. Build Command: `npm run build` / Output Directory: `dist`（デフォルトのまま）
 5. **Deploy** をクリック
 
-以降、`main` への push で自動デプロイされます。
+**本番 URL:** https://style-choice-order.vercel.app
+
+以降、`main` への push で自動デプロイされます（GitHub 連携が Vercel ダッシュボードで有効な場合）。
 
 ### CLI から
 

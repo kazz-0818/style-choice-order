@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-cream: #f7f4ef;
+  --color-stone: #e8e2d9;
+  --color-charcoal: #1a1a1a;
+  --color-warm-gray: #6b6560;
+  --color-gold: #b8956a;
+  --color-gold-light: #d4bc96;
+  --color-brown-deep: #3d2f26;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans',
+    'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+}

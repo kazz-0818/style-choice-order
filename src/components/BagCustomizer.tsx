@@ -58,12 +58,12 @@ export function BagCustomizer({
           </p>
         </div>
 
-        <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:gap-12">
+        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
           <div className="order-1 min-w-0 overflow-visible lg:sticky lg:top-24 lg:self-start">
-            <p className="mb-2 hidden text-xs tracking-widest text-warm-gray uppercase sm:mb-3 sm:block">
-              プレビュー
-            </p>
             <div className="relative mx-auto w-fit overflow-visible sm:mx-0 sm:w-full">
+              <p className="absolute top-3 left-3 z-10 hidden text-xs tracking-widest text-warm-gray uppercase lg:block">
+                プレビュー
+              </p>
               <BagPreview
                 templateId={customization.templateId}
                 layerColors={customization.layerColors}

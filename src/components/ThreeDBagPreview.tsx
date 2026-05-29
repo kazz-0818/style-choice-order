@@ -19,14 +19,6 @@ const LOAD_TIMEOUT_MS = 20_000
 const FRAME_CLASS =
   'three-d-preview-frame relative mx-auto w-full max-w-[240px] rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none'
 
-function PreviewBadge() {
-  return (
-    <span className="absolute top-3 right-3 z-20 rounded-full border border-gold/40 bg-white/95 px-2.5 py-1 text-[10px] font-medium tracking-[0.18em] text-gold uppercase shadow-sm backdrop-blur-sm">
-      3D Preview β
-    </span>
-  )
-}
-
 function ColorSwatchRow({ layerColors }: { layerColors: LayerColors }) {
   const layers = MESH_LAYER_NAMES.map((name) => ({
     name,
@@ -121,7 +113,6 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
 function PreviewFallback({ layerColors }: { layerColors: LayerColors }) {
   return (
     <div className={`${FRAME_CLASS} overflow-hidden p-4 sm:p-8`}>
-      <PreviewBadge />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(184,149,106,0.08),transparent_55%)]" />
       <div className="relative flex w-full flex-col items-center px-2 pt-6 text-center">
         <Css3dBagScene layerColors={layerColors} />
@@ -239,7 +230,6 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
 
   return (
     <div ref={frameRef} className={FRAME_CLASS}>
-      <PreviewBadge />
       <p className="absolute top-3 left-3 z-10 text-[10px] tracking-widest text-warm-gray lg:hidden">
         ピンチで拡大 · ドラッグで回転
       </p>

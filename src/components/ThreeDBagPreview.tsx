@@ -4,7 +4,6 @@ import { getColorHex } from '../data/colors'
 import type { BagTemplateId, LayerColors } from '../types/bag'
 import type { ModelViewerElement } from '../types/model-viewer'
 import { applyLayerColorsToScene } from '../utils/threeD/applyLayerColors'
-import { checkModelExists } from '../utils/threeD/checkModelExists'
 import { CUSTOM_BAG_MODEL_URL, MESH_LAYER_NAMES } from '../utils/threeD/modelConfig'
 
 export interface ThreeDBagPreviewProps {
@@ -13,7 +12,9 @@ export interface ThreeDBagPreviewProps {
   templateId?: BagTemplateId
 }
 
-type PreviewStatus = 'placeholder' | 'loading-glb' | 'ready' | 'error'
+type PreviewStatus = 'loading-glb' | 'ready' | 'fallback'
+
+const LOAD_TIMEOUT_MS = 12_000
 
 const FRAME_CLASS =
   'mx-auto flex aspect-[4/5] w-full max-w-[185px] items-center justify-center rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 p-3 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none sm:p-8'
@@ -117,30 +118,17 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
   )
 }
 
-function PreviewPlaceholder({
-  layerColors,
-  title,
-  description,
-  hint,
-}: {
-  layerColors: LayerColors
-  title: string
-  description: string
-  hint?: string
-}) {
+function PreviewFallback({ layerColors }: { layerColors: LayerColors }) {
   return (
     <div className={`${FRAME_CLASS} relative overflow-hidden`}>
       <PreviewBadge />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(184,149,106,0.08),transparent_55%)]" />
       <div className="relative flex w-full flex-col items-center px-2 text-center">
         <Css3dBagScene layerColors={layerColors} />
-        <p className="mt-3 font-serif text-sm text-charcoal sm:text-base">{title}</p>
+        <p className="mt-3 font-serif text-sm text-charcoal sm:text-base">カラーイメージ</p>
         <p className="mt-2 max-w-xs text-xs leading-relaxed text-warm-gray sm:text-sm">
-          {description}
+          選択したカラーの組み合わせを3Dで確認できます。ドラッグで角度を変えてご覧ください。
         </p>
-        {hint && (
-          <p className="mt-2 text-[10px] tracking-wide text-warm-gray/80 sm:text-xs">{hint}</p>
-        )}
         <ColorSwatchRow layerColors={layerColors} />
       </div>
     </div>
@@ -148,80 +136,81 @@ function PreviewPlaceholder({
 }
 
 export function ThreeDBagPreview({ layerColors, templateId: _templateId }: ThreeDBagPreviewProps) {
-  const viewerRef = useRef<ModelViewerElement>(null)
-  const [status, setStatus] = useState<PreviewStatus>('placeholder')
-  const [shouldLoadGlb, setShouldLoadGlb] = useState(false)
+  const layerColorsRef = useRef(layerColors)
+  layerColorsRef.current = layerColors
 
-  useEffect(() => {
-    let cancelled = false
+  const [status, setStatus] = useState<PreviewStatus>('loading-glb')
+  const [viewerNode, setViewerNode] = useState<ModelViewerElement | null>(null)
 
-    checkModelExists(CUSTOM_BAG_MODEL_URL).then((exists) => {
-      if (cancelled) return
-      if (exists) {
-        setShouldLoadGlb(true)
-        setStatus('loading-glb')
-      }
-    })
-
-    return () => {
-      cancelled = true
+  const applyColors = useCallback((viewer: ModelViewerElement) => {
+    if (!viewer.model) return
+    try {
+      applyLayerColorsToScene(viewer.model, layerColorsRef.current)
+    } catch (error) {
+      console.warn('[ThreeDBagPreview] Could not apply layer colors:', error)
     }
   }, [])
 
+  const markReady = useCallback(() => {
+    if (!viewerNode) return
+    applyColors(viewerNode)
+    setStatus('ready')
+  }, [applyColors, viewerNode])
+
+  const handleModelError = useCallback((event: Event) => {
+    console.error('[ThreeDBagPreview] Failed to load GLB model:', event)
+    setStatus('fallback')
+  }, [])
+
   useEffect(() => {
-    const viewer = viewerRef.current
-    if (!viewer || !shouldLoadGlb) return
+    if (!viewerNode) return
 
-    const handleLoad = () => {
-      if (viewer.model) {
-        applyLayerColorsToScene(viewer.model, layerColors)
-      }
-      setStatus('ready')
-    }
+    const onLoad = () => markReady()
+    const onError = (event: Event) => handleModelError(event)
 
-    const handleError = (event: Event) => {
-      console.error('[ThreeDBagPreview] Failed to load GLB model:', event)
-      setStatus('error')
-      setShouldLoadGlb(false)
-    }
+    viewerNode.addEventListener('load', onLoad)
+    viewerNode.addEventListener('error', onError)
 
-    viewer.addEventListener('load', handleLoad)
-    viewer.addEventListener('error', handleError)
-
-    if (viewer.model) {
-      handleLoad()
+    if (viewerNode.model) {
+      onLoad()
     }
 
     return () => {
-      viewer.removeEventListener('load', handleLoad)
-      viewer.removeEventListener('error', handleError)
+      viewerNode.removeEventListener('load', onLoad)
+      viewerNode.removeEventListener('error', onError)
     }
-  }, [shouldLoadGlb, layerColors])
+  }, [viewerNode, markReady, handleModelError])
 
   useEffect(() => {
-    const viewer = viewerRef.current
-    if (!viewer?.model || status !== 'ready') return
-    applyLayerColorsToScene(viewer.model, layerColors)
-  }, [layerColors, status])
+    if (!viewerNode || status !== 'loading-glb') return
 
-  if (status === 'placeholder') {
-    return (
-      <PreviewPlaceholder
-        layerColors={layerColors}
-        title="カラーイメージ"
-        description="選択したカラーの組み合わせを3Dで確認できます。ドラッグで角度を変えてご覧ください。"
-      />
-    )
-  }
+    const pollId = window.setInterval(() => {
+      if (viewerNode.model) {
+        markReady()
+      }
+    }, 300)
 
-  if (status === 'error') {
-    return (
-      <PreviewPlaceholder
-        layerColors={layerColors}
-        title="3Dモデルを読み込めませんでした"
-        description="カラーイメージ表示に切り替えています。しばらくしてから再度お試しください。"
-      />
-    )
+    return () => window.clearInterval(pollId)
+  }, [viewerNode, status, markReady])
+
+  useEffect(() => {
+    if (!viewerNode || status !== 'ready') return
+    applyColors(viewerNode)
+  }, [layerColors, status, applyColors, viewerNode])
+
+  useEffect(() => {
+    if (status !== 'loading-glb') return
+
+    const timeoutId = window.setTimeout(() => {
+      console.error('[ThreeDBagPreview] GLB load timed out')
+      setStatus('fallback')
+    }, LOAD_TIMEOUT_MS)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [status])
+
+  if (status === 'fallback') {
+    return <PreviewFallback layerColors={layerColors} />
   }
 
   return (
@@ -236,7 +225,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
         </div>
       )}
       <model-viewer
-        ref={viewerRef}
+        ref={setViewerNode}
         src={CUSTOM_BAG_MODEL_URL}
         alt="オーダーメイドバッグ 3Dプレビュー"
         camera-controls
@@ -244,6 +233,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
         shadow-intensity="0.45"
         exposure="1"
         interaction-prompt="none"
+        loading="eager"
         className="three-d-model-viewer h-full min-h-[220px] w-full rounded-xl bg-gradient-to-b from-white to-stone/20 sm:min-h-[360px]"
       />
     </div>

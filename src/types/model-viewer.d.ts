@@ -11,6 +11,7 @@ declare module 'react' {
         React.HTMLAttributes<ModelViewerElement> & {
           src?: string
           alt?: string
+          loading?: 'auto' | 'lazy' | 'eager'
           'camera-controls'?: boolean | ''
           'touch-action'?: string
           'auto-rotate'?: boolean | ''
@@ -19,6 +20,8 @@ declare module 'react' {
           'shadow-intensity'?: string
           exposure?: string
           'interaction-prompt'?: string
+          onLoad?: (event: Event) => void
+          onError?: (event: Event) => void
         },
         ModelViewerElement
       >

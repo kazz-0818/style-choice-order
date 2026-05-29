@@ -28,6 +28,9 @@ body {
 
 .customizer-steps {
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  touch-action: pan-x pan-y;
 }
 
 .customizer-steps::-webkit-scrollbar {
@@ -36,8 +39,10 @@ body {
 
 .step-card-scroll {
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--color-stone) transparent;
+  touch-action: auto;
 }
 
 .step-card-scroll::-webkit-scrollbar {

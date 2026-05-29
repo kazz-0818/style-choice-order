@@ -80,8 +80,8 @@ export function BagCustomizer({
             <p className="mb-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
               左右にスワイプして選択
             </p>
-            <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 sm:flex-col sm:gap-10 sm:overflow-visible sm:pb-0">
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+            <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-10 sm:overflow-visible sm:pb-0">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <TemplateSelector
                     step={1}
@@ -91,7 +91,7 @@ export function BagCustomizer({
                 </StepCard>
               </div>
 
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <PartOptionGroup
                     step={2}
@@ -103,7 +103,7 @@ export function BagCustomizer({
                 </StepCard>
               </div>
 
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <PartOptionGroup
                     step={3}
@@ -115,7 +115,7 @@ export function BagCustomizer({
                 </StepCard>
               </div>
 
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <PartOptionGroup
                     step={4}
@@ -127,7 +127,7 @@ export function BagCustomizer({
                 </StepCard>
               </div>
 
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <PartOptionGroup
                     step={5}
@@ -139,7 +139,7 @@ export function BagCustomizer({
                 </StepCard>
               </div>
 
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <ColorSelector
                     step={6}
@@ -151,7 +151,7 @@ export function BagCustomizer({
                 </StepCard>
               </div>
 
-              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
+              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
                 <StepCard>
                   <OptionSummary step={7} customization={customization} bare />
                 </StepCard>

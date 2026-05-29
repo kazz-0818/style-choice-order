@@ -77,7 +77,7 @@ export function BagCustomizer({
           </div>
 
           <div className="order-2 min-w-0 w-full overflow-hidden">
-            <p className="mb-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
+            <p className="mb-2 text-center text-[10px] tracking-wide text-warm-gray sm:hidden">
               左右にスワイプして選択
             </p>
             <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-10 sm:overflow-visible sm:pb-0">

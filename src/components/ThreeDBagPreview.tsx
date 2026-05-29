@@ -208,9 +208,8 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
     return (
       <PreviewPlaceholder
         layerColors={layerColors}
-        title="3Dモデル準備中"
-        description="GLBモデルを配置するとここに表示されます。カラー選択は引き続きご利用いただけます。"
-        hint="配置先: public/models/custom-bag.glb"
+        title="カラーイメージ"
+        description="選択したカラーの組み合わせを3Dで確認できます。ドラッグで角度を変えてご覧ください。"
       />
     )
   }
@@ -220,8 +219,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
       <PreviewPlaceholder
         layerColors={layerColors}
         title="3Dモデルを読み込めませんでした"
-        description="ファイル形式またはメッシュ構成をご確認ください。"
-        hint={CUSTOM_BAG_MODEL_URL}
+        description="カラーイメージ表示に切り替えています。しばらくしてから再度お試しください。"
       />
     )
   }

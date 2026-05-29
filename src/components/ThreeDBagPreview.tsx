@@ -14,10 +14,10 @@ export interface ThreeDBagPreviewProps {
 
 type PreviewStatus = 'loading-glb' | 'ready' | 'fallback'
 
-const LOAD_TIMEOUT_MS = 12_000
+const LOAD_TIMEOUT_MS = 20_000
 
 const FRAME_CLASS =
-  'mx-auto flex aspect-[4/5] w-full max-w-[185px] items-center justify-center rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 p-3 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none sm:p-8'
+  'three-d-preview-frame relative mx-auto w-full max-w-[240px] rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none'
 
 function PreviewBadge() {
   return (
@@ -87,7 +87,7 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
 
   return (
     <div
-      className="three-d-scene relative h-36 w-full cursor-grab touch-none select-none active:cursor-grabbing sm:h-48"
+      className="three-d-scene relative h-44 w-full cursor-grab touch-none select-none active:cursor-grabbing sm:h-48"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -120,10 +120,10 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
 
 function PreviewFallback({ layerColors }: { layerColors: LayerColors }) {
   return (
-    <div className={`${FRAME_CLASS} relative overflow-hidden`}>
+    <div className={`${FRAME_CLASS} overflow-hidden p-4 sm:p-8`}>
       <PreviewBadge />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(184,149,106,0.08),transparent_55%)]" />
-      <div className="relative flex w-full flex-col items-center px-2 text-center">
+      <div className="relative flex w-full flex-col items-center px-2 pt-6 text-center">
         <Css3dBagScene layerColors={layerColors} />
         <p className="mt-3 font-serif text-sm text-charcoal sm:text-base">カラーイメージ</p>
         <p className="mt-2 max-w-xs text-xs leading-relaxed text-warm-gray sm:text-sm">
@@ -135,7 +135,14 @@ function PreviewFallback({ layerColors }: { layerColors: LayerColors }) {
   )
 }
 
+function refreshViewerLayout(viewer: ModelViewerElement) {
+  const updateFraming = (viewer as ModelViewerElement & { updateFraming?: () => void }).updateFraming
+  updateFraming?.()
+  window.dispatchEvent(new Event('resize'))
+}
+
 export function ThreeDBagPreview({ layerColors, templateId: _templateId }: ThreeDBagPreviewProps) {
+  const frameRef = useRef<HTMLDivElement>(null)
   const layerColorsRef = useRef(layerColors)
   layerColorsRef.current = layerColors
 
@@ -154,6 +161,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
   const markReady = useCallback(() => {
     if (!viewerNode) return
     applyColors(viewerNode)
+    refreshViewerLayout(viewerNode)
     setStatus('ready')
   }, [applyColors, viewerNode])
 
@@ -209,13 +217,32 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
     return () => window.clearTimeout(timeoutId)
   }, [status])
 
+  useEffect(() => {
+    if (!viewerNode || status !== 'ready') return
+
+    refreshViewerLayout(viewerNode)
+
+    const frame = frameRef.current
+    if (!frame || typeof ResizeObserver === 'undefined') return
+
+    const observer = new ResizeObserver(() => {
+      refreshViewerLayout(viewerNode)
+    })
+    observer.observe(frame)
+
+    return () => observer.disconnect()
+  }, [viewerNode, status])
+
   if (status === 'fallback') {
     return <PreviewFallback layerColors={layerColors} />
   }
 
   return (
-    <div className={`${FRAME_CLASS} relative !p-2 sm:!p-4`}>
+    <div ref={frameRef} className={FRAME_CLASS}>
       <PreviewBadge />
+      <p className="absolute top-3 left-3 z-10 text-[10px] tracking-widest text-warm-gray lg:hidden">
+        ピンチで拡大 · ドラッグで回転
+      </p>
       <p className="absolute top-3 left-3 z-10 hidden text-[10px] tracking-widest text-warm-gray lg:block">
         ドラッグで回転 · ピンチでズーム
       </p>
@@ -224,18 +251,21 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
           <p className="text-xs tracking-wide text-warm-gray">3Dモデルを読み込み中…</p>
         </div>
       )}
-      <model-viewer
-        ref={setViewerNode}
-        src={CUSTOM_BAG_MODEL_URL}
-        alt="オーダーメイドバッグ 3Dプレビュー"
-        camera-controls
-        touch-action="pan-y"
-        shadow-intensity="0.45"
-        exposure="1"
-        interaction-prompt="none"
-        loading="eager"
-        className="three-d-model-viewer h-full min-h-[220px] w-full rounded-xl bg-gradient-to-b from-white to-stone/20 sm:min-h-[360px]"
-      />
+      <div className="three-d-viewer-shell">
+        <model-viewer
+          ref={setViewerNode}
+          src={CUSTOM_BAG_MODEL_URL}
+          alt="オーダーメイドバッグ 3Dプレビュー"
+          camera-controls
+          touch-action="none"
+          shadow-intensity="0.45"
+          exposure="1"
+          environment-image="neutral"
+          interaction-prompt="none"
+          loading="eager"
+          className="three-d-model-viewer"
+        />
+      </div>
     </div>
   )
 }

@@ -63,19 +63,19 @@ export function BagCustomizer({
         <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
 
         <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
-          <div className="order-1 min-w-0 overflow-visible lg:sticky lg:top-24 lg:self-start">
+          <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:self-start">
             <div className="mb-6 hidden max-w-2xl lg:block">{customizerIntro}</div>
-            <div className="relative mx-auto w-fit overflow-visible sm:mx-0 sm:w-full">
-              <p className="absolute top-3 left-3 z-10 hidden text-xs tracking-widest text-gold uppercase lg:block">
+            <div className="relative mx-auto w-full max-w-[240px] sm:max-w-none">
+              <p className="mb-2 text-center text-[10px] tracking-widest text-gold uppercase lg:hidden">
+                3D Preview β
+              </p>
+              <p className="mb-3 hidden text-xs tracking-widest text-gold uppercase lg:block">
                 3D Preview β
               </p>
               <ThreeDBagPreview
                 templateId={customization.templateId}
                 layerColors={customization.layerColors}
               />
-              <p className="absolute bottom-0 left-full ml-2 whitespace-nowrap text-[10px] tracking-widest text-gold uppercase sm:hidden">
-                3D Preview β
-              </p>
             </div>
           </div>
 

@@ -46,20 +46,20 @@ export function BagCustomizer({
   }
 
   return (
-    <section id="customizer" className="border-b border-stone bg-cream py-16 sm:py-20">
+    <section id="customizer" className="border-b border-stone bg-cream py-10 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mb-10 max-w-2xl">
+        <div className="mb-6 max-w-2xl sm:mb-10">
           <h2 className="font-serif text-2xl font-light text-charcoal sm:text-3xl">
             バッグをカスタマイズ
           </h2>
-          <p className="mt-3 text-sm text-warm-gray">
+          <p className="mt-2 text-sm text-warm-gray sm:mt-3">
             型・パーツ・カラーを選び、右（または下）のプレビューで完成イメージをご確認ください。
           </p>
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
           <div className="order-1 lg:sticky lg:top-24 lg:self-start">
-            <p className="mb-3 text-xs tracking-widest text-warm-gray uppercase">プレビュー</p>
+            <p className="mb-2 text-xs tracking-widest text-warm-gray uppercase sm:mb-3">プレビュー</p>
             <BagPreview
               templateId={customization.templateId}
               layerColors={customization.layerColors}
@@ -68,7 +68,7 @@ export function BagCustomizer({
             />
           </div>
 
-          <div className="order-2 flex flex-col gap-10">
+          <div className="order-2 flex flex-col gap-6 sm:gap-10">
             <div className="rounded-2xl border border-stone bg-white p-6">
               <TemplateSelector
                 value={customization.templateId}

@@ -287,7 +287,7 @@ export function BagPreview({
   const shared = { colors: layerColors, handleTypeId, decorationId }
 
   return (
-    <div className="flex aspect-[4/5] w-full items-center justify-center rounded-2xl border border-stone bg-gradient-to-b from-white to-stone/40 p-6 sm:p-8">
+    <div className="mx-auto flex aspect-[4/5] w-full max-w-[185px] items-center justify-center rounded-2xl border border-stone bg-gradient-to-b from-white to-stone/40 p-3 sm:max-w-none sm:p-8">
       {templateId === 'tote' && <TotePreview {...shared} />}
       {templateId === 'mini-hand' && <MiniHandPreview {...shared} />}
       {templateId === 'shoulder' && <ShoulderPreview {...shared} />}

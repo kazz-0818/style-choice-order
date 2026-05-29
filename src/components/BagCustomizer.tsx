@@ -62,9 +62,9 @@ export function BagCustomizer({
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
 
-        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
-          <div className="order-1 min-w-0 space-y-6 overflow-visible lg:sticky lg:top-24 lg:self-start">
-            <div className="hidden max-w-2xl lg:block">{customizerIntro}</div>
+        <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-12 lg:gap-y-6">
+          <div className="order-1 min-w-0 overflow-visible lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-24 lg:self-start">
+            <div className="mb-6 hidden max-w-2xl lg:block">{customizerIntro}</div>
             <div className="relative mx-auto w-fit overflow-visible sm:mx-0 sm:w-full">
               <p className="absolute top-3 left-3 z-10 hidden text-xs tracking-widest text-warm-gray uppercase lg:block">
                 プレビュー
@@ -81,7 +81,7 @@ export function BagCustomizer({
             </div>
           </div>
 
-          <div className="order-2 min-w-0 w-full overflow-hidden">
+          <div className="order-2 min-w-0 w-full overflow-hidden lg:col-start-2 lg:row-start-2">
             <p className="mb-2 flex items-center justify-center gap-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
               <span className="text-gold" aria-hidden>
                 ←

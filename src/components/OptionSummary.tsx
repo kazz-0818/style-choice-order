@@ -1,3 +1,4 @@
+import { StepTitle } from './StepTitle'
 import { useState } from 'react'
 import { getColorName } from '../data/colors'
 import { templateMap } from '../data/bagTemplates'
@@ -13,9 +14,10 @@ import { calculatePrice, formatYen } from '../utils/price'
 
 interface OptionSummaryProps {
   customization: BagCustomization
+  step?: number
 }
 
-export function OptionSummary({ customization }: OptionSummaryProps) {
+export function OptionSummary({ customization, step }: OptionSummaryProps) {
   const [copied, setCopied] = useState(false)
   const price = calculatePrice(customization)
 
@@ -44,7 +46,11 @@ export function OptionSummary({ customization }: OptionSummaryProps) {
 
   return (
     <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-      <h3 className="font-serif text-base text-charcoal sm:text-lg">選択内容の確認</h3>
+      {step ? (
+        <StepTitle step={step}>選択内容の確認</StepTitle>
+      ) : (
+        <h3 className="font-serif text-base text-charcoal sm:text-lg">選択内容の確認</h3>
+      )}
       <p className="mt-1 text-[10px] text-warm-gray sm:text-xs">
         参考価格（税抜・目安）：{formatYen(price.total)}
       </p>

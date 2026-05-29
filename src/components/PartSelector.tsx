@@ -1,3 +1,4 @@
+import { StepTitle } from './StepTitle'
 import {
   DECORATIONS,
   HANDLE_TYPES,
@@ -12,15 +13,23 @@ export function PartOptionGroup<
   options,
   value,
   onChange,
+  step,
 }: {
   label: string
   options: T[]
   value: string
   onChange: (id: string) => void
+  step?: number
 }) {
   return (
     <div>
-      <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">{label}</h3>
+      {step ? (
+        <StepTitle step={step}>{label}</StepTitle>
+      ) : (
+        <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
+          {label}
+        </h3>
+      )}
       <div className="mt-2 flex flex-col gap-1.5 sm:mt-3 sm:gap-2">
         {options.map((option) => (
           <button

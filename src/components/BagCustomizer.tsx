@@ -75,60 +75,85 @@ export function BagCustomizer({
             </div>
           </div>
 
-          <div className="order-2 flex flex-col gap-4 sm:gap-10">
-            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-              <TemplateSelector
-                value={customization.templateId}
-                onChange={handleTemplateChange}
-              />
-            </div>
+          <div className="order-2">
+            <p className="mb-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
+              左右にスワイプして選択
+            </p>
+            <div className="customizer-steps -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2 sm:mx-0 sm:flex-col sm:gap-10 sm:overflow-visible sm:px-0 sm:pb-0">
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                  <TemplateSelector
+                    step={1}
+                    value={customization.templateId}
+                    onChange={handleTemplateChange}
+                  />
+                </div>
+              </div>
 
-            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-              <PartOptionGroup
-                label="本体素材"
-                options={MATERIALS}
-                value={customization.materialId}
-                onChange={(id) => update({ materialId: id })}
-              />
-            </div>
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                  <PartOptionGroup
+                    step={2}
+                    label="本体素材"
+                    options={MATERIALS}
+                    value={customization.materialId}
+                    onChange={(id) => update({ materialId: id })}
+                  />
+                </div>
+              </div>
 
-            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-              <PartOptionGroup
-                label="取手タイプ"
-                options={HANDLE_TYPES}
-                value={customization.handleTypeId}
-                onChange={(id) => update({ handleTypeId: id })}
-              />
-            </div>
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                  <PartOptionGroup
+                    step={3}
+                    label="取手タイプ"
+                    options={HANDLE_TYPES}
+                    value={customization.handleTypeId}
+                    onChange={(id) => update({ handleTypeId: id })}
+                  />
+                </div>
+              </div>
 
-            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-              <PartOptionGroup
-                label="金具カラー"
-                options={HARDWARE_COLORS}
-                value={customization.hardwareColorId}
-                onChange={handleHardwareChange}
-              />
-            </div>
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                  <PartOptionGroup
+                    step={4}
+                    label="金具カラー"
+                    options={HARDWARE_COLORS}
+                    value={customization.hardwareColorId}
+                    onChange={handleHardwareChange}
+                  />
+                </div>
+              </div>
 
-            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-              <PartOptionGroup
-                label="装飾オプション"
-                options={DECORATIONS}
-                value={customization.decorationId}
-                onChange={(id) => update({ decorationId: id })}
-              />
-            </div>
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                  <PartOptionGroup
+                    step={5}
+                    label="装飾オプション"
+                    options={DECORATIONS}
+                    value={customization.decorationId}
+                    onChange={(id) => update({ decorationId: id })}
+                  />
+                </div>
+              </div>
 
-            <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
-              <ColorSelector
-                activeLayer={activeLayer}
-                layerColors={customization.layerColors}
-                onLayerChange={onActiveLayerChange}
-                onColorSelect={updateLayerColor}
-              />
-            </div>
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
+                  <ColorSelector
+                    step={6}
+                    activeLayer={activeLayer}
+                    layerColors={customization.layerColors}
+                    onLayerChange={onActiveLayerChange}
+                    onColorSelect={updateLayerColor}
+                  />
+                </div>
+              </div>
 
-            <OptionSummary customization={customization} />
+              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+                <OptionSummary step={7} customization={customization} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

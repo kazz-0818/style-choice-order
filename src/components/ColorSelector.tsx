@@ -1,3 +1,4 @@
+import { StepTitle } from './StepTitle'
 import { COLORS } from '../data/colors'
 import { BAG_LAYERS, type BagLayer } from '../types/bag'
 
@@ -6,6 +7,7 @@ interface ColorSelectorProps {
   layerColors: Record<BagLayer, string>
   onLayerChange: (layer: BagLayer) => void
   onColorSelect: (layer: BagLayer, colorId: string) => void
+  step?: number
 }
 
 export function ColorSelector({
@@ -13,9 +15,13 @@ export function ColorSelector({
   layerColors,
   onLayerChange,
   onColorSelect,
+  step,
 }: ColorSelectorProps) {
   return (
     <div className="space-y-3 sm:space-y-4">
+      {step && (
+        <StepTitle step={step}>カラー</StepTitle>
+      )}
       <div>
         <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
           編集するパーツ

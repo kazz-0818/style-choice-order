@@ -25,3 +25,11 @@ body {
   background-color: var(--color-cream);
   color: var(--color-charcoal);
 }
+
+.customizer-steps {
+  scrollbar-width: none;
+}
+
+.customizer-steps::-webkit-scrollbar {
+  display: none;
+}

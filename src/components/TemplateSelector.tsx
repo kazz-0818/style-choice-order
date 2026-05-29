@@ -1,17 +1,17 @@
+import { StepTitle } from './StepTitle'
 import { BAG_TEMPLATES } from '../data/bagTemplates'
 import type { BagTemplateId } from '../types/bag'
 
 interface TemplateSelectorProps {
   value: BagTemplateId
   onChange: (id: BagTemplateId) => void
+  step?: number
 }
 
-export function TemplateSelector({ value, onChange }: TemplateSelectorProps) {
+export function TemplateSelector({ value, onChange, step = 1 }: TemplateSelectorProps) {
   return (
     <div>
-      <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
-        バッグ型
-      </h3>
+      <StepTitle step={step}>バッグ型</StepTitle>
       <div className="mt-2 grid gap-1.5 sm:mt-3 sm:gap-2">
         {BAG_TEMPLATES.map((template) => (
           <button

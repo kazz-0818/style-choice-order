@@ -69,9 +69,7 @@ export function applyCustomizationToScene(
   root: Object3D,
   customization: BagCustomization,
 ): void {
-  if (!cachedDefaults) {
-    cachedDefaults = captureDefaults(root)
-  }
+  ensureCustomizationDefaults(root)
 
   const visual = getPreviewVisualConfig(customization)
 
@@ -133,4 +131,11 @@ export function applyCustomizationToScene(
 /** 別 GLB 読み込み時にデフォルト姿勢キャッシュをリセット */
 export function resetCustomizationSceneCache(): void {
   cachedDefaults = null
+}
+
+/** 初回適用前に GLB ルートからデフォルト値をキャプチャ */
+export function ensureCustomizationDefaults(root: Object3D): void {
+  if (!cachedDefaults) {
+    cachedDefaults = captureDefaults(root)
+  }
 }

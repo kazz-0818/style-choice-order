@@ -25,8 +25,8 @@ export interface PreviewVisualConfig {
 
 const TEMPLATE_SCALE: Record<BagTemplateId, number> = {
   tote: 1,
-  'mini-hand': 0.76,
-  shoulder: 0.94,
+  'mini-hand': 0.68,
+  shoulder: 0.92,
 }
 
 const MATERIAL_STYLE: Record<string, PreviewMaterialStyle> = {
@@ -51,20 +51,20 @@ const HANDLE_MESH: Record<string, PreviewMeshTransform> = {
     visible: true,
   },
   'long-handle': {
-    scale: [1.12, 1.22, 1],
-    position: [0, 0.12, 0],
+    scale: [1.15, 1.45, 1],
+    position: [0, 0.22, 0],
     rotation: [0, 0, 0],
     visible: true,
   },
   'shoulder-strap': {
-    scale: [1.35, 0.85, 0.75],
-    position: [0, 0.05, -0.08],
-    rotation: [0.55, 0, 0],
+    scale: [1.55, 0.7, 0.65],
+    position: [0, 0.08, -0.12],
+    rotation: [0.85, 0, 0],
     visible: true,
   },
   'chain-handle': {
-    scale: [1, 0.72, 1],
-    position: [0, 0.08, 0],
+    scale: [1.05, 0.55, 1],
+    position: [0, 0.12, 0],
     rotation: [0, 0, 0],
     visible: true,
   },
@@ -97,11 +97,12 @@ export function getPreviewVisualConfig(customization: BagCustomization): Preview
     ? { roughness: 0.22, metalness: 0.88 }
     : bodyMaterial
 
-  const bodyScale: [number, number, number] = [
-    templateScale,
-    templateScale * (customization.templateId === 'shoulder' ? 1.08 : 1),
-    templateScale,
-  ]
+  const bodyScale: [number, number, number] =
+    customization.templateId === 'shoulder'
+      ? [templateScale * 1.15, templateScale * 0.92, templateScale * 0.82]
+      : customization.templateId === 'mini-hand'
+        ? [templateScale * 0.92, templateScale, templateScale * 0.88]
+        : [templateScale, templateScale, templateScale]
 
   return {
     templateScale,

@@ -28,12 +28,14 @@ const { mergeGeometries } = await import('three/addons/utils/BufferGeometryUtils
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const outputPath = join(__dirname, '../public/models/custom-bag.glb')
 
-function createMaterial(hex, roughness = 0.62, metalness = 0.04) {
-  return new THREE.MeshStandardMaterial({
+function createMaterial(hex, roughness = 0.62, metalness = 0.04, name = '') {
+  const material = new THREE.MeshStandardMaterial({
     color: hex,
     roughness,
     metalness,
   })
+  if (name) material.name = name
+  return material
 }
 
 function createBagScene() {
@@ -42,14 +44,14 @@ function createBagScene() {
 
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(2.1, 1.55, 0.72),
-    createMaterial(0x111111),
+    createMaterial(0x111111, 0.62, 0.04, 'body'),
   )
   body.name = 'body'
   body.position.y = 0.05
 
   const bottom = new THREE.Mesh(
     new THREE.BoxGeometry(2.16, 0.1, 0.76),
-    createMaterial(0x4a3428),
+    createMaterial(0x4a3428, 0.62, 0.04, 'bottom'),
   )
   bottom.name = 'bottom'
   bottom.position.y = -0.78
@@ -60,7 +62,7 @@ function createBagScene() {
   rightSide.translate(1.06, 0.05, 0)
   const side = new THREE.Mesh(
     mergeGeometries([leftSide, rightSide]),
-    createMaterial(0x111111),
+    createMaterial(0x111111, 0.62, 0.04, 'side'),
   )
   side.name = 'side'
 
@@ -73,7 +75,7 @@ function createBagScene() {
   ])
   const handle = new THREE.Mesh(
     new THREE.TubeGeometry(handleCurve, 32, 0.055, 12, false),
-    createMaterial(0x8b6f4e, 0.58),
+    createMaterial(0x8b6f4e, 0.58, 0.04, 'handle'),
   )
   handle.name = 'handle'
 
@@ -87,13 +89,13 @@ function createBagScene() {
   clasp.translate(0, 0.72, 0.38)
   const metal = new THREE.Mesh(
     mergeGeometries([ringLeft, ringRight, clasp]),
-    createMaterial(0xb8956a, 0.28, 0.72),
+    createMaterial(0xb8956a, 0.28, 0.72, 'metal'),
   )
   metal.name = 'metal'
 
   const accent = new THREE.Mesh(
     new THREE.BoxGeometry(1.15, 0.82, 0.04),
-    createMaterial(0xd4c4a8, 0.7),
+    createMaterial(0xd4c4a8, 0.7, 0.04, 'accent'),
   )
   accent.name = 'accent'
   accent.position.set(0, -0.05, 0.39)

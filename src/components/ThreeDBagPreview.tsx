@@ -6,7 +6,12 @@ import type { ModelViewerElement } from '../types/model-viewer'
 import { getPreviewCssModifiers, getPreviewVisualConfig } from '../utils/preview/previewVisualConfig'
 import {
   applyCustomizationToScene,
+  resetCustomizationSceneCache,
 } from '../utils/threeD/applyCustomizationToScene'
+import {
+  getModelViewerThreeRoot,
+  requestModelViewerRender,
+} from '../utils/threeD/modelViewerInternals'
 import { CUSTOM_BAG_MODEL_URL, MESH_LAYER_NAMES } from '../utils/threeD/modelConfig'
 
 export interface ThreeDBagPreviewProps {
@@ -168,9 +173,11 @@ export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
   const [viewerNode, setViewerNode] = useState<ModelViewerElement | null>(null)
 
   const applyCustomization = useCallback((viewer: ModelViewerElement) => {
-    if (!viewer.model) return
+    const root = getModelViewerThreeRoot(viewer)
+    if (!root) return
     try {
-      applyCustomizationToScene(viewer.model, customizationRef.current)
+      applyCustomizationToScene(root, customizationRef.current)
+      requestModelViewerRender(viewer)
     } catch (error) {
       console.warn('[ThreeDBagPreview] Could not apply customization:', error)
     }
@@ -191,13 +198,16 @@ export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
   useEffect(() => {
     if (!viewerNode) return
 
-    const onLoad = () => markReady()
+    const onLoad = () => {
+      resetCustomizationSceneCache()
+      markReady()
+    }
     const onError = (event: Event) => handleModelError(event)
 
     viewerNode.addEventListener('load', onLoad)
     viewerNode.addEventListener('error', onError)
 
-    if (viewerNode.model) {
+    if (getModelViewerThreeRoot(viewerNode)) {
       onLoad()
     }
 
@@ -211,7 +221,7 @@ export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
     if (!viewerNode || status !== 'loading-glb') return
 
     const pollId = window.setInterval(() => {
-      if (viewerNode.model) {
+      if (getModelViewerThreeRoot(viewerNode)) {
         markReady()
       }
     }, 300)

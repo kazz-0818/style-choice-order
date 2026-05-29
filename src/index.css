@@ -36,8 +36,3 @@ body {
 .customizer-steps::-webkit-scrollbar {
   display: none;
 }
-
-.step-card-scroll::-webkit-scrollbar-thumb {
-  background-color: var(--color-stone);
-  border-radius: 999px;
-}

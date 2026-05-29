@@ -4,7 +4,7 @@ export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-stone bg-charcoal py-10 text-cream/80">
+    <footer className="border-t border-stone bg-kogicha-dark py-10 text-cream/80">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div>
           <p className="font-serif text-sm tracking-widest text-cream">Style Choice Order</p>

@@ -18,7 +18,7 @@ export function Hero() {
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <a
             href="#customizer"
-            className="inline-flex items-center justify-center rounded-full bg-charcoal px-8 py-3.5 text-sm tracking-wide text-cream transition hover:bg-brown-deep"
+            className="inline-flex items-center justify-center rounded-full bg-kogicha px-8 py-3.5 text-sm tracking-wide text-cream transition hover:bg-kogicha-dark"
           >
             バッグをカスタムする
           </a>

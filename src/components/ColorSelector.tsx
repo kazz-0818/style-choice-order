@@ -28,7 +28,7 @@ export function ColorSelector({
               onClick={() => onLayerChange(layer.id)}
               className={`rounded-full px-3 py-1.5 text-xs transition ${
                 activeLayer === layer.id
-                  ? 'bg-charcoal text-cream'
+                  ? 'bg-kogicha text-cream'
                   : 'border border-stone bg-white text-warm-gray hover:border-gold'
               }`}
             >

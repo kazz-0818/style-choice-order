@@ -41,13 +41,13 @@ export function InquirySection({ customization }: InquirySectionProps) {
           <button
             type="button"
             onClick={handleCopy}
-            className="rounded-full border border-charcoal px-6 py-3 text-sm tracking-wide transition hover:bg-charcoal hover:text-cream"
+            className="rounded-full border border-kogicha px-6 py-3 text-sm tracking-wide transition hover:bg-kogicha hover:text-cream"
           >
             問い合わせ内容をコピー
           </button>
           <a
             href={mailto}
-            className="rounded-full bg-charcoal px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-brown-deep"
+            className="rounded-full bg-kogicha px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-kogicha-dark"
           >
             メールで問い合わせる
           </a>

@@ -36,7 +36,7 @@ function OptionGroup<T extends { id: string; name: string; description?: string 
             onClick={() => onChange(option.id)}
             className={`rounded-xl border px-4 py-3 text-left transition ${
               value === option.id
-                ? 'border-charcoal bg-charcoal text-cream'
+                ? 'border-kogicha bg-kogicha text-cream'
                 : 'border-stone bg-white text-charcoal hover:border-gold'
             }`}
           >

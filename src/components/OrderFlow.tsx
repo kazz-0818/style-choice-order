@@ -20,7 +20,7 @@ export function OrderFlow() {
               key={step}
               className="flex gap-4 rounded-2xl border border-stone bg-white p-5"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-charcoal text-sm text-cream">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-kogicha text-sm text-cream">
                 {index + 1}
               </span>
               <p className="self-center text-sm leading-relaxed text-charcoal">{step}</p>

@@ -59,7 +59,7 @@ export function OptionSummary({ customization }: OptionSummaryProps) {
       <button
         type="button"
         onClick={handleCopy}
-        className="mt-6 w-full rounded-full border border-charcoal bg-charcoal py-3 text-sm tracking-wide text-cream transition hover:bg-brown-deep"
+        className="mt-6 w-full rounded-full border border-kogicha bg-kogicha py-3 text-sm tracking-wide text-cream transition hover:bg-kogicha-dark"
       >
         問い合わせ用テキストをコピー
       </button>

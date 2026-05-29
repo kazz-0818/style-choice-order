@@ -20,7 +20,7 @@ export function TemplateSelector({ value, onChange }: TemplateSelectorProps) {
             onClick={() => onChange(template.id)}
             className={`rounded-xl border px-4 py-3 text-left transition ${
               value === template.id
-                ? 'border-charcoal bg-charcoal text-cream'
+                ? 'border-kogicha bg-kogicha text-cream'
                 : 'border-stone bg-white hover:border-gold'
             }`}
           >

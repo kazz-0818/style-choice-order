@@ -13,7 +13,7 @@ export interface ThreeDBagPreviewProps {
   templateId?: BagTemplateId
 }
 
-type PreviewStatus = 'checking' | 'placeholder' | 'loading' | 'ready' | 'error'
+type PreviewStatus = 'placeholder' | 'loading-glb' | 'ready' | 'error'
 
 const FRAME_CLASS =
   'mx-auto flex aspect-[4/5] w-full max-w-[185px] items-center justify-center rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 p-3 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none sm:p-8'
@@ -47,7 +47,6 @@ function ColorSwatchRow({ layerColors }: { layerColors: LayerColors }) {
 }
 
 function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
-  const sceneRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef({ active: false, startX: 0, startY: 0, rotX: -12, rotY: 24 })
   const [rotation, setRotation] = useState({ x: -12, y: 24 })
 
@@ -87,7 +86,6 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
 
   return (
     <div
-      ref={sceneRef}
       className="three-d-scene relative h-36 w-full cursor-grab touch-none select-none active:cursor-grabbing sm:h-48"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -151,16 +149,18 @@ function PreviewPlaceholder({
 
 export function ThreeDBagPreview({ layerColors, templateId: _templateId }: ThreeDBagPreviewProps) {
   const viewerRef = useRef<ModelViewerElement>(null)
-  const [status, setStatus] = useState<PreviewStatus>('checking')
-  const [modelAvailable, setModelAvailable] = useState(false)
+  const [status, setStatus] = useState<PreviewStatus>('placeholder')
+  const [shouldLoadGlb, setShouldLoadGlb] = useState(false)
 
   useEffect(() => {
     let cancelled = false
 
     checkModelExists(CUSTOM_BAG_MODEL_URL).then((exists) => {
       if (cancelled) return
-      setModelAvailable(exists)
-      setStatus(exists ? 'loading' : 'placeholder')
+      if (exists) {
+        setShouldLoadGlb(true)
+        setStatus('loading-glb')
+      }
     })
 
     return () => {
@@ -170,7 +170,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
 
   useEffect(() => {
     const viewer = viewerRef.current
-    if (!viewer || !modelAvailable) return
+    if (!viewer || !shouldLoadGlb) return
 
     const handleLoad = () => {
       if (viewer.model) {
@@ -182,6 +182,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
     const handleError = (event: Event) => {
       console.error('[ThreeDBagPreview] Failed to load GLB model:', event)
       setStatus('error')
+      setShouldLoadGlb(false)
     }
 
     viewer.addEventListener('load', handleLoad)
@@ -195,23 +196,13 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
       viewer.removeEventListener('load', handleLoad)
       viewer.removeEventListener('error', handleError)
     }
-  }, [modelAvailable, layerColors])
+  }, [shouldLoadGlb, layerColors])
 
   useEffect(() => {
     const viewer = viewerRef.current
     if (!viewer?.model || status !== 'ready') return
     applyLayerColorsToScene(viewer.model, layerColors)
   }, [layerColors, status])
-
-  if (status === 'checking' || status === 'loading') {
-    return (
-      <PreviewPlaceholder
-        layerColors={layerColors}
-        title={status === 'checking' ? '3Dプレビューを確認中…' : '3Dモデルを読み込み中…'}
-        description="GLBモデルの有無を確認しています。"
-      />
-    )
-  }
 
   if (status === 'placeholder') {
     return (
@@ -241,6 +232,11 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
       <p className="absolute top-3 left-3 z-10 hidden text-[10px] tracking-widest text-warm-gray lg:block">
         ドラッグで回転 · ピンチでズーム
       </p>
+      {status === 'loading-glb' && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/70 backdrop-blur-[1px]">
+          <p className="text-xs tracking-wide text-warm-gray">3Dモデルを読み込み中…</p>
+        </div>
+      )}
       <model-viewer
         ref={viewerRef}
         src={CUSTOM_BAG_MODEL_URL}

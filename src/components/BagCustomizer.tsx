@@ -1,7 +1,7 @@
 import { BagPreview } from './BagPreview'
 import { ColorSelector } from './ColorSelector'
 import { OptionSummary } from './OptionSummary'
-import { PartSelector } from './PartSelector'
+import { PartOptionGroup, DECORATIONS, HANDLE_TYPES, HARDWARE_COLORS, MATERIALS } from './PartSelector'
 import { TemplateSelector } from './TemplateSelector'
 import { hardwareMap } from '../data/parts'
 import type { BagCustomization, BagLayer, BagTemplateId } from '../types/bag'
@@ -77,15 +77,38 @@ export function BagCustomizer({
             </div>
 
             <div className="rounded-2xl border border-stone bg-white p-6">
-              <p className="mb-6 text-xs tracking-widest text-warm-gray uppercase">
-                パーツ選択
-              </p>
-              <PartSelector
-                customization={customization}
-                onMaterialChange={(id) => update({ materialId: id })}
-                onHandleChange={(id) => update({ handleTypeId: id })}
-                onHardwareChange={handleHardwareChange}
-                onDecorationChange={(id) => update({ decorationId: id })}
+              <PartOptionGroup
+                label="本体素材"
+                options={MATERIALS}
+                value={customization.materialId}
+                onChange={(id) => update({ materialId: id })}
+              />
+            </div>
+
+            <div className="rounded-2xl border border-stone bg-white p-6">
+              <PartOptionGroup
+                label="取手タイプ"
+                options={HANDLE_TYPES}
+                value={customization.handleTypeId}
+                onChange={(id) => update({ handleTypeId: id })}
+              />
+            </div>
+
+            <div className="rounded-2xl border border-stone bg-white p-6">
+              <PartOptionGroup
+                label="金具カラー"
+                options={HARDWARE_COLORS}
+                value={customization.hardwareColorId}
+                onChange={handleHardwareChange}
+              />
+            </div>
+
+            <div className="rounded-2xl border border-stone bg-white p-6">
+              <PartOptionGroup
+                label="装飾オプション"
+                options={DECORATIONS}
+                value={customization.decorationId}
+                onChange={(id) => update({ decorationId: id })}
               />
             </div>
 

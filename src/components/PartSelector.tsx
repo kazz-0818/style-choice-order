@@ -4,17 +4,10 @@ import {
   HARDWARE_COLORS,
   MATERIALS,
 } from '../data/parts'
-import type { BagCustomization } from '../types/bag'
 
-interface PartSelectorProps {
-  customization: BagCustomization
-  onMaterialChange: (id: string) => void
-  onHandleChange: (id: string) => void
-  onHardwareChange: (id: string) => void
-  onDecorationChange: (id: string) => void
-}
-
-function OptionGroup<T extends { id: string; name: string; description?: string }>({
+export function PartOptionGroup<
+  T extends { id: string; name: string; description?: string },
+>({
   label,
   options,
   value,
@@ -57,39 +50,4 @@ function OptionGroup<T extends { id: string; name: string; description?: string 
   )
 }
 
-export function PartSelector({
-  customization,
-  onMaterialChange,
-  onHandleChange,
-  onHardwareChange,
-  onDecorationChange,
-}: PartSelectorProps) {
-  return (
-    <div className="space-y-8">
-      <OptionGroup
-        label="本体素材"
-        options={MATERIALS}
-        value={customization.materialId}
-        onChange={onMaterialChange}
-      />
-      <OptionGroup
-        label="取手タイプ"
-        options={HANDLE_TYPES}
-        value={customization.handleTypeId}
-        onChange={onHandleChange}
-      />
-      <OptionGroup
-        label="金具カラー"
-        options={HARDWARE_COLORS}
-        value={customization.hardwareColorId}
-        onChange={onHardwareChange}
-      />
-      <OptionGroup
-        label="装飾オプション"
-        options={DECORATIONS}
-        value={customization.decorationId}
-        onChange={onDecorationChange}
-      />
-    </div>
-  )
-}
+export { MATERIALS, HANDLE_TYPES, HARDWARE_COLORS, DECORATIONS }

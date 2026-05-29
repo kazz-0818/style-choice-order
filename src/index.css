@@ -226,3 +226,67 @@ body {
   border-radius: 999px;
   transform: translateZ(26px);
 }
+
+.three-d-bag__face--accent {
+  width: 88px;
+  height: 82px;
+  left: 0;
+  top: 10px;
+  transform: translateZ(18px);
+}
+
+.three-d-bag.handle-shoulder-strap .three-d-bag__handle {
+  width: 72px;
+  top: -8px;
+  transform: translateZ(24px) rotateZ(28deg);
+}
+
+.three-d-bag.handle-long-handle .three-d-bag__handle {
+  width: 64px;
+  height: 16px;
+  top: -22px;
+}
+
+.three-d-bag.handle-chain-handle .three-d-bag__handle {
+  height: 10px;
+  box-shadow: 0 0 8px rgba(184, 149, 106, 0.45);
+}
+
+.three-d-bag.material-canvas .three-d-bag__face,
+.three-d-bag.material-nylon-like .three-d-bag__face {
+  box-shadow: none;
+}
+
+.three-d-bag.material-textured-leather .three-d-bag__face--front {
+  background-image: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(0, 0, 0, 0.06) 100%
+  ) !important;
+  background-blend-mode: overlay;
+}
+
+.three-d-bag.template-mini-hand {
+  transform: scale(0.82);
+}
+
+.three-d-bag.template-shoulder {
+  transform: scale(0.94);
+}
+
+.three-d-bag.decoration-stitch-accent .three-d-bag__face--accent {
+  height: 6px;
+  top: 48px;
+}
+
+.three-d-bag.decoration-front-pocket .three-d-bag__face--accent {
+  opacity: 0.95;
+}
+
+.three-d-bag.decoration-charm .three-d-bag__face--accent {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  top: 56px;
+  left: 52px;
+}

@@ -1,15 +1,16 @@
 import '@google/model-viewer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getColorHex } from '../data/colors'
-import type { BagTemplateId, LayerColors } from '../types/bag'
+import type { BagCustomization } from '../types/bag'
 import type { ModelViewerElement } from '../types/model-viewer'
-import { applyLayerColorsToScene } from '../utils/threeD/applyLayerColors'
+import { getPreviewCssModifiers, getPreviewVisualConfig } from '../utils/preview/previewVisualConfig'
+import {
+  applyCustomizationToScene,
+} from '../utils/threeD/applyCustomizationToScene'
 import { CUSTOM_BAG_MODEL_URL, MESH_LAYER_NAMES } from '../utils/threeD/modelConfig'
 
 export interface ThreeDBagPreviewProps {
-  layerColors: LayerColors
-  /** 将来: テンプレート別GLB切替用 */
-  templateId?: BagTemplateId
+  customization: BagCustomization
 }
 
 type PreviewStatus = 'loading-glb' | 'ready' | 'fallback'
@@ -19,10 +20,10 @@ const LOAD_TIMEOUT_MS = 20_000
 const FRAME_CLASS =
   'three-d-preview-frame relative mx-auto w-full max-w-[240px] rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none'
 
-function ColorSwatchRow({ layerColors }: { layerColors: LayerColors }) {
+function ColorSwatchRow({ customization }: { customization: BagCustomization }) {
   const layers = MESH_LAYER_NAMES.map((name) => ({
     name,
-    hex: getColorHex(layerColors[name]),
+    hex: getColorHex(customization.layerColors[name]),
   }))
 
   return (
@@ -39,9 +40,11 @@ function ColorSwatchRow({ layerColors }: { layerColors: LayerColors }) {
   )
 }
 
-function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
+function Css3dBagScene({ customization }: { customization: BagCustomization }) {
   const dragRef = useRef({ active: false, startX: 0, startY: 0, rotX: -12, rotY: 24 })
   const [rotation, setRotation] = useState({ x: -12, y: 24 })
+  const visual = getPreviewVisualConfig(customization)
+  const cssMods = getPreviewCssModifiers(customization)
 
   const onPointerDown = useCallback((event: React.PointerEvent) => {
     dragRef.current = {
@@ -70,12 +73,16 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
     event.currentTarget.releasePointerCapture(event.pointerId)
   }, [])
 
+  const { layerColors } = customization
   const body = getColorHex(layerColors.body)
   const side = getColorHex(layerColors.side)
   const bottom = getColorHex(layerColors.bottom)
   const handle = getColorHex(layerColors.handle)
   const metal = getColorHex(layerColors.metal)
   const accent = getColorHex(layerColors.accent)
+  const accentVisible = visual.meshes.accent.visible
+  const handleStyle = visual.meshes.handle
+  const bagScale = visual.templateScale
 
   return (
     <div
@@ -91,14 +98,34 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
           className="three-d-scene__object"
           style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}
         >
-          <div className="three-d-bag">
+          <div
+            className={['three-d-bag', ...cssMods].join(' ')}
+            style={{ transform: `scale(${bagScale})` }}
+          >
             <div className="three-d-bag__face three-d-bag__face--front" style={{ background: body }} />
             <div className="three-d-bag__face three-d-bag__face--back" style={{ background: side }} />
             <div className="three-d-bag__face three-d-bag__face--left" style={{ background: side }} />
             <div className="three-d-bag__face three-d-bag__face--right" style={{ background: side }} />
             <div className="three-d-bag__face three-d-bag__face--bottom" style={{ background: bottom }} />
             <div className="three-d-bag__face three-d-bag__face--top" style={{ background: accent }} />
-            <div className="three-d-bag__handle" style={{ background: handle }} />
+            {accentVisible && (
+              <div
+                className="three-d-bag__face three-d-bag__face--accent"
+                style={{
+                  background: visual.accentUsesMetal ? metal : accent,
+                  transform: `translateZ(0.42rem) scale(${visual.meshes.accent.scale[0]}, ${visual.meshes.accent.scale[1]})`,
+                }}
+              />
+            )}
+            <div
+              className="three-d-bag__handle"
+              style={{
+                background: customization.handleTypeId === 'chain-handle'
+                  ? `linear-gradient(135deg, ${metal}, ${handle})`
+                  : handle,
+                transform: `translateZ(24px) scale(${handleStyle.scale[0]}, ${handleStyle.scale[1]}) rotateZ(${handleStyle.rotation[2]}rad)`,
+              }}
+            />
             <div className="three-d-bag__metal" style={{ background: metal }} />
           </div>
         </div>
@@ -110,17 +137,17 @@ function Css3dBagScene({ layerColors }: { layerColors: LayerColors }) {
   )
 }
 
-function PreviewFallback({ layerColors }: { layerColors: LayerColors }) {
+function PreviewFallback({ customization }: { customization: BagCustomization }) {
   return (
     <div className={`${FRAME_CLASS} overflow-hidden p-4 sm:p-8`}>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(184,149,106,0.08),transparent_55%)]" />
       <div className="relative flex w-full flex-col items-center px-2 pt-6 text-center">
-        <Css3dBagScene layerColors={layerColors} />
+        <Css3dBagScene customization={customization} />
         <p className="mt-3 font-serif text-sm text-charcoal sm:text-base">カラーイメージ</p>
         <p className="mt-2 max-w-xs text-xs leading-relaxed text-warm-gray sm:text-sm">
           選択したカラーの組み合わせを3Dで確認できます。ドラッグで角度を変えてご覧ください。
         </p>
-        <ColorSwatchRow layerColors={layerColors} />
+        <ColorSwatchRow customization={customization} />
       </div>
     </div>
   )
@@ -132,29 +159,29 @@ function refreshViewerLayout(viewer: ModelViewerElement) {
   window.dispatchEvent(new Event('resize'))
 }
 
-export function ThreeDBagPreview({ layerColors, templateId: _templateId }: ThreeDBagPreviewProps) {
+export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
   const frameRef = useRef<HTMLDivElement>(null)
-  const layerColorsRef = useRef(layerColors)
-  layerColorsRef.current = layerColors
+  const customizationRef = useRef(customization)
+  customizationRef.current = customization
 
   const [status, setStatus] = useState<PreviewStatus>('loading-glb')
   const [viewerNode, setViewerNode] = useState<ModelViewerElement | null>(null)
 
-  const applyColors = useCallback((viewer: ModelViewerElement) => {
+  const applyCustomization = useCallback((viewer: ModelViewerElement) => {
     if (!viewer.model) return
     try {
-      applyLayerColorsToScene(viewer.model, layerColorsRef.current)
+      applyCustomizationToScene(viewer.model, customizationRef.current)
     } catch (error) {
-      console.warn('[ThreeDBagPreview] Could not apply layer colors:', error)
+      console.warn('[ThreeDBagPreview] Could not apply customization:', error)
     }
   }, [])
 
   const markReady = useCallback(() => {
     if (!viewerNode) return
-    applyColors(viewerNode)
+    applyCustomization(viewerNode)
     refreshViewerLayout(viewerNode)
     setStatus('ready')
-  }, [applyColors, viewerNode])
+  }, [applyCustomization, viewerNode])
 
   const handleModelError = useCallback((event: Event) => {
     console.error('[ThreeDBagPreview] Failed to load GLB model:', event)
@@ -194,8 +221,9 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
 
   useEffect(() => {
     if (!viewerNode || status !== 'ready') return
-    applyColors(viewerNode)
-  }, [layerColors, status, applyColors, viewerNode])
+    applyCustomization(viewerNode)
+    refreshViewerLayout(viewerNode)
+  }, [customization, status, applyCustomization, viewerNode])
 
   useEffect(() => {
     if (status !== 'loading-glb') return
@@ -225,7 +253,7 @@ export function ThreeDBagPreview({ layerColors, templateId: _templateId }: Three
   }, [viewerNode, status])
 
   if (status === 'fallback') {
-    return <PreviewFallback layerColors={layerColors} />
+    return <PreviewFallback customization={customization} />
   }
 
   return (

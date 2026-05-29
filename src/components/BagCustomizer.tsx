@@ -66,10 +66,7 @@ export function BagCustomizer({
           <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:self-start">
             <div className="mb-6 hidden max-w-2xl lg:block">{customizerIntro}</div>
             <div className="relative mx-auto w-full max-w-[240px] sm:max-w-none">
-              <ThreeDBagPreview
-                templateId={customization.templateId}
-                layerColors={customization.layerColors}
-              />
+              <ThreeDBagPreview customization={customization} />
             </div>
           </div>
 

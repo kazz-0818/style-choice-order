@@ -23,17 +23,21 @@ export function Features() {
         <p className="mt-3 max-w-xl text-sm text-warm-gray">
           画面上で仕様を固めながら、Style Choice の製作チームへスムーズにご相談いただけます。
         </p>
-        <div className="mt-10 grid gap-6 sm:grid-cols-3">
+        <div className="mt-10 grid grid-cols-3 gap-2 sm:gap-6">
           {FEATURES.map((feature, index) => (
             <article
               key={feature.title}
-              className="rounded-2xl border border-stone bg-cream/50 p-6 transition hover:border-gold/40"
+              className="rounded-xl border border-stone bg-cream/50 p-3 transition hover:border-gold/40 sm:rounded-2xl sm:p-6"
             >
-              <span className="text-xs tracking-widest text-gold">
+              <span className="text-[10px] tracking-widest text-gold sm:text-xs">
                 {String(index + 1).padStart(2, '0')}
               </span>
-              <h3 className="mt-3 font-serif text-lg text-charcoal">{feature.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-warm-gray">{feature.body}</p>
+              <h3 className="mt-2 font-serif text-xs leading-snug text-charcoal sm:mt-3 sm:text-lg">
+                {feature.title}
+              </h3>
+              <p className="mt-2 text-[11px] leading-snug text-warm-gray sm:mt-3 sm:text-sm sm:leading-relaxed">
+                {feature.body}
+              </p>
             </article>
           ))}
         </div>

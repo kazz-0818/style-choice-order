@@ -32,7 +32,9 @@ export function InquirySection({ customization }: InquirySectionProps) {
     <section id="inquiry" className="border-b border-stone bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <h2 className="font-serif text-2xl font-light text-charcoal sm:text-3xl">
-          完成イメージをもとに、製作相談へ。
+          完成イメージをもとに、
+          <br />
+          製作相談へ。
         </h2>
         <p className="mt-5 text-sm leading-relaxed text-warm-gray sm:text-base">
           仕様が完全に決まっていない段階でもご相談可能です。ショップ別注、イベント販売、ブランドオリジナル商品など、用途に合わせてご提案いたします。

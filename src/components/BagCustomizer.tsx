@@ -57,8 +57,8 @@ export function BagCustomizer({
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
-          <div className="order-1 lg:sticky lg:top-24 lg:self-start">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:gap-12">
+          <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:self-start">
             <p className="mb-2 hidden text-xs tracking-widest text-warm-gray uppercase sm:mb-3 sm:block">
               プレビュー
             </p>
@@ -75,12 +75,12 @@ export function BagCustomizer({
             </div>
           </div>
 
-          <div className="order-2">
+          <div className="order-2 min-w-0 w-full overflow-hidden">
             <p className="mb-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
               左右にスワイプして選択
             </p>
-            <div className="customizer-steps -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2 sm:mx-0 sm:flex-col sm:gap-10 sm:overflow-visible sm:px-0 sm:pb-0">
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+            <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 sm:flex-col sm:gap-10 sm:overflow-visible sm:pb-0">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
                   <TemplateSelector
                     step={1}
@@ -90,7 +90,7 @@ export function BagCustomizer({
                 </div>
               </div>
 
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
                   <PartOptionGroup
                     step={2}
@@ -102,7 +102,7 @@ export function BagCustomizer({
                 </div>
               </div>
 
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
                   <PartOptionGroup
                     step={3}
@@ -114,7 +114,7 @@ export function BagCustomizer({
                 </div>
               </div>
 
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
                   <PartOptionGroup
                     step={4}
@@ -126,7 +126,7 @@ export function BagCustomizer({
                 </div>
               </div>
 
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
                   <PartOptionGroup
                     step={5}
@@ -138,7 +138,7 @@ export function BagCustomizer({
                 </div>
               </div>
 
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <div className="rounded-xl border border-stone bg-white p-4 sm:rounded-2xl sm:p-6">
                   <ColorSelector
                     step={6}
@@ -150,7 +150,7 @@ export function BagCustomizer({
                 </div>
               </div>
 
-              <div className="w-[88vw] max-w-[340px] shrink-0 snap-center sm:w-full sm:max-w-none">
+              <div className="shrink-0 grow-0 basis-[calc(100%-0.75rem)] snap-center sm:w-full sm:shrink sm:grow sm:basis-auto">
                 <OptionSummary step={7} customization={customization} />
               </div>
             </div>

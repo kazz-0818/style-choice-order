@@ -7,7 +7,8 @@ export function Hero() {
           Style Choice LLC — Custom Bags
         </p>
         <h1 className="max-w-2xl font-serif text-3xl leading-snug font-light text-charcoal sm:text-4xl lg:text-5xl">
-          世界にひとつ、自分だけの
+          世界にひとつ、
+          <span className="whitespace-nowrap">自分だけの</span>
           <br />
           オーダーメイドバッグを。
         </h1>

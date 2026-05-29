@@ -7,10 +7,10 @@ export function Hero() {
           Style Choice LLC — Custom Bags
         </p>
         <h1 className="max-w-2xl font-serif text-3xl leading-snug font-light text-charcoal sm:text-4xl lg:text-5xl">
-          世界にひとつ、
-          <span className="whitespace-nowrap">自分だけの</span>
-          <br />
-          オーダーメイドバッグを。
+          <span className="block whitespace-nowrap sm:whitespace-normal">
+            世界にひとつ、自分だけの
+          </span>
+          <span className="block">オーダーメイドバッグを。</span>
         </h1>
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-warm-gray sm:text-base">
           本体・取手・金具・カラーを選びながら、完成イメージを確認。ショップ様の別注やオリジナル商品のご相談にも対応します。

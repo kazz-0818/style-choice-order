@@ -58,25 +58,22 @@ export function BagCustomizer({
   )
 
   return (
-    <section id="customizer" className="border-b border-stone bg-cream py-10 sm:py-20">
+    <section
+      id="customizer"
+      className="scroll-mt-[4.5rem] border-b border-stone bg-cream py-10 sm:scroll-mt-24 sm:py-20"
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
+        <div className="mb-6 hidden max-w-2xl lg:mb-10 lg:block">{customizerIntro}</div>
 
         <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
           <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:self-start">
-            <div className="mb-6 hidden max-w-2xl lg:block">{customizerIntro}</div>
             <div className="relative mx-auto w-full max-w-[240px] sm:max-w-none">
               <ThreeDBagPreview customization={customization} />
             </div>
           </div>
 
           <div className="order-2 min-w-0 w-full overflow-hidden">
-            <div
-              className="mb-6 hidden max-w-2xl lg:block lg:invisible"
-              aria-hidden="true"
-            >
-              {customizerIntro}
-            </div>
             <p className="mb-2 flex items-center justify-center gap-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
               <span className="text-gold" aria-hidden>
                 ←

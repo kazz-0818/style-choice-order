@@ -53,7 +53,7 @@ export function BagCustomizer({
             バッグをカスタマイズ
           </h2>
           <p className="mt-2 text-sm text-warm-gray sm:mt-3">
-            型・パーツ・カラーを選び、右（または下）のプレビューで完成イメージをご確認ください。
+            型・パーツ・カラーを選び、プレビューで完成イメージをご確認ください。
           </p>
         </div>
 

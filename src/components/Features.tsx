@@ -35,7 +35,7 @@ export function Features() {
               <h3 className="mt-2 font-serif text-xs leading-snug text-charcoal sm:mt-3 sm:text-lg">
                 {feature.title}
               </h3>
-              <p className="mt-2 text-[11px] leading-snug text-warm-gray sm:mt-3 sm:text-sm sm:leading-relaxed">
+              <p className="mt-2 text-[9px] leading-snug text-warm-gray sm:mt-3 sm:text-sm sm:leading-relaxed">
                 {feature.body}
               </p>
             </article>

@@ -11,7 +11,8 @@
     "generate:bag-glb": "node scripts/generate-bag-glb.mjs"
   },
   "dependencies": {
-    "@google/model-viewer": "^4.2.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "three": "^0.182.0"

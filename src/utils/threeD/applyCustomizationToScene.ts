@@ -14,6 +14,7 @@ type MeshDefaults = {
 }
 
 let cachedDefaults: Map<string, MeshDefaults> | null = null
+let cachedRootUuid: string | null = null
 
 function isMeshLayerName(name: string): name is MeshLayerName {
   return (MESH_LAYER_NAMES as readonly string[]).includes(name)
@@ -32,6 +33,13 @@ function captureDefaults(root: Object3D): Map<string, MeshDefaults> {
     })
   })
   return defaults
+}
+
+function ensureCustomizationDefaults(root: Object3D): void {
+  if (cachedRootUuid !== root.uuid) {
+    cachedDefaults = captureDefaults(root)
+    cachedRootUuid = root.uuid
+  }
 }
 
 function applyMaterialStyle(
@@ -62,9 +70,7 @@ function applyMaterialStyle(
   }
 }
 
-/**
- * GLB シーンへカラー・型・素材・取手・装飾を反映。
- */
+/** GLB シーンへカラー・型・素材・取手・装飾を反映。 */
 export function applyCustomizationToScene(
   root: Object3D,
   customization: BagCustomization,
@@ -128,14 +134,7 @@ export function applyCustomizationToScene(
   })
 }
 
-/** 別 GLB 読み込み時にデフォルト姿勢キャッシュをリセット */
 export function resetCustomizationSceneCache(): void {
   cachedDefaults = null
-}
-
-/** 初回適用前に GLB ルートからデフォルト値をキャプチャ */
-export function ensureCustomizationDefaults(root: Object3D): void {
-  if (!cachedDefaults) {
-    cachedDefaults = captureDefaults(root)
-  }
+  cachedRootUuid = null
 }

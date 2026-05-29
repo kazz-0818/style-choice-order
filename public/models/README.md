@@ -56,6 +56,6 @@ npm run generate:bag-glb
 
 ## 技術メモ
 
-- 読み込み: `@google/model-viewer`（将来 React Three Fiber へ移行可能）
-- コンポーネント: `src/components/ThreeDBagPreview.tsx`
+- 読み込み: React Three Fiber + `@react-three/drei`（`useGLTF`）
+- コンポーネント: `src/components/ThreeDBagPreview.tsx` / `src/components/three/BagModel.tsx`
 - 色反映ロジック: `src/utils/threeD/applyLayerColors.ts`

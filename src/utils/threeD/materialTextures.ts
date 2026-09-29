@@ -100,6 +100,43 @@ function weaveHeight(period: number, seed: number, ripstop: boolean): HeightFn {
   }
 }
 
+/**
+ * ファー・ボア：毛足の方向（縦）に細長くなじむノイズを重ねた、ふわふわの凹凸。
+ * 格子を折り返して、タイルとして継ぎ目なく繰り返せるようにする。
+ */
+function furHeight(seed: number): HeightFn {
+  const rand = mulberry32(seed)
+  const layers = [
+    { fx: 40, fy: 12, w: 0.42 },
+    { fx: 96, fy: 30, w: 0.3 },
+    { fx: 192, fy: 70, w: 0.2 },
+  ].map((l) => {
+    const grid = new Float32Array(l.fx * l.fy)
+    for (let i = 0; i < grid.length; i++) grid[i] = rand()
+    return { ...l, grid }
+  })
+  const fine = new Float32Array(SIZE * SIZE)
+  for (let i = 0; i < fine.length; i++) fine[i] = rand()
+  const smooth = (t: number) => t * t * (3 - 2 * t)
+  return (x, y) => {
+    let h = 0
+    for (const l of layers) {
+      const u = (x / SIZE) * l.fx
+      const v = (y / SIZE) * l.fy
+      const x0 = Math.floor(u)
+      const y0 = Math.floor(v)
+      const tx = smooth(u - x0)
+      const ty = smooth(v - y0)
+      const g = (ix: number, iy: number) => l.grid[(iy % l.fy) * l.fx + (ix % l.fx)]
+      const a = g(x0, y0) * (1 - tx) + g(x0 + 1, y0) * tx
+      const b = g(x0, y0 + 1) * (1 - tx) + g(x0 + 1, y0 + 1) * tx
+      h += (a * (1 - ty) + b * ty) * l.w
+    }
+    h += fine[(y % SIZE) * SIZE + (x % SIZE)] * 0.08
+    return clamp01(h)
+  }
+}
+
 function buildTextures(heightFn: HeightFn, strength: number, toneMin: number): {
   map: CanvasTexture
   normalMap: CanvasTexture
@@ -179,6 +216,14 @@ const RECIPES: Record<
     toneMin: 0.62,
     tile: 0.6,
     normalScale: 1.1,
+  },
+  // ファー・ボア：毛足のふさふさ感（陰影を強めに）
+  fur: {
+    height: () => furHeight(31),
+    strength: 5.5,
+    toneMin: 0.5,
+    tile: 0.55,
+    normalScale: 1.5,
   },
   // 化学繊維：細かな織りとリップストップ格子
   'tech-fiber': {

@@ -1,6 +1,6 @@
 import type { PartOption } from '../types/bag'
 
-/** 素材（パンフレット P2：本革・合皮・布・化学繊維） */
+/** 素材（パンフレット P2：本革・合皮・布・化学繊維 ＋ ファー・ボア） */
 export const MATERIALS: PartOption[] = [
   {
     id: 'genuine-leather',
@@ -16,6 +16,11 @@ export const MATERIALS: PartOption[] = [
     id: 'fabric',
     name: '布',
     description: 'キャンバスなどの生地。カジュアルで軽やかな仕上がりに。',
+  },
+  {
+    id: 'fur',
+    name: 'ファー・ボア',
+    description: 'ふわふわのフェイクファー。縁や持ち手を革でまとめるのがおすすめ。',
   },
   {
     id: 'tech-fiber',

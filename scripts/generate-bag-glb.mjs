@@ -203,28 +203,28 @@ const sideGeometry = (bodyGeo) =>
 const bottomGeometry = (bodyGeo) => extractPanel(bodyGeo, (_cx, cy) => cy < -TOP + 0.2, 1.012)
 
 // ── 開口部まわり（ファスナー・口金・マグネット） ────────
-const ZIP_L = W - 0.7
+const ZIP_L = W - 0.5
 const ZIP_Y = TOP - 0.24
 
 function zipTapeGeometry() {
   return mergeGeometries([
-    box(ZIP_L, 0.1, 0.03, 0, ZIP_Y, D / 2 + bulgeAt(0, ZIP_Y) - 0.004),
-    box(ZIP_L, 0.1, 0.03, 0, ZIP_Y, -D / 2 - bulgeAt(0, ZIP_Y) + 0.004),
-    box(ZIP_L, 0.03, 0.1, 0, TOP, 0),
+    box(ZIP_L, 0.09, 0.03, 0, ZIP_Y, D / 2 + bulgeAt(0, ZIP_Y) - 0.004),
+    box(ZIP_L, 0.09, 0.03, 0, ZIP_Y, -D / 2 - bulgeAt(0, ZIP_Y) + 0.004),
+    box(W - 0.35, 0.03, 0.14, 0, TOP, 0),
   ])
 }
 
 function zipTeethGeometry() {
   const parts = []
-  const pitch = 0.04
+  const pitch = 0.03
   const count = Math.floor(ZIP_L / pitch)
   for (let i = 0; i < count; i++) {
     const x = -ZIP_L / 2 + pitch / 2 + i * pitch
     const sgn = i % 2 === 0 ? 1 : -1
     const bz = bulgeAt(x, ZIP_Y)
-    parts.push(box(0.028, 0.032, 0.022, x, ZIP_Y + sgn * 0.016, D / 2 + bz + 0.012))
-    parts.push(box(0.028, 0.032, 0.022, x, ZIP_Y + sgn * 0.016, -D / 2 - bz - 0.012))
-    parts.push(box(0.028, 0.022, 0.032, x, TOP + 0.012, sgn * 0.016))
+    parts.push(box(0.02, 0.024, 0.018, x, ZIP_Y + sgn * 0.012, D / 2 + bz + 0.01))
+    parts.push(box(0.02, 0.024, 0.018, x, ZIP_Y + sgn * 0.012, -D / 2 - bz - 0.01))
+    if (Math.abs(x) < (W - 0.35) / 2 - 0.02) parts.push(box(0.02, 0.018, 0.024, x, TOP + 0.012, sgn * 0.012))
   }
   return mergeGeometries(parts)
 }
@@ -268,7 +268,7 @@ function handleGeometry() {
     new THREE.Vector3(ATTACH_X - 0.12, TOP + ARCH_H * 0.8, 0),
     new THREE.Vector3(ATTACH_X, TOP, 0),
   ])
-  return new THREE.TubeGeometry(curve, 40, 0.055, 12, false)
+  return new THREE.TubeGeometry(curve, 40, 0.038, 12, false)
 }
 
 /** 取付リング（半円）。原点 y=0 が本体上面に来るよう配置する */
@@ -283,6 +283,289 @@ function ringGeometry(zs) {
     }
   }
   return mergeGeometries(parts)
+}
+
+
+// ── 金具・チャームの形 ──────────────────────────
+/** シールド型ロック（前面フラップ中央用）。原点 = 中心、+z が手前 */
+function shieldGeometry() {
+  const shape = new THREE.Shape()
+  shape.moveTo(-0.13, 0.15)
+  shape.lineTo(0.13, 0.15)
+  shape.lineTo(0.13, -0.02)
+  shape.bezierCurveTo(0.13, -0.11, 0.05, -0.17, 0, -0.2)
+  shape.bezierCurveTo(-0.05, -0.17, -0.13, -0.11, -0.13, -0.02)
+  shape.closePath()
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.03,
+    bevelEnabled: true,
+    bevelThickness: 0.01,
+    bevelSize: 0.01,
+    bevelSegments: 2,
+    curveSegments: 12,
+  })
+  g.translate(0, 0.02, -0.015)
+  return g
+}
+
+function extrudeCharm(shape, depth = 0.035) {
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: 0.012,
+    bevelSize: 0.012,
+    bevelSegments: 2,
+    curveSegments: 14,
+  })
+  g.translate(0, 0, -depth / 2)
+  return g
+}
+
+function starGeometry() {
+  const shape = new THREE.Shape()
+  const outer = 0.12
+  const inner = 0.055
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? outer : inner
+    const a = Math.PI / 2 + (i * Math.PI) / 5
+    const x = Math.cos(a) * r
+    const y = Math.sin(a) * r
+    if (i === 0) shape.moveTo(x, y)
+    else shape.lineTo(x, y)
+  }
+  shape.closePath()
+  return extrudeCharm(shape)
+}
+
+function heartGeometry() {
+  const s = 0.0065
+  const shape = new THREE.Shape()
+  shape.moveTo(0, -14 * s)
+  shape.bezierCurveTo(-8 * s, -8 * s, -18 * s, -2 * s, -18 * s, 6 * s)
+  shape.bezierCurveTo(-18 * s, 13 * s, -12 * s, 17 * s, -7 * s, 17 * s)
+  shape.bezierCurveTo(-3 * s, 17 * s, -1 * s, 14 * s, 0, 11 * s)
+  shape.bezierCurveTo(1 * s, 14 * s, 3 * s, 17 * s, 7 * s, 17 * s)
+  shape.bezierCurveTo(12 * s, 17 * s, 18 * s, 13 * s, 18 * s, 6 * s)
+  shape.bezierCurveTo(18 * s, -2 * s, 8 * s, -8 * s, 0, -14 * s)
+  return extrudeCharm(shape)
+}
+
+function tassleCharmGeometry() {
+  const cap = new THREE.SphereGeometry(0.03, 14, 10).translate(0, 0.09, 0)
+  const neck = new THREE.CylinderGeometry(0.02, 0.03, 0.05, 12).translate(0, 0.045, 0)
+  const body = new THREE.CylinderGeometry(0.035, 0.075, 0.24, 18, 1, true).translate(0, -0.1, 0)
+  const bottom = new THREE.CircleGeometry(0.075, 18).rotateX(Math.PI / 2).translate(0, -0.22, 0)
+  return mergeGeometries([cap, neck, body, bottom])
+}
+
+function tagGeometry() {
+  return new RoundedBoxGeometry(0.17, 0.27, 0.022, 2, 0.01)
+}
+
+// ── ドラム型（円筒ボストン）本体 ───────────────────
+/**
+ * X軸まわりに回転させた楕円柱。断面の半径は Y: H/2、Z: D/2（各型のスケールで円にも楕円にもなる）。
+ * 両端は丸く面取りする。
+ */
+const DRUM_EDGE_X = 0.2
+const DRUM_EDGE_R = 0.3
+const DRUM_RADIAL_SEGS = 44
+const DRUM_R0 = (H / 2 + D / 2) / 2
+
+function drumProfile() {
+  // (x, r) — r は 0〜1 の半径比。上端から下端へ
+  const pts = []
+  const steps = 8
+  const xe = W / 2
+  pts.push([xe, 0])
+  pts.push([xe, 1 - DRUM_EDGE_R])
+  for (let i = 1; i <= steps; i++) {
+    const a = (i / steps) * (Math.PI / 2)
+    pts.push([xe - DRUM_EDGE_X + Math.cos(a) * DRUM_EDGE_X, 1 - DRUM_EDGE_R + Math.sin(a) * DRUM_EDGE_R])
+  }
+  const midSteps = 3
+  for (let i = 1; i < midSteps; i++) {
+    pts.push([xe - DRUM_EDGE_X - (2 * (xe - DRUM_EDGE_X) * i) / midSteps, 1])
+  }
+  for (let i = 0; i <= steps; i++) {
+    const a = (i / steps) * (Math.PI / 2)
+    pts.push([-xe + DRUM_EDGE_X - Math.sin(a) * DRUM_EDGE_X, 1 - DRUM_EDGE_R + Math.cos(a) * DRUM_EDGE_R])
+  }
+  pts.push([-xe, 0])
+  return pts
+}
+
+function drumBodyGeometry() {
+  const prof = drumProfile()
+  const N = DRUM_RADIAL_SEGS
+  const positions = []
+  const uvs = []
+  const at = (pi, ti) => {
+    const [x, r] = prof[pi]
+    const th = (ti / N) * Math.PI * 2
+    // th=0 は真上（+Y）、th が増えると手前（+Z）へ回る
+    const y = r * Math.cos(th) * (H / 2)
+    const z = r * Math.sin(th) * (D / 2)
+    return { p: [x, y, z], uv: [x, (ti / N) * Math.PI * 2 * DRUM_R0] }
+  }
+  const capUv = (o) => [o.p[2], o.p[1]]
+  for (let pi = 0; pi < prof.length - 1; pi++) {
+    const isCap = pi === 0 || pi === prof.length - 2
+    for (let ti = 0; ti < N; ti++) {
+      const a = at(pi, ti)
+      const b = at(pi + 1, ti)
+      const c = at(pi + 1, ti + 1)
+      const d = at(pi, ti + 1)
+      const tris = [
+        [a, b, c],
+        [a, c, d],
+      ]
+      for (const tri of tris) {
+        // 円周方向 th の向き・プロファイル方向から外向きに揃える
+        const [p0, p1, p2] = tri.map((o) => new THREE.Vector3(...o.p))
+        const n = new THREE.Vector3().crossVectors(p1.clone().sub(p0), p2.clone().sub(p0))
+        if (n.lengthSq() < 1e-12) continue // キャップ中心の縮退三角形を除く
+        const centroid = p0.clone().add(p1).add(p2).divideScalar(3)
+        // 面の中心から見た外向き（X軸の中心線からの半径方向、キャップはX方向）
+        const outward = isCap
+          ? new THREE.Vector3(Math.sign(centroid.x), 0, 0)
+          : new THREE.Vector3(0, centroid.y, centroid.z).normalize()
+        const order = n.dot(outward) >= 0 ? tri : [tri[0], tri[2], tri[1]]
+        for (const o of order) {
+          positions.push(...o.p)
+          uvs.push(...(isCap ? capUv(o) : o.uv))
+        }
+      }
+    }
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2))
+  return toCreasedNormals(geometry, 0.9)
+}
+
+const drumSideGeometry = (geo) =>
+  extractPanel(geo, (cx) => Math.abs(cx) > W / 2 - DRUM_EDGE_X - 0.02, 1.006)
+
+/** ドラム型の天面ファスナー（頂点の中心線に沿う） */
+const DRUM_ZIP_L = W - 0.55
+
+function drumZipTapeGeometry() {
+  return box(DRUM_ZIP_L, 0.02, 0.16, 0, TOP + 0.004, 0)
+}
+
+function drumZipTeethGeometry() {
+  const parts = []
+  const pitch = 0.04
+  const count = Math.floor(DRUM_ZIP_L / pitch)
+  for (let i = 0; i < count; i++) {
+    const x = -DRUM_ZIP_L / 2 + pitch / 2 + i * pitch
+    const sgn = i % 2 === 0 ? 1 : -1
+    parts.push(box(0.028, 0.022, 0.034, x, TOP + 0.02, sgn * 0.016))
+  }
+  return mergeGeometries(parts)
+}
+
+// ── トップハンドル型のベルト ────────────────────────
+const BELT_Y = TOP - 0.27
+const BELT_HALF = 0.08
+
+/** 本体をぐるっと一周するベルト（本体表面の帯を少し浮かせて抜き出す） */
+const beltGeometry = (bodyGeo) =>
+  extractPanel(bodyGeo, (_cx, cy) => Math.abs(cy - BELT_Y) < BELT_HALF, 1.012)
+
+/** ベルトのステッチ（前面・背面の上下ふち） */
+function beltStitchGeometry() {
+  const parts = []
+  const pitch = 0.07
+  const x0 = -W / 2 + 0.4
+  const n = Math.floor((W - 0.8) / pitch)
+  for (const dy of [BELT_HALF - 0.016, -(BELT_HALF - 0.016)]) {
+    for (let i = 0; i <= n; i++) {
+      const x = x0 + i * pitch
+      const y = BELT_Y + dy
+      const z = (D / 2 + bulgeAt(x, y)) * 1.012 + 0.004
+      parts.push(box(0.04, 0.008, 0.005, x, y, z))
+      parts.push(box(0.04, 0.008, 0.005, x, y, -z))
+    }
+  }
+  return mergeGeometries(parts)
+}
+
+// ── ハンドルの革タブ・サイドリング ──────────────────
+const TAB_L = 0.5
+
+/** 持ち手を留める涙型の革タブ。原点 = 上端中央、+z が手前 */
+function tabGeometry() {
+  const shape = new THREE.Shape()
+  const w = 0.08
+  shape.moveTo(-w, 0)
+  shape.absarc(0, 0, w, Math.PI, 0, true)
+  shape.lineTo(w, -TAB_L * 0.55)
+  shape.bezierCurveTo(w, -TAB_L * 0.8, 0.02, -TAB_L * 0.95, 0, -TAB_L)
+  shape.bezierCurveTo(-0.02, -TAB_L * 0.95, -w, -TAB_L * 0.8, -w, -TAB_L * 0.55)
+  shape.lineTo(-w, 0)
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.014,
+    bevelEnabled: true,
+    bevelThickness: 0.004,
+    bevelSize: 0.004,
+    bevelSegments: 1,
+    curveSegments: 10,
+  })
+  g.translate(0, 0, 0.004)
+  return g
+}
+
+/** 側面上部の小さなリング（ショルダー取付用）。左右セット */
+function sideRingsGeometry() {
+  const parts = []
+  for (const sx of [-1, 1]) {
+    const ring = new THREE.TorusGeometry(0.055, 0.013, 8, 18)
+    ring.rotateY(Math.PI / 2)
+    ring.translate(sx * (W / 2 + 0.035), 0, 0)
+    const plate = new THREE.BoxGeometry(0.02, 0.06, 0.05)
+    plate.translate(sx * (W / 2 + 0.005), 0.035, 0)
+    parts.push(ring, plate)
+  }
+  return mergeGeometries(parts)
+}
+
+// ── フラップの形（ショルダーポーチ型） ──────────────
+const FLAP_W = W - 0.44
+
+function flapShapeGeometry(kind) {
+  const hw = FLAP_W / 2
+  const hh = FLAP_H / 2
+  const shape = new THREE.Shape()
+  shape.moveTo(-hw, hh)
+  shape.lineTo(hw, hh)
+  if (kind === 'round') {
+    const r = 0.28
+    shape.lineTo(hw, -hh + r)
+    shape.quadraticCurveTo(hw, -hh, hw - r, -hh)
+    shape.lineTo(-hw + r, -hh)
+    shape.quadraticCurveTo(-hw, -hh, -hw, -hh + r)
+  } else if (kind === 'curve') {
+    shape.lineTo(hw, -hh + 0.02)
+    shape.quadraticCurveTo(0, -hh - 0.26, -hw, -hh + 0.02)
+  } else {
+    // point: 中央が尖ったV字
+    shape.lineTo(hw, -hh + 0.1)
+    shape.lineTo(0, -hh - 0.2)
+    shape.lineTo(-hw, -hh + 0.1)
+  }
+  shape.closePath()
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: FLAP_T,
+    bevelEnabled: true,
+    bevelThickness: 0.008,
+    bevelSize: 0.008,
+    bevelSegments: 1,
+    curveSegments: 16,
+  })
+  g.translate(0, 0, -FLAP_T / 2)
+  return g
 }
 
 function createBagScene() {
@@ -318,10 +601,19 @@ function createBagScene() {
     rbox(POCKET_W, POCKET_H, POCKET_T, 0.02),
     mat(0xd4c4a8, 0.7, 0.04, 'pocket-back'),
   )
+  const claspShield = mesh('clasp-shield', shieldGeometry(), metalMat('clasp-shield'))
+  const pocketL = mesh('pocket-l', rbox(0.64, POCKET_H, POCKET_T, 0.02), mat(0xd4c4a8, 0.7, 0.04, 'pocket-l'))
+  const pocketR = mesh('pocket-r', rbox(0.64, POCKET_H, POCKET_T, 0.02), mat(0xd4c4a8, 0.7, 0.04, 'pocket-r'))
   const plate = mesh('plate', new THREE.BoxGeometry(0.5, 0.28, 0.03), metalMat('plate'))
 
   const chain = mesh('chain', new THREE.CylinderGeometry(0.014, 0.014, 1, 8), metalMat('chain'))
   const charm = mesh('charm', new THREE.SphereGeometry(0.11, 20, 14), mat(0xd4c4a8, 0.5, 0.1, 'charm'))
+  const charmStar = mesh('charm-star', starGeometry(), mat(0xd4c4a8, 0.5, 0.1, 'charm-star'))
+  const charmHeart = mesh('charm-heart', heartGeometry(), mat(0xd4c4a8, 0.5, 0.1, 'charm-heart'))
+  const charmTassel = mesh('charm-tassel', tassleCharmGeometry(), mat(0xd4c4a8, 0.7, 0.02, 'charm-tassel'))
+  const charmTag = mesh('charm-tag', tagGeometry(), metalMat('charm-tag'))
+  // ショルダーのチェーンストラップ（形状は実行時に持ち手のカーブに合わせて作り直す）
+  const strapChain = mesh('strap-chain', new THREE.BoxGeometry(0.02, 0.02, 0.02), metalMat('strap-chain'))
 
   const zipTape = mesh('zip-tape', zipTapeGeometry(), mat(0x222222, 0.8, 0, 'zip-tape'))
   const zipTeeth = mesh('zip-teeth', zipTeethGeometry(), metalMat('zip-teeth'))
@@ -350,6 +642,21 @@ function createBagScene() {
     }
   }
 
+  const belt = mesh('belt', beltGeometry(bodyGeo), mat(0x8b6f4e, 0.55, 0.05, 'belt'))
+  const beltStitch = mesh('belt-stitch', beltStitchGeometry(), mat(0xe8dcc0, 0.8, 0, 'belt-stitch'))
+  const tabGeo = tabGeometry()
+  const tabs = [0, 1, 2, 3].map((i) => mesh(`tab-${i}`, tabGeo, mat(0x8b6f4e, 0.55, 0.05, `tab-${i}`)))
+  const sideRings = mesh('side-rings', sideRingsGeometry(), metalMat('side-rings'))
+  const flapRound = mesh('flap-round', flapShapeGeometry('round'), mat(0x1e2a3a, 0.6, 0.05, 'flap-round'))
+  const flapCurve = mesh('flap-curve', flapShapeGeometry('curve'), mat(0x1e2a3a, 0.6, 0.05, 'flap-curve'))
+  const flapPoint = mesh('flap-point', flapShapeGeometry('point'), mat(0x1e2a3a, 0.6, 0.05, 'flap-point'))
+
+  const drumGeo = drumBodyGeometry()
+  const drumBody = mesh('drum-body', drumGeo, mat(0x1e2a3a, 0.6, 0.05, 'drum-body'))
+  const drumSide = mesh('drum-side', drumSideGeometry(drumGeo), mat(0x1e2a3a, 0.6, 0.05, 'drum-side'))
+  const drumZipTape = mesh('drum-zip-tape', drumZipTapeGeometry(), mat(0x222222, 0.8, 0, 'drum-zip-tape'))
+  const drumZipTeeth = mesh('drum-zip-teeth', drumZipTeethGeometry(), metalMat('drum-zip-teeth'))
+
   const studs = [0, 1, 2, 3].map((i) =>
     mesh(
       `stud-${i}`,
@@ -367,12 +674,31 @@ function createBagScene() {
     ringSingle,
     ringDual,
     clasp,
+    claspShield,
     flap,
     pocket,
     pocketBack,
+    pocketL,
+    pocketR,
     plate,
     chain,
     charm,
+    charmStar,
+    charmHeart,
+    charmTassel,
+    charmTag,
+    strapChain,
+    belt,
+    beltStitch,
+    ...tabs,
+    sideRings,
+    flapRound,
+    flapCurve,
+    flapPoint,
+    drumBody,
+    drumSide,
+    drumZipTape,
+    drumZipTeeth,
     zipTape,
     zipTeeth,
     openingMouth,
@@ -410,7 +736,8 @@ console.log(`Generated ${outputPath} (${buffer.length} bytes)`)
 
 // 生成結果の簡易チェック（本体の法線が外向きか・寸法）
 {
-  const body = scene.getObjectByName('body').geometry
+  for (const n of ['body', 'drum-body']) {
+  const body = scene.getObjectByName(n).geometry
   const pos = body.getAttribute('position')
   const nor = body.getAttribute('normal')
   let outward = 0
@@ -420,8 +747,9 @@ console.log(`Generated ${outputPath} (${buffer.length} bytes)`)
   body.computeBoundingBox()
   const { min, max } = body.boundingBox
   console.log(
-    `body: ${pos.count} verts, outward normals ${((outward / pos.count) * 100).toFixed(1)}%, bbox`,
+    `${n}: ${pos.count} verts, outward normals ${((outward / pos.count) * 100).toFixed(1)}%, bbox`,
     [min.x, min.y, min.z].map((v) => v.toFixed(3)).join(','),
     [max.x, max.y, max.z].map((v) => v.toFixed(3)).join(','),
   )
+  }
 }

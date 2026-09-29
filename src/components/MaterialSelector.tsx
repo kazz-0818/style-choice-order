@@ -14,7 +14,7 @@ export function MaterialSelector({ value, onChange, step }: MaterialSelectorProp
       <StepTitle
         step={step}
         icon="hide"
-        lead="本革・合皮・布・化学繊維から選べます。革の種類や質感はご相談の中で決定します。"
+        lead="本革・合皮・布・ファー・化学繊維から選べます。革の種類や質感はご相談の中で決定します。"
       >
         素材
       </StepTitle>

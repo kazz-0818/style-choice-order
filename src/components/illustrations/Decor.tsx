@@ -99,6 +99,17 @@ export function MaterialArt({ id, className }: { id: string; className?: string 
           <path d="M66 10v14M72 10v14M78 10v14" stroke={GOLD} strokeWidth="2" />
         </g>
       )}
+      {id === 'fur' && (
+        <g stroke={NAVY} strokeWidth="1.2" strokeLinecap="round">
+          <rect x="12" y="12" width="96" height="56" rx="8" fill="#fbf8f2" />
+          {Array.from({ length: 34 }).map((_, i) => {
+            const x = 18 + (i % 9) * 10.5 + (Math.floor(i / 9) % 2) * 4
+            const y = 22 + Math.floor(i / 9) * 13
+            return <path key={i} d={`M${x} ${y + 8}q2 -6 ${i % 2 ? 3 : -3} -9`} fill="none" stroke="#c9bda8" strokeWidth="1.4" />
+          })}
+          <path d="M12 20c8 4 16-3 24 1s16-3 24 1 16-3 24 1 16-2 24 0" fill="none" stroke="#8b6f4e" strokeWidth="2" />
+        </g>
+      )}
       {id === 'tech-fiber' && (
         <g stroke={NAVY} strokeWidth="1.2">
           <rect x="10" y="10" width="100" height="60" rx="3" fill="#c9ced6" />

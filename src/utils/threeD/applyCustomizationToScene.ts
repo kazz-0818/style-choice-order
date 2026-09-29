@@ -4,8 +4,11 @@ import { MODEL as M } from '../../data/bagShapes'
 import { getColorHex } from '../../data/colors'
 import type { BagCustomization, BagLayer } from '../../types/bag'
 import { STUD_COLORS, computeBagLayout } from './bagLayout'
+import { syncFurShells } from './furShells'
 import { getMaterialTextures } from './materialTextures'
 import { isMeshName, type MeshName } from './modelConfig'
+import { buildChainGeometry } from './strapChain'
+import { TAPER_MESHES, applyTaper } from './taper'
 
 interface MaterialStyle {
   roughness: number
@@ -41,6 +44,14 @@ const MATERIAL_STYLE: Record<string, MaterialStyle> = {
     sheenRoughness: 0.75,
     sheenColor: '#d9dde8',
   },
+  // ファー・ボア：マットでふわふわ、縁が白く光る
+  fur: {
+    roughness: 1,
+    metalness: 0,
+    sheen: 1,
+    sheenRoughness: 0.9,
+    sheenColor: '#ffffff',
+  },
   // 化学繊維：ナイロンのような薄いツヤ
   'tech-fiber': {
     roughness: 0.48,
@@ -60,7 +71,27 @@ const PLAIN_STYLE: MaterialStyle = { roughness: 0.75, metalness: 0 }
 /** メッシュ → 色を決めるレイヤー */
 const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   body: 'body',
+  'drum-body': 'body',
+  'drum-side': 'side',
+  'drum-zip-teeth': 'metal',
+  'clasp-shield': 'metal',
+  'charm-star': 'accent',
+  'charm-heart': 'accent',
+  'charm-tassel': 'accent',
+  'charm-tag': 'metal',
+  'strap-chain': 'metal',
   flap: 'body',
+  'flap-round': 'body',
+  'flap-curve': 'body',
+  'flap-point': 'body',
+  belt: 'handle',
+  'tab-0': 'handle',
+  'tab-1': 'handle',
+  'tab-2': 'handle',
+  'tab-3': 'handle',
+  'side-rings': 'metal',
+  'pocket-l': 'accent',
+  'pocket-r': 'accent',
   'magnet-tab': 'body',
   side: 'side',
   bottom: 'bottom',
@@ -95,7 +126,23 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
     case 'body':
     case 'side':
     case 'bottom':
+    case 'belt':
+    case 'flap-round':
+    case 'flap-curve':
+    case 'flap-point':
+    case 'tab-0':
+    case 'tab-1':
+    case 'tab-2':
+    case 'tab-3':
       return [sx, sy]
+    case 'pocket-l':
+    case 'pocket-r':
+      return [0.64 * sx, M.POCKET_H * sy]
+    case 'drum-body':
+      // UV は (X, 円周方向の長さ)。円周の実寸は楕円断面の平均半径に比例
+      return [sx, (sy * M.TOP + sz * (M.D / 2)) / 2 / ((M.TOP + M.D / 2) / 2)]
+    case 'drum-side':
+      return [sz, sy]
     case 'flap':
       return [(M.W - 0.44) * sx, M.FLAP_H * sy]
     case 'pocket':
@@ -103,7 +150,7 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
       return [M.POCKET_W * sx, M.POCKET_H * sy]
     case 'handle':
     case 'handle2':
-      return [(2 * M.ATTACH_X * sx + 2 * M.ARCH_H * sy) * 0.9, 2 * Math.PI * 0.055 * Math.max(sz, 1)]
+      return [(2 * M.ATTACH_X * sx + 2 * M.ARCH_H * sy) * 0.9, 2 * Math.PI * 0.038 * Math.max(sz, 1)]
     case 'magnet-tab':
       return [0.3 * sx, 0.24 * sy]
     case 'puller-tab':
@@ -200,6 +247,26 @@ export function applyCustomizationToScene(
     mesh.scale.set(...target.scale)
     if (!target.visible) return
 
+    // チェーンストラップ：持ち手のカーブに合わせて形状を作り直す
+    if (name === 'strap-chain' && layout.chain) {
+      const { points, linkScale } = layout.chain
+      const key = `${linkScale}|${points.map((p) => p.map((v) => v.toFixed(3)).join(',')).join(';')}`
+      if (mesh.userData.chainKey !== key) {
+        mesh.geometry.dispose()
+        mesh.geometry = buildChainGeometry(points, linkScale)
+        mesh.userData.chainKey = key
+      }
+    }
+
+    // 上すぼまり（台形・A字）を本体系のジオメトリへ反映
+    if (TAPER_MESHES.has(name)) applyTaper(mesh, layout.taper.x, layout.taper.z)
+
+    // ベルトのステッチ：淡いクリーム色の糸
+    if (name === 'belt-stitch') {
+      paint(mesh, '#e6d9bd', MATTE_STYLE)
+      return
+    }
+
     // 底鋲：素材・カラーの選択に従う
     if (name.startsWith('stud-')) {
       paint(mesh, STUD_COLORS[specs.studColor ?? 'gold'] ?? STUD_COLORS.gold, METAL_STYLE)
@@ -219,7 +286,7 @@ export function applyCustomizationToScene(
     }
 
     // ファスナーテープ・開口部の内側
-    if (name === 'zip-tape') {
+    if (name === 'zip-tape' || name === 'drum-zip-tape') {
       paint(mesh, shade(getColorHex(layerColors.body), 0.45), MATTE_STYLE)
       return
     }
@@ -236,6 +303,10 @@ export function applyCustomizationToScene(
       return
     }
     const extent = textureExtent(name, target.scale)
-    paint(mesh, hex, bodyStyle, extent ? { materialId, extent } : null)
+    // ファー・ボア：本体まわりは毛層（シェル）を重ねてふさふさにする
+    const furry =
+      materialId === 'fur' && !!extent && ['body', 'side', 'bottom', 'accent'].includes(layer)
+    paint(mesh, furry ? shade(hex, 0.72) : hex, bodyStyle, extent ? { materialId, extent } : null)
+    syncFurShells(mesh, furry, hex, extent)
   })
 }

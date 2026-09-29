@@ -1,7 +1,13 @@
 import type { BagTemplate } from '../types/bag'
 
-/** パンフレット（2026/08/06版）記載の6型 */
+/** パンフレット（2026/08/06版）記載の7型（掲載順） */
 export const BAG_TEMPLATES: BagTemplate[] = [
+  {
+    id: 'top-handle',
+    name: 'トップハンドルバッグ型',
+    nameEn: 'Top Handle Bag',
+    description: '台形の端正なフォルムに、ベルトとターンロック。持ち手の長さやベルト仕様まで設計。',
+  },
   {
     id: 'business',
     name: 'ビジネスバッグ型',
@@ -24,7 +30,7 @@ export const BAG_TEMPLATES: BagTemplate[] = [
     id: 'mini-boston',
     name: 'ミニボストンバッグ型',
     nameEn: 'Mini Boston Bag',
-    description: 'ころんと丸みのあるミニボストン。引き手やチェーンで表情が変わります。',
+    description: 'ころんと丸みのある円筒形のミニボストン。引き手やチェーンで表情が変わります。',
   },
   {
     id: 'shoulder',
@@ -36,7 +42,7 @@ export const BAG_TEMPLATES: BagTemplate[] = [
     id: 'tote',
     name: 'トートバッグ型',
     nameEn: 'Tote Bag',
-    description: 'シャープな縦型トート。マチ・外ポケット・底鋲を自由に設計。',
+    description: 'シャープな横長トート。マチ・外ポケット・底鋲を自由に設計。',
   },
 ]
 

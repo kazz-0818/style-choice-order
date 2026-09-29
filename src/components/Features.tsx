@@ -91,7 +91,7 @@ export function Features() {
           <div className="text-center">
             <p className="text-[10px] tracking-[0.4em] text-gold uppercase">Lineup</p>
             <h2 className="mt-2 font-serif text-2xl font-light text-navy sm:text-3xl">
-              選べる6つのバッグ型
+              選べる7つのバッグ型
             </h2>
             <GoldDivider className="mt-4" />
           </div>

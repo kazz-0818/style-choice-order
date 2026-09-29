@@ -112,8 +112,8 @@ export function BagCustomizer({
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
 
-        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
-          <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <div className="flex min-w-0 flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
+          <div className="sticky top-[60px] z-30 order-1 -mx-4 min-w-0 border-b border-stone/60 bg-cream/95 px-4 pt-2 pb-2 shadow-sm backdrop-blur-sm sm:top-[64px] sm:-mx-6 sm:px-6 lg:top-24 lg:z-10 lg:mx-0 lg:self-start lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
             <div className="mb-5 hidden max-w-2xl lg:block">{customizerIntro}</div>
             <div className="relative mx-auto w-full max-w-[280px] sm:max-w-none">
               <ThreeDBagPreview customization={customization} viewRequest={viewRequest} />
@@ -157,6 +157,16 @@ export function BagCustomizer({
                 />
               </StepSlot>
 
+              <StepSlot>
+                <ColorSelector
+                  step={next()}
+                  activeLayer={activeLayer}
+                  layerColors={customization.layerColors}
+                  onLayerChange={onActiveLayerChange}
+                  onColorSelect={updateLayerColor}
+                />
+              </StepSlot>
+
               {templateSteps.map((spec) =>
                 spec.id === 'silhouette' ? (
                   <StepSlot key={`${customization.templateId}-${spec.id}`}>
@@ -194,16 +204,6 @@ export function BagCustomizer({
                   spec={logoStep}
                   specs={customization.specs}
                   onSelect={updateSpec}
-                />
-              </StepSlot>
-
-              <StepSlot>
-                <ColorSelector
-                  step={next()}
-                  activeLayer={activeLayer}
-                  layerColors={customization.layerColors}
-                  onLayerChange={onActiveLayerChange}
-                  onColorSelect={updateLayerColor}
                 />
               </StepSlot>
 

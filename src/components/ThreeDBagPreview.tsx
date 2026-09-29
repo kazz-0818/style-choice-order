@@ -127,10 +127,12 @@ function StudioEnvironment() {
 function R3FScene({
   customization,
   viewRequest,
+  autoRotate,
   onReady,
 }: {
   customization: BagCustomization
   viewRequest: ViewRequest
+  autoRotate: boolean
   onReady: () => void
 }) {
   return (
@@ -145,6 +147,8 @@ function R3FScene({
       </Suspense>
       <OrbitControls
         makeDefault
+        autoRotate={autoRotate}
+        autoRotateSpeed={2.5}
         enablePan={false}
         minDistance={3}
         maxDistance={8.5}
@@ -159,6 +163,13 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
   const [useFallback, setUseFallback] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const hasLoadedRef = useRef(false)
+  const [autoRotate, setAutoRotate] = useState(true)
+  const initialNonceRef = useRef(viewRequest.nonce)
+
+  // 「OTHER VIEWS」で視点を選んだら、その向きで止めて見られるよう自動回転を止める
+  useEffect(() => {
+    if (viewRequest.nonce !== initialNonceRef.current) setAutoRotate(false)
+  }, [viewRequest.nonce])
 
   const handleReady = useCallback(() => {
     if (!hasLoadedRef.current) {
@@ -173,11 +184,27 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
 
   return (
     <div className={FRAME_CLASS}>
-      <p className="absolute top-3 left-3 z-10 text-[10px] tracking-widest text-warm-gray lg:hidden">
-        ピンチで拡大 · ドラッグで回転
-      </p>
-      <p className="absolute top-3 left-3 z-10 hidden text-[10px] tracking-widest text-warm-gray lg:block">
-        ドラッグで回転 · ピンチでズーム
+      <button
+        type="button"
+        role="switch"
+        aria-checked={autoRotate}
+        onClick={() => setAutoRotate((v) => !v)}
+        className="absolute top-3 left-3 z-20 flex items-center gap-2 rounded-full border border-stone bg-white/85 px-2.5 py-1 text-[10px] tracking-widest text-navy shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+      >
+        <span>自動回転</span>
+        <span
+          aria-hidden="true"
+          className={`relative inline-block h-4 w-7 rounded-full transition-colors ${autoRotate ? 'bg-gold' : 'bg-stone'}`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow transition-transform ${autoRotate ? 'translate-x-3' : ''}`}
+          />
+        </span>
+        <span className="w-4 text-left font-medium">{autoRotate ? 'ON' : 'OFF'}</span>
+      </button>
+      <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-[10px] whitespace-nowrap tracking-widest text-warm-gray">
+        <span className="lg:hidden">ピンチで拡大 · ドラッグで回転</span>
+        <span className="hidden lg:inline">ドラッグで回転 · ピンチでズーム</span>
       </p>
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/70 backdrop-blur-[1px]">
@@ -196,6 +223,7 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
             <R3FScene
               customization={customization}
               viewRequest={viewRequest}
+              autoRotate={autoRotate}
               onReady={handleReady}
             />
           </Canvas>

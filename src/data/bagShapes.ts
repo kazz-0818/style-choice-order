@@ -31,16 +31,21 @@ export function frontBulge(xm: number, ym: number): number {
   return BULGE * Math.pow(fx, 0.7) * Math.pow(fy, 0.7)
 }
 
-export type HandleMode = 'dual' | 'single'
+/** dual: 2本持ち手 / single: ショルダーストラップ / top: 中央1本の小さなトップハンドル */
+export type HandleMode = 'dual' | 'single' | 'top'
 
 export interface BagShape {
   /** 標準寸法に対する本体スケール */
   sx: number
   sy: number
   sz: number
+  /** 本体の作り：箱型（角丸）または円筒 */
+  body: 'box' | 'cylinder'
+  /** 上端の幅・奥行きが底に対して何倍か（1 = 直方体、小さいほど台形・A字） */
+  taper: { x: number; z: number }
   handle: {
     mode: HandleMode
-    /** 取付幅（本体幅に対する比率） */
+    /** 取付幅（上端の本体幅に対する比率） */
     spread: number
     /** 標準の持ち手の高さ倍率 */
     base: number
@@ -48,46 +53,86 @@ export interface BagShape {
     tilt: number
     /** 断面（前後）の太さ倍率 */
     thick: number
+    /** 前後の取付位置（上面の半奥行きに対する比率。既定 0.55） */
+    edge?: number
+    /** 表裏の持ち手を頂点で寄せる比率（頂点の間隔 / 根元の間隔。未指定＝垂直） */
+    converge?: number
   }
 }
 
-/** 提案書の6型ごとの標準プロポーション */
+/** 高さ ym（モデル座標）での上すぼまり係数（0=底で1、上端でtaper値） */
+export function taperFactor(shape: BagShape, ym: number): { fx: number; fz: number } {
+  const t = Math.max(0, Math.min(1, (ym + MODEL.TOP) / (2 * MODEL.TOP)))
+  return {
+    fx: 1 + (shape.taper.x - 1) * t,
+    fz: 1 + (shape.taper.z - 1) * t,
+  }
+}
+
+/** パンフレット（2026/08/06版）7型の標準プロポーション（線画の縦横比・側面の傾きに合わせる） */
 export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
+  // 台形のトップハンドル。側面は上に向かって細くなるA字
+  'top-handle': {
+    sx: 0.8,
+    sy: 0.88,
+    sz: 0.62,
+    body: 'box',
+    taper: { x: 0.85, z: 0.6 },
+    handle: { mode: 'dual', spread: 0.49, base: 1.42, tilt: 0, thick: 1, edge: 0.88, converge: 0.42 },
+  },
+  // 横長の角型。側面は底が広い台形
   business: {
-    sx: 0.95,
-    sy: 0.85,
+    sx: 0.82,
+    sy: 0.9,
     sz: 0.75,
-    handle: { mode: 'dual', spread: 0.6, base: 0.75, tilt: 0, thick: 1 },
+    body: 'box',
+    taper: { x: 0.96, z: 0.7 },
+    handle: { mode: 'dual', spread: 0.39, base: 1.22, tilt: 0, thick: 1 },
   },
+  // 口金付きの台形。側面は三角に近い
   boston: {
-    sx: 1,
-    sy: 0.72,
-    sz: 1.35,
-    handle: { mode: 'dual', spread: 0.5, base: 0.75, tilt: 0, thick: 1 },
-  },
-  'shoulder-pouch': {
-    sx: 0.5,
+    sx: 0.92,
     sy: 0.75,
-    sz: 0.55,
-    handle: { mode: 'single', spread: 0.85, base: 1.5, tilt: 0.35, thick: 1.4 },
+    sz: 1.25,
+    body: 'box',
+    taper: { x: 0.8, z: 0.45 },
+    handle: { mode: 'dual', spread: 0.49, base: 1.02, tilt: 0, thick: 1 },
   },
+  // 縦型ポーチ。小さなトップハンドル＋チェーンストラップ
+  'shoulder-pouch': {
+    sx: 0.52,
+    sy: 0.8,
+    sz: 0.5,
+    body: 'box',
+    taper: { x: 0.92, z: 0.8 },
+    handle: { mode: 'top', spread: 0.32, base: 0.3, tilt: 0, thick: 1 },
+  },
+  // 円筒（ドラム）形の横長ミニボストン
   'mini-boston': {
-    sx: 0.75,
-    sy: 0.55,
-    sz: 1.1,
-    handle: { mode: 'dual', spread: 0.55, base: 0.6, tilt: 0, thick: 1 },
+    sx: 0.78,
+    sy: 0.62,
+    sz: 1.33,
+    body: 'cylinder',
+    taper: { x: 1, z: 1 },
+    handle: { mode: 'dual', spread: 0.54, base: 1.2, tilt: 0, thick: 1 },
   },
+  // 丸みのある横型。細いストラップ
   shoulder: {
     sx: 0.9,
     sy: 0.7,
     sz: 0.7,
-    handle: { mode: 'single', spread: 0.85, base: 1.5, tilt: 0.4, thick: 1.6 },
+    body: 'box',
+    taper: { x: 1, z: 1 },
+    handle: { mode: 'single', spread: 0.95, base: 1.5, tilt: 0.4, thick: 1.3 },
   },
+  // 横長トート。側面はA字
   tote: {
     sx: 0.95,
-    sy: 1,
+    sy: 0.85,
     sz: 0.9,
-    handle: { mode: 'dual', spread: 0.75, base: 1, tilt: 0, thick: 1 },
+    body: 'box',
+    taper: { x: 0.95, z: 0.6 },
+    handle: { mode: 'dual', spread: 0.44, base: 1.65, tilt: 0, thick: 1 },
   },
 }
 

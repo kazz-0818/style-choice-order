@@ -18,6 +18,7 @@ export type StepId =
   | 'clasp'
   | 'charm'
   | 'strap'
+  | 'belt'
   | 'bottom'
   | 'logo'
 
@@ -44,7 +45,7 @@ export interface SpecStep {
   groups: SpecGroup[]
 }
 
-const HAND_CARRY: BagTemplateId[] = ['business', 'boston', 'mini-boston', 'tote']
+const HAND_CARRY: BagTemplateId[] = ['top-handle', 'business', 'boston', 'mini-boston', 'tote']
 
 const ZIPPER_OPENINGS = ['zipper', 'zip-single', 'zip-double', 'frame-zip']
 
@@ -56,12 +57,14 @@ const TEMPLATE_STEPS: Record<BagTemplateId, StepId[]> = {
   'mini-boston': ['silhouette', 'opening', 'handle', 'lock', 'charm'],
   shoulder: ['silhouette', 'opening', 'handle', 'strap', 'bottom'],
   tote: ['silhouette', 'opening', 'handle', 'pocket', 'studs'],
+  'top-handle': ['silhouette', 'opening', 'handle', 'lock', 'belt', 'studs'],
 }
 
 function openingGroup(t: BagTemplateId): SpecGroup {
   const label = '開口部'
   switch (t) {
     case 'business':
+    case 'top-handle':
       return {
         key: 'opening',
         label,
@@ -153,7 +156,20 @@ function lockGroup(t: BagTemplateId): SpecGroup {
           { id: 'none', name: 'なし', description: 'すっきりとしたシンプル仕様' },
           { id: 'turn', name: 'ターンロック', description: '前面のワンポイントに' },
           { id: 'padlock', name: 'パドロック', description: '南京錠風のクラシック金具' },
+          { id: 'shield', name: 'シールドロック', description: '盾形のゴールド金具で華やかに' },
           { id: 'belt', name: 'ベルト＆バックル', description: 'ベルトで固定する仕様' },
+        ],
+      }
+    case 'top-handle':
+      return {
+        key: 'lock',
+        label,
+        defaultId: 'turn',
+        options: [
+          { id: 'turn', name: 'ターンロック', description: 'ベルト中央のワンポイントに' },
+          { id: 'padlock', name: 'パドロック', description: '南京錠風のクラシック金具' },
+          { id: 'shield', name: 'シールドロック', description: '盾形のゴールド金具' },
+          { id: 'none', name: 'なし', description: '金具なしのシンプル仕様' },
         ],
       }
     case 'boston':
@@ -163,6 +179,7 @@ function lockGroup(t: BagTemplateId): SpecGroup {
         defaultId: 'twist',
         options: [
           { id: 'twist', name: 'ツイストロック', description: '中央でひねって留める' },
+          { id: 'shield', name: 'シールドロック', description: '盾形のゴールド金具で華やかに' },
           { id: 'belt', name: 'ベルト＆バックル', description: 'ベルト仕様（太さも相談可）' },
           { id: 'turn', name: 'ターンロック', description: '前面のワンポイントに' },
           { id: 'none', name: 'なし', description: 'ロックなしのシンプル仕様' },
@@ -310,7 +327,7 @@ const STEP_BUILDERS: Record<StepId, (t: BagTemplateId) => SpecStep> = {
       },
     ],
   }),
-  clasp: () => ({
+  clasp: (t) => ({
     id: 'clasp',
     label: '留め具',
     icon: 'clasp',
@@ -319,10 +336,11 @@ const STEP_BUILDERS: Record<StepId, (t: BagTemplateId) => SpecStep> = {
       {
         key: 'clasp',
         label: '留め具のデザイン',
-        defaultId: 'turn',
+        defaultId: t === 'shoulder-pouch' ? 'shield' : 'turn',
         options: [
           { id: 'none', name: 'なし', description: 'マグネットの隠し留め' },
           { id: 'turn', name: 'ターンロック', description: '前面のワンポイントに' },
+          { id: 'shield', name: 'シールドロック', description: '盾形のゴールド金具（フラップ中央）' },
           { id: 'snap', name: 'スナップ', description: 'シンプルな丸型' },
           { id: 'bar', name: 'バークラスプ', description: '横長のモダンな留め具' },
         ],
@@ -355,6 +373,7 @@ const STEP_BUILDERS: Record<StepId, (t: BagTemplateId) => SpecStep> = {
           { id: 'star', name: 'スター' },
           { id: 'heart', name: 'ハート' },
           { id: 'tassel', name: 'タッセル' },
+          { id: 'tag', name: 'メタルタグ', description: '金属プレートのタグ' },
         ],
       },
       {
@@ -402,6 +421,33 @@ const STEP_BUILDERS: Record<StepId, (t: BagTemplateId) => SpecStep> = {
           { id: 'fixed', name: '固定', description: '調整なし' },
           { id: 'slider', name: 'アジャスター', description: 'スライドで無段階調整' },
           { id: 'buckle', name: 'バックル穴', description: '穴位置で段階調整' },
+        ],
+      },
+    ],
+  }),
+  belt: () => ({
+    id: 'belt',
+    label: 'ベルト仕様',
+    icon: 'strap',
+    lead: '本体を一周するベルトの太さと、ステッチの有無を選べます。',
+    groups: [
+      {
+        key: 'beltWidth',
+        label: 'ベルトの太さ',
+        defaultId: 'standard',
+        options: [
+          { id: 'thin', name: '細め', description: '軽やかで繊細な印象に' },
+          { id: 'standard', name: '標準', description: 'バランスのよい標準幅' },
+          { id: 'thick', name: '太め', description: '存在感のあるデザインに' },
+        ],
+      },
+      {
+        key: 'beltStitch',
+        label: 'ステッチ',
+        defaultId: 'stitch',
+        options: [
+          { id: 'stitch', name: 'あり', description: 'ふちに縫い目を入れて上品に' },
+          { id: 'none', name: 'なし', description: 'すっきりとした仕上がり' },
         ],
       },
     ],

@@ -5,6 +5,7 @@ export type BagTemplateId =
   | 'mini-boston'
   | 'shoulder'
   | 'tote'
+  | 'top-handle'
 
 export type BagLayer = 'body' | 'handle' | 'side' | 'bottom' | 'metal' | 'accent'
 
@@ -64,6 +65,8 @@ export type SpecKey =
   | 'charm'
   | 'charmDesign'
   | 'chainLength'
+  | 'beltWidth'
+  | 'beltStitch'
   | 'strapWidth'
   | 'strapHook'
   | 'strapAdjust'

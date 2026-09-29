@@ -73,13 +73,19 @@ body {
 }
 
 .three-d-preview-frame {
-  aspect-ratio: 4 / 5;
-  min-height: 280px;
+  /* プレビュー＋Other Views を固定表示するため、画面の高さに収まるサイズにする */
+  height: clamp(200px, 32vh, 300px);
 }
 
 @media (min-width: 640px) {
   .three-d-preview-frame {
-    min-height: 420px;
+    height: clamp(300px, 46vh, 460px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .three-d-preview-frame {
+    height: clamp(360px, calc(100vh - 420px), 640px);
   }
 }
 
@@ -94,16 +100,9 @@ body {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  min-height: 280px;
   touch-action: none;
   border-radius: 1rem;
   outline: none;
-}
-
-@media (min-width: 640px) {
-  .three-d-canvas {
-    min-height: 420px;
-  }
 }
 
 /* スライダー（本体シルエット） */

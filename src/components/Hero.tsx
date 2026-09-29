@@ -30,11 +30,11 @@ export function Hero({ onSelectTemplate }: HeroProps) {
           あなたの『欲しい』をカタチにします。
         </p>
         <p className="mx-auto mt-4 max-w-xl text-xs leading-relaxed text-warm-gray sm:text-sm">
-          本革・合皮・布・化学繊維から素材を選び、デザイン・サイズ・細部の仕様まで。
+          本革・合皮・布・ファー・化学繊維から素材を選び、デザイン・サイズ・細部の仕様まで。
           1点から製作できるフルオーダーメイドバッグです。
         </p>
 
-        <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:grid-cols-6 sm:gap-3">
+        <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:grid-cols-4 lg:grid-cols-7 sm:gap-3">
           {BAG_TEMPLATES.map((template) => (
             <a
               key={template.id}

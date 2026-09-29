@@ -15,7 +15,7 @@ export function TemplateSelector({ value, onChange, step = 1 }: TemplateSelector
       <StepTitle
         step={step}
         icon="bag"
-        lead="6つのバッグ型からお選びください。型によって選べるパーツ項目が変わります。"
+        lead="7つのバッグ型からお選びください。型によって選べるパーツ項目が変わります。"
       >
         バッグ型
       </StepTitle>

@@ -134,10 +134,12 @@ function weaveHeight(period: number, seed: number, ripstop: boolean): HeightFn {
  */
 function furHeight(seed: number): HeightFn {
   const rand = mulberry32(seed)
+  // 大きな毛束 → 中くらいの毛の流れ → 1本ずつの細い毛、の順に重ねる（縦長ほど毛足が長く見える）
   const layers = [
-    { fx: 40, fy: 12, w: 0.42 },
-    { fx: 96, fy: 30, w: 0.3 },
-    { fx: 192, fy: 70, w: 0.2 },
+    { fx: 12, fy: 4, w: 0.26 },
+    { fx: 32, fy: 10, w: 0.24 },
+    { fx: 72, fy: 20, w: 0.2 },
+    { fx: 128, fy: 40, w: 0.18 },
   ].map((l) => {
     const grid = new Float32Array(l.fx * l.fy)
     for (let i = 0; i < grid.length; i++) grid[i] = rand()
@@ -160,8 +162,9 @@ function furHeight(seed: number): HeightFn {
       const b = g(x0, y0 + 1) * (1 - tx) + g(x0 + 1, y0 + 1) * tx
       h += (a * (1 - ty) + b * ty) * l.w
     }
-    h += fine[(y % SIZE) * SIZE + (x % SIZE)] * 0.08
-    return clamp01(h)
+    h += fine[(y % SIZE) * SIZE + (x % SIZE)] * 0.12
+    // コントラストを上げて、毛先の明るさと毛の間の影をはっきりさせる
+    return clamp01((h - 0.5) * 1.7 + 0.5)
   }
 }
 
@@ -248,10 +251,10 @@ const RECIPES: Record<
   // ファー・ボア：毛足のふさふさ感（陰影を強めに）
   fur: {
     height: () => furHeight(31),
-    strength: 5.5,
-    toneMin: 0.5,
-    tile: 0.55,
-    normalScale: 1.5,
+    strength: 8,
+    toneMin: 0.38,
+    tile: 0.5,
+    normalScale: 2.2,
   },
   // 化学繊維：細かな織りとリップストップ格子
   'tech-fiber': {

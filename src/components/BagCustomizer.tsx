@@ -115,8 +115,11 @@ export function BagCustomizer({
         <div className="flex min-w-0 flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
           <div className="sticky top-[60px] z-30 order-1 -mx-4 min-w-0 border-b border-stone/60 bg-cream/95 px-4 pt-2 pb-2 shadow-sm backdrop-blur-sm sm:top-[64px] sm:-mx-6 sm:px-6 lg:top-24 lg:z-10 lg:mx-0 lg:self-start lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
             <div className="mb-5 hidden max-w-2xl lg:block">{customizerIntro}</div>
-            <div className="relative mx-auto w-full max-w-[280px] sm:max-w-none">
-              <ThreeDBagPreview customization={customization} viewRequest={viewRequest} />
+            {/* スマホ: プレビューの右に Other Views を縦並び／sm 以上: 従来どおりプレビューの下 */}
+            <div className="relative mx-auto flex w-full max-w-[340px] items-stretch gap-2 sm:block sm:max-w-none">
+              <div className="min-w-0 flex-1">
+                <ThreeDBagPreview customization={customization} viewRequest={viewRequest} />
+              </div>
               <ViewSwitcher
                 customization={customization}
                 active={viewRequest.view}
@@ -136,7 +139,7 @@ export function BagCustomizer({
                 ←
               </span>
               <span>左右にスワイプして選択</span>
-              <span className="text-gold" aria-hidden>
+              <span className="swipe-hint-right text-sm leading-none font-bold text-gold" aria-hidden>
                 →
               </span>
             </p>

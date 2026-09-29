@@ -8,6 +8,8 @@ import { syncFurShells } from './furShells'
 import { getMaterialTextures } from './materialTextures'
 import { isMeshName, type MeshName } from './modelConfig'
 import { buildChainGeometry } from './strapChain'
+import { buildHandleBandGeometry } from './handleBand'
+import { buildRingGeometry, ringSpecKey } from './ringGeometry'
 import { TAPER_MESHES, applyTaper } from './taper'
 
 interface MaterialStyle {
@@ -53,7 +55,7 @@ const MATERIAL_STYLE: Record<string, MaterialStyle> = {
     roughness: 1,
     metalness: 0,
     sheen: 1,
-    sheenRoughness: 0.9,
+    sheenRoughness: 0.55,
     sheenColor: '#ffffff',
   },
   // 化学繊維：ナイロンのような薄いツヤ
@@ -93,6 +95,10 @@ const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   'tab-1': 'handle',
   'tab-2': 'handle',
   'tab-3': 'handle',
+  'tab-ring-0': 'metal',
+  'tab-ring-1': 'metal',
+  'tab-ring-2': 'metal',
+  'tab-ring-3': 'metal',
   'side-rings': 'metal',
   'pocket-l': 'accent',
   'pocket-r': 'accent',
@@ -262,6 +268,31 @@ export function applyCustomizationToScene(
       }
     }
 
+    // 表裏の持ち手：幅・厚みが一定のバンドを実寸で作り直す（GLB 標準の持ち手は伸縮で歪むため）
+    if (name === 'handle' || name === 'handle2') {
+      if (!mesh.userData.baseGeometry) mesh.userData.baseGeometry = mesh.geometry
+      const band = layout.handleBand
+      const key = band
+        ? [band.halfSpan, band.height, band.width, band.thickness].map((v) => v.toFixed(4)).join('|')
+        : ''
+      if (mesh.userData.bandKey !== key) {
+        if (mesh.geometry !== mesh.userData.baseGeometry) mesh.geometry.dispose()
+        mesh.geometry = band ? buildHandleBandGeometry(band) : mesh.userData.baseGeometry
+        mesh.userData.bandKey = key
+      }
+    }
+
+    // 取付リング：面が表・裏と平行になるよう、実寸の位置で作り直す
+    if (name === 'ring-dual' || name === 'ring-single') {
+      const spec = name === 'ring-dual' ? layout.rings.dual : layout.rings.single
+      const key = ringSpecKey(spec)
+      if (mesh.userData.ringKey !== key) {
+        mesh.geometry.dispose()
+        mesh.geometry = buildRingGeometry(spec)
+        mesh.userData.ringKey = key
+      }
+    }
+
     // 上すぼまり（台形・A字）を本体系のジオメトリへ反映
     if (TAPER_MESHES.has(name)) applyTaper(mesh, layout.taper.x, layout.taper.z)
 
@@ -306,11 +337,13 @@ export function applyCustomizationToScene(
       paint(mesh, hex, METAL_STYLE)
       return
     }
-    const extent = textureExtent(name, target.scale)
-    // ファー・ボア：本体まわりは毛層（シェル）を重ねてふさふさにする
+    const isBand = (name === 'handle' || name === 'handle2') && !!layout.handleBand
+    // バンドの UV は実寸なので、テクスチャの繰り返しは 1 単位あたりで指定する
+    const extent = isBand ? ([1, 1] as [number, number]) : textureExtent(name, target.scale)
+    // ファー・ボア：本体まわりは毛層（シェル）を重ねてふわふわにする
     const furry =
-      materialId === 'fur' && !!extent && ['body', 'side', 'bottom', 'accent'].includes(layer)
-    paint(mesh, furry ? shade(hex, 0.72) : hex, bodyStyle, extent ? { materialId, extent } : null)
+      materialId === 'fur' && !!extent && !isBand && ['body', 'side', 'bottom', 'accent'].includes(layer)
+    paint(mesh, furry ? shade(hex, 0.85) : hex, bodyStyle, extent ? { materialId, extent } : null)
     syncFurShells(mesh, furry, hex, extent)
   })
 }

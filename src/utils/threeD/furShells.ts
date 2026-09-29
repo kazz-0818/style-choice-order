@@ -18,15 +18,15 @@ import {
  */
 
 /** 毛の層の数（多いほどふんわりするが描画は重くなる） */
-const SHELLS = 22
+const SHELLS = 28
 /** 毛足の長さ（モデル座標） */
-const FUR_LENGTH = 0.12
+const FUR_LENGTH = 0.1
 /** 毛の密度テクスチャ1枚が実寸で何ユニットか */
 export const FUR_TILE = 0.6
 
 const SIZE = 512
 /** 1タイルあたりの毛の本数（片側） */
-const STRANDS = 110
+const STRANDS = 150
 
 interface StrandTextures {
   /** 緑チャンネル＝毛の長さ */
@@ -151,7 +151,7 @@ function makeShellMaterial(h: number, offset: number): MeshStandardMaterial {
     metalness: 0,
     map: tex.tone.clone(),
     alphaMap: tex.alpha.clone(),
-    alphaTest: 0.04 + h * 0.9,
+    alphaTest: 0.03 + h * 0.82,
     // 毛先の縁をやわらかく（ギザギザ・プラスチックの毛に見えないように）
     alphaToCoverage: true,
     envMapIntensity: 0.4,
@@ -228,7 +228,7 @@ export function syncFurShells(
     shell.geometry = mesh.geometry
     const mat = shell.material as MeshStandardMaterial
     // 根元は暗く、毛先は明るく（奥行き感）
-    mat.color.copy(base).multiplyScalar(0.62 + 0.55 * h)
+    mat.color.copy(base).multiplyScalar(0.78 + 0.42 * h)
     mat.alphaMap!.repeat.set(rx, ry)
     mat.map!.repeat.set(rx, ry)
   })

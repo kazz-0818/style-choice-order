@@ -277,7 +277,6 @@ function ringGeometry(zs) {
   for (const x of [-ATTACH_X, ATTACH_X]) {
     for (const z of zs) {
       const ring = new THREE.TorusGeometry(0.09, 0.018, 12, 24, Math.PI)
-      ring.rotateY(Math.PI / 2)
       ring.translate(x, 0, z)
       parts.push(ring)
     }
@@ -495,16 +494,29 @@ function beltStitchGeometry() {
 // ── ハンドルの革タブ・サイドリング ──────────────────
 const TAB_L = 0.5
 
-/** 持ち手を留める涙型の革タブ。原点 = 上端中央、+z が手前 */
+/**
+ * 持ち手を留める革タブ（基準寸法：ストラップ半幅 0.05・全長 0.5）。
+ * 上端に金具リングを通す「頭」があり、首を絞ってストラップ状に伸び、先は丸い。
+ * 原点 = 頭の上端中央、+z が手前。実行時に横幅・縦長さだけを拡縮して使う。
+ */
+const TAB_HALF_W = 0.05
 function tabGeometry() {
+  const w = TAB_HALF_W
+  const hw = 0.062 // 頭の半幅
+  const hh = 0.1 // 頭の高さ
+  const r = 0.02
   const shape = new THREE.Shape()
-  const w = 0.08
-  shape.moveTo(-w, 0)
-  shape.absarc(0, 0, w, Math.PI, 0, true)
-  shape.lineTo(w, -TAB_L * 0.55)
-  shape.bezierCurveTo(w, -TAB_L * 0.8, 0.02, -TAB_L * 0.95, 0, -TAB_L)
-  shape.bezierCurveTo(-0.02, -TAB_L * 0.95, -w, -TAB_L * 0.8, -w, -TAB_L * 0.55)
-  shape.lineTo(-w, 0)
+  shape.moveTo(-hw + r, 0)
+  shape.lineTo(hw - r, 0)
+  shape.quadraticCurveTo(hw, 0, hw, -r)
+  shape.lineTo(hw, -(hh - 0.02))
+  shape.bezierCurveTo(hw, -(hh + 0.01), w, -(hh + 0.005), w, -(hh + 0.04))
+  shape.lineTo(w, -(TAB_L - w))
+  shape.absarc(0, -(TAB_L - w), w, 0, Math.PI, true)
+  shape.lineTo(-w, -(hh + 0.04))
+  shape.bezierCurveTo(-w, -(hh + 0.005), -hw, -(hh + 0.01), -hw, -(hh - 0.02))
+  shape.lineTo(-hw, -r)
+  shape.quadraticCurveTo(-hw, 0, -hw + r, 0)
   const g = new THREE.ExtrudeGeometry(shape, {
     depth: 0.014,
     bevelEnabled: true,
@@ -514,6 +526,40 @@ function tabGeometry() {
     curveSegments: 10,
   })
   g.translate(0, 0, 0.004)
+  return g
+}
+
+/** 持ち手を通す長方形の金具リング（正面から見た枠）。原点 = 中心、+z が手前 */
+function tabRingGeometry() {
+  const ow = 0.056
+  const oh = 0.038
+  const wall = 0.011
+  const rr = 0.012
+  const rounded = (hw, hh, rad, path) => {
+    path.moveTo(-hw + rad, -hh)
+    path.lineTo(hw - rad, -hh)
+    path.quadraticCurveTo(hw, -hh, hw, -hh + rad)
+    path.lineTo(hw, hh - rad)
+    path.quadraticCurveTo(hw, hh, hw - rad, hh)
+    path.lineTo(-hw + rad, hh)
+    path.quadraticCurveTo(-hw, hh, -hw, hh - rad)
+    path.lineTo(-hw, -hh + rad)
+    path.quadraticCurveTo(-hw, -hh, -hw + rad, -hh)
+  }
+  const shape = new THREE.Shape()
+  rounded(ow, oh, rr, shape)
+  const hole = new THREE.Path()
+  rounded(ow - wall, oh - wall, rr * 0.5, hole)
+  shape.holes.push(hole)
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.016,
+    bevelEnabled: true,
+    bevelThickness: 0.004,
+    bevelSize: 0.003,
+    bevelSegments: 2,
+    curveSegments: 6,
+  })
+  g.translate(0, 0, 0.014)
   return g
 }
 
@@ -646,6 +692,8 @@ function createBagScene() {
   const beltStitch = mesh('belt-stitch', beltStitchGeometry(), mat(0xe8dcc0, 0.8, 0, 'belt-stitch'))
   const tabGeo = tabGeometry()
   const tabs = [0, 1, 2, 3].map((i) => mesh(`tab-${i}`, tabGeo, mat(0x8b6f4e, 0.55, 0.05, `tab-${i}`)))
+  const tabRingGeo = tabRingGeometry()
+  const tabRings = [0, 1, 2, 3].map((i) => mesh(`tab-ring-${i}`, tabRingGeo, metalMat(`tab-ring-${i}`)))
   const sideRings = mesh('side-rings', sideRingsGeometry(), metalMat('side-rings'))
   const flapRound = mesh('flap-round', flapShapeGeometry('round'), mat(0x1e2a3a, 0.6, 0.05, 'flap-round'))
   const flapCurve = mesh('flap-curve', flapShapeGeometry('curve'), mat(0x1e2a3a, 0.6, 0.05, 'flap-curve'))
@@ -691,6 +739,7 @@ function createBagScene() {
     belt,
     beltStitch,
     ...tabs,
+    ...tabRings,
     sideRings,
     flapRound,
     flapCurve,

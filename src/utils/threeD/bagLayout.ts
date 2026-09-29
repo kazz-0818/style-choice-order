@@ -7,6 +7,8 @@ import {
 } from '../../data/bagShapes'
 import type { BagCustomization } from '../../types/bag'
 import type { MeshName } from './modelConfig'
+import type { HandleBandSpec } from './handleBand'
+import type { RingSpec } from './ringGeometry'
 import type { ChainPoints } from './strapChain'
 
 export interface MeshLayout {
@@ -23,6 +25,10 @@ export interface BagLayout {
   rootY: number
   /** 実行時に生成するチェーン（ストラップ／前面のドレープ）の経路 */
   chain: { points: ChainPoints; linkScale: number } | null
+  /** 表裏の持ち手（dual）を作り直すバンドの寸法。null = GLB 標準の持ち手 */
+  handleBand: HandleBandSpec | null
+  /** 取付リング（半円）の位置。面は表・裏と平行 */
+  rings: { single: RingSpec; dual: RingSpec }
   /** 本体の上すぼまり（上端の幅・奥行き倍率） */
   taper: { x: number; z: number }
 }
@@ -36,7 +42,18 @@ const BELT_WIDTH: Record<string, number> = { thin: 0.6, standard: 1, thick: 1.45
 const FLAP_EXTRA: Record<string, number> = { square: 0, round: 0, curve: 0.12, point: 0.2 }
 /** ベルト（トップハンドル）の中心高さ・革タブの長さ */
 const BELT_Y = M.TOP - 0.27
-const TAB_TOP_Y = M.TOP - 0.05
+/**
+ * 持ち手の取付タブ（パンフレット正面図の実測）
+ * halfW: ストラップ半幅 / lenFrac: 天面からストラップ先端までの長さ（本体高さ比）
+ * dropFrac: 天面から金具リング中心までの距離（本体高さ比） / ringH: リングの高さ
+ */
+const TAB_CFG: Record<string, { halfW: number; lenFrac: number; dropFrac: number; ringH: number }> = {
+  'top-handle': { halfW: 0.053, lenFrac: 0.34, dropFrac: 0.056, ringH: 0.07 },
+  business: { halfW: 0.068, lenFrac: 0.47, dropFrac: 0.13, ringH: 0.09 },
+  tote: { halfW: 0.064, lenFrac: 0.28, dropFrac: 0.0, ringH: 0.085 },
+}
+/** 生成 GLB のタブ・リングの基準寸法（generate-bag-glb.mjs と合わせる） */
+const TAB_BASE = { halfW: 0.05, len: 0.5, headDrop: 0.05, ringHalfW: 0.056, ringHalfH: 0.038 }
 const CHAIN_LENGTH: Record<string, number> = { short: 0.35, medium: 0.65, long: 1 }
 
 const CLASP_SCALE: Record<string, [number, number, number]> = {
@@ -107,6 +124,22 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     }
   }
 
+  // ── 取付タブの寸法（持ち手の根元位置にも使う） ──
+  const tabCfg = TAB_CFG[templateId]
+  const bodyH = 2 * top
+  const tabSx = (tabCfg?.halfW ?? TAB_BASE.halfW) / TAB_BASE.halfW
+  const ringCY = tabCfg ? top - tabCfg.dropFrac * bodyH : top
+  const ringHt = tabCfg?.ringH ?? 0.08
+  const strapBotY = top - (tabCfg?.lenFrac ?? 0.3) * bodyH
+  // タブ上端 = リング中心 + 頭の深さ（タブ縦倍率に比例）。倍率が長さに依存するので解いて求める
+  const headRatio = TAB_BASE.headDrop / TAB_BASE.len
+  const tabTopY = (ringCY - headRatio * strapBotY) / (1 - headRatio)
+  const tabLenY = Math.max(0.2, tabTopY - strapBotY)
+  const tabFit = fitPlate(tabTopY / sy, strapBotY / sy, 0)
+  /** タブ面（傾き付き）の、高さ y における前面 z */
+  const tabPlaneZ = (y: number) =>
+    tabFit.zTop + ((tabFit.zBot - tabFit.zTop) * (tabTopY - y)) / Math.max(1e-6, tabTopY - strapBotY)
+
   // ── 持ち手 ─────────────────────────
   const lengthTable = isStrap ? STRAP_LENGTH : HAND_LENGTH
   const lengthMult = isPouch ? 1 : (lengthTable[specs.handle ?? 'standard'] ?? 1)
@@ -116,7 +149,9 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const tz = shape.handle.thick * (isStrap ? widthMult : 1)
   const zc = !dual
     ? 0
-    : isCyl
+    : hasTabs
+      ? tabPlaneZ(ringCY) + 0.028
+      : isCyl
       ? M.HANDLE_Z * sz
       : (shape.handle.edge ?? 0.55) * (M.D / 2) * sz * topF.fz
   // 天面の角丸で前後の縁は下がるため、持ち手の取付位置もわずかに下げる
@@ -129,7 +164,8 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     const dz = Math.max(0, zc - flat)
     topDrop = 0.16 * sy * (1 - Math.sqrt(Math.max(0, 1 - (dz / rz) ** 2))) * 0.9
   }
-  const handleTop = top - topDrop
+  // タブ付きの型は金具リングの中心が持ち手の根元になる
+  const handleTop = hasTabs && dual ? ringCY : top - topDrop
   // 表裏それぞれの持ち手を頂点に向けて内側へ傾ける（根元は表裏のパネル側、頂点で寄る）
   const converge = dual ? shape.handle.converge : undefined
   const leanSin =
@@ -284,16 +320,24 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const pocketFx = fxAt(-0.2)
   const pocketZ = pocketFit.z + M.POCKET_T / 2 - 0.008
 
-  // ── 革タブ・サイドリング（ビジネス／トート） ──
-  const tabLen = templateId === 'business' ? 1.46 : templateId === 'top-handle' ? 1.33 : 1.4
-  const tabFit = fitPlate(TAB_TOP_Y, TAB_TOP_Y - 0.5 * tabLen, 0)
+  // ── 革タブ・金具リング・サイドリング（ビジネス／トート／トップハンドル） ──
   const tabX = ringX
   const tabLayout = (idx: number) => {
     const front = idx < 2
     const sign = idx % 2 === 0 ? -1 : 1
     return layout(
-      [sign * tabX, TAB_TOP_Y * sy, (front ? 1 : -1) * (tabFit.zTop - 0.002)],
-      [1, sy * tabLen, 1],
+      [sign * tabX, tabTopY, (front ? 1 : -1) * (tabFit.zTop - 0.002)],
+      [tabSx, tabLenY / TAB_BASE.len, 1],
+      hasTabs,
+      front ? [tabFit.rot, 0, 0] : [-tabFit.rot, Math.PI, 0],
+    )
+  }
+  const tabRingLayout = (idx: number) => {
+    const front = idx < 2
+    const sign = idx % 2 === 0 ? -1 : 1
+    return layout(
+      [sign * tabX, ringCY, (front ? 1 : -1) * (tabPlaneZ(ringCY) + 0.004)],
+      [(tabSx * 1.08 * 0.062) / TAB_BASE.ringHalfW, ringHt / (2 * TAB_BASE.ringHalfH), 1],
       hasTabs,
       front ? [tabFit.rot, 0, 0] : [-tabFit.rot, Math.PI, 0],
     )
@@ -337,20 +381,21 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     'drum-zip-teeth': layout([0, 0, 0], bodyScale, zipVisible && isCyl),
     belt: layout(beltLayout.pos, beltLayout.scale, beltVisible),
     'belt-stitch': layout(beltLayout.pos, beltLayout.scale, beltStitchVisible),
-    handle: layout([0, handleY, handleZ(1)], [hx, hl, tz], true, [theta, 0, 0]),
+    handle: dual
+      ? layout([0, handleTop, zc], [1, 1, 1], true, [theta, 0, 0])
+      : layout([0, handleY, handleZ(1)], [hx, hl, tz], true, [theta, 0, 0]),
     'strap-chain': layout([0, 0, 0], [1, 1, 1], !!chain),
-    handle2: layout(
-      [0, handleY, handleZ(-1, converge !== undefined ? -theta : theta)],
-      [hx, hl, tz],
-      dual,
-      [converge !== undefined ? -theta : theta, 0, 0],
-    ),
-    'ring-single': layout([0, top, 0], [hx, 1, 1], isStrap || isTop),
-    'ring-dual': layout([0, handleTop, 0], [hx, 1, Math.max(0.01, zc / M.HANDLE_Z)], dual),
+    handle2: layout([0, handleTop, -zc], [1, 1, 1], dual, [-theta, 0, 0]),
+    'ring-single': layout([0, top, 0], [1, 1, 1], isStrap || isTop),
+    'ring-dual': layout([0, handleTop, 0], [1, 1, 1], dual && !hasTabs),
     'tab-0': tabLayout(0),
     'tab-1': tabLayout(1),
     'tab-2': tabLayout(2),
     'tab-3': tabLayout(3),
+    'tab-ring-0': tabRingLayout(0),
+    'tab-ring-1': tabRingLayout(1),
+    'tab-ring-2': tabRingLayout(2),
+    'tab-ring-3': tabRingLayout(3),
     'side-rings': layout(
       [0, ringsY, 0],
       [sx * fxAt(M.TOP - 0.16), 1, 1],
@@ -425,7 +470,7 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   } satisfies Record<MeshName, MeshLayout>
 
   // ── 画面中央への収まり ─────────────────
-  const handleArch = top + M.ARCH_H * hl * Math.cos(theta) + 0.06
+  const handleArch = (dual ? handleTop : top) + M.ARCH_H * hl * Math.cos(theta) + 0.06
   const archTop = Math.max(handleArch, isPouch ? chainTopY + 0.06 : 0)
   let bottomY = -top - (studsVisible ? M.STUD_H : 0)
   if (chainVisible) bottomY = Math.min(bottomY, charmTopY - chainLen - (charmVisible ? 0.22 : 0.05))
@@ -434,5 +479,19 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const rootScale = Math.min(3.2 / height, 3.9 / width, 1.15)
   const rootY = (-(archTop + bottomY) / 2) * rootScale
 
-  return { meshes, rootScale, rootY, chain, taper: shape.taper }
+  const handleBand: HandleBandSpec | null = dual
+    ? {
+        halfSpan: ringX,
+        height: M.ARCH_H * hl,
+        width: shape.handle.bandW ?? 0.08,
+        thickness: shape.handle.bandT ?? 0.05,
+      }
+    : null
+
+  const rings = {
+    single: { x: ringX, zs: [0] },
+    dual: { x: ringX, zs: [-zc, zc] },
+  }
+
+  return { meshes, rootScale, rootY, chain, handleBand, rings, taper: shape.taper }
 }

@@ -57,6 +57,9 @@ export interface BagShape {
     edge?: number
     /** 表裏の持ち手を頂点で寄せる比率（頂点の間隔 / 根元の間隔。未指定＝垂直） */
     converge?: number
+    /** 表裏の持ち手（dual）のバンド幅・厚み（モデル単位。パンフレットの帯の太さ） */
+    bandW?: number
+    bandT?: number
   }
 }
 
@@ -74,11 +77,11 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
   // 台形のトップハンドル。側面は上に向かって細くなるA字
   'top-handle': {
     sx: 0.8,
-    sy: 0.88,
+    sy: 0.78,
     sz: 0.62,
     body: 'box',
     taper: { x: 0.85, z: 0.6 },
-    handle: { mode: 'dual', spread: 0.49, base: 1.42, tilt: 0, thick: 1, edge: 0.88, converge: 0.42 },
+    handle: { mode: 'dual', spread: 0.49, base: 1.27, tilt: 0, thick: 1, converge: 0.42, bandW: 0.066, bandT: 0.05 },
   },
   // 横長の角型。側面は底が広い台形
   business: {
@@ -87,7 +90,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 0.75,
     body: 'box',
     taper: { x: 0.96, z: 0.7 },
-    handle: { mode: 'dual', spread: 0.39, base: 1.22, tilt: 0, thick: 1 },
+    handle: { mode: 'dual', spread: 0.39, base: 1.22, tilt: 0, thick: 1, converge: 0.5, bandW: 0.085, bandT: 0.05 },
   },
   // 口金付きの台形。側面は三角に近い
   boston: {
@@ -96,7 +99,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 1.25,
     body: 'box',
     taper: { x: 0.8, z: 0.45 },
-    handle: { mode: 'dual', spread: 0.49, base: 1.02, tilt: 0, thick: 1 },
+    handle: { mode: 'dual', spread: 0.49, base: 1.02, tilt: 0, thick: 1, bandW: 0.085, bandT: 0.05 },
   },
   // 縦型ポーチ。小さなトップハンドル＋チェーンストラップ
   'shoulder-pouch': {
@@ -114,7 +117,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 1.33,
     body: 'cylinder',
     taper: { x: 1, z: 1 },
-    handle: { mode: 'dual', spread: 0.54, base: 1.2, tilt: 0, thick: 1 },
+    handle: { mode: 'dual', spread: 0.54, base: 1.2, tilt: 0, thick: 1, bandW: 0.08, bandT: 0.05 },
   },
   // 丸みのある横型。細いストラップ
   shoulder: {
@@ -132,7 +135,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 0.9,
     body: 'box',
     taper: { x: 0.95, z: 0.6 },
-    handle: { mode: 'dual', spread: 0.44, base: 1.65, tilt: 0, thick: 1 },
+    handle: { mode: 'dual', spread: 0.44, base: 1.65, tilt: 0, thick: 1, converge: 0.5, bandW: 0.084, bandT: 0.05 },
   },
 }
 

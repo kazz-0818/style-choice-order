@@ -28,13 +28,13 @@ export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherPr
   }
 
   return (
-    <div className="mt-3 sm:mt-4">
-      <p className="mb-1.5 flex items-center gap-2 text-[10px] tracking-[0.25em] text-gold uppercase">
+    <div className="w-[42px] shrink-0 sm:mt-4 sm:w-auto">
+      <p className="mb-1.5 hidden items-center sm:flex gap-2 text-[10px] tracking-[0.25em] text-gold uppercase">
         <span className="h-px flex-1 bg-gold/40" />
         Other Views
         <span className="h-px flex-1 bg-gold/40" />
       </p>
-      <div className="grid grid-cols-5 gap-1 sm:gap-2">
+      <div className="grid h-full grid-cols-1 content-between gap-1 sm:h-auto sm:grid-cols-5 sm:content-start sm:gap-2">
         {VIEWS.map((view) => (
           <button
             key={view.id}
@@ -61,7 +61,7 @@ export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherPr
               />
             </span>
             <span
-              className={`block py-0.5 text-[8px] tracking-widest sm:text-[9px] ${
+              className={`block py-0.5 text-[7px] tracking-widest sm:text-[9px] ${
                 active === view.id ? 'bg-navy text-cream' : 'bg-white text-warm-gray'
               }`}
             >

@@ -146,7 +146,6 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const hl = shape.handle.base * lengthMult
   const hx = sx * topF.fx * shape.handle.spread
   const widthMult = specs.strapWidth ? (STRAP_WIDTH[specs.strapWidth] ?? 1) : 1
-  const tz = shape.handle.thick * (isStrap ? widthMult : 1)
   const zc = !dual
     ? 0
     : hasTabs
@@ -173,8 +172,6 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
       ? Math.min(0.5, ((1 - converge) * zc) / (M.ARCH_H * hl))
       : Math.sin(shape.handle.tilt)
   const theta = -Math.asin(leanSin)
-  const handleY = handleTop - M.TOP * hl * Math.cos(theta)
-  const handleZ = (sign: number, th: number = theta) => sign * zc - M.TOP * hl * Math.sin(th)
   const ringX = M.ATTACH_X * hx
 
   // ── 前面パーツの表示判定 ─────────────
@@ -282,10 +279,18 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const pullerKind = specs.puller ?? 'ring'
   const pullerXs: number[] =
     opening === 'zip-double' ? [-0.3, 0.3] : opening === 'zip-single' ? [0] : [0.5]
-  const pullerY = isCyl ? top + 0.012 : (M.TOP - 0.24) * sy
-  const pullerZ = (xm: number) => (isCyl ? 0 : surfaceZ(xm, M.TOP - 0.24) + 0.014)
+  // ビジネス／ショルダー／トート／トップハンドルのファスナーは天面だけ（表裏の面には付けない）
+  const zipTopOnly =
+    templateId === 'business' ||
+    templateId === 'shoulder' ||
+    templateId === 'tote' ||
+    templateId === 'top-handle'
+  const zipOnTop = isCyl || zipTopOnly
+  const pullerY = isCyl ? top + 0.012 : zipTopOnly ? top + 0.014 : (M.TOP - 0.24) * sy
+  const pullerZ = (xm: number) =>
+    isCyl ? 0 : zipTopOnly ? 0.03 : surfaceZ(xm, M.TOP - 0.24) + 0.014
   // 円筒型は天面に寝かせ、カーブに沿って手前へ垂らす
-  const pullerRot: [number, number, number] = isCyl ? [-1.15, 0, 0] : [0, 0, 0]
+  const pullerRot: [number, number, number] = zipOnTop ? [isCyl ? -1.15 : -1.3, 0, 0] : [0, 0, 0]
   const pu = Math.max(0.6, Math.min(1.1, u))
   const puller = (idx: 0 | 1) => {
     const visible = zipVisible && (idx === 0 || opening === 'zip-double')
@@ -306,13 +311,10 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
 
   // ── 前面の板パーツ（フラップ・ポケット） ──
   const flapFit = fitPlate(M.TOP, M.TOP - M.FLAP_H)
-  const flapScale: [number, number, number] = [sx * fxAt(M.TOP - M.FLAP_H / 2), sy, 1]
-  const flapPos: [number, number, number] = [
-    0,
-    top - (M.FLAP_H * sy) / 2,
-    flapFit.z + M.FLAP_T / 2 - 0.006,
-  ]
-  const flapRot: [number, number, number] = [flapFit.rot, 0, 0]
+  // フラップは天面とつながった一枚革（本体と同じ座標系・すぼまりで表面に沿う）
+  const flapScale = bodyScale
+  const flapPos: [number, number, number] = [0, 0, 0]
+  const flapRot: [number, number, number] = [0, 0, 0]
   const flapOf = (kind: string) => hasFlap && flapKind === kind
 
   const pocketH = splitPockets ? 1.4 : 1
@@ -383,7 +385,7 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     'belt-stitch': layout(beltLayout.pos, beltLayout.scale, beltStitchVisible),
     handle: dual
       ? layout([0, handleTop, zc], [1, 1, 1], true, [theta, 0, 0])
-      : layout([0, handleY, handleZ(1)], [hx, hl, tz], true, [theta, 0, 0]),
+      : layout([0, handleTop, 0], [1, 1, 1], true, [theta, 0, 0]),
     'strap-chain': layout([0, 0, 0], [1, 1, 1], !!chain),
     handle2: layout([0, handleTop, -zc], [1, 1, 1], dual, [-theta, 0, 0]),
     'ring-single': layout([0, top, 0], [1, 1, 1], isStrap || isTop),
@@ -451,8 +453,10 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     'stud-1': layout([studPositions[1][0], studY, studPositions[1][1]], [1, 1, 1], studsVisible),
     'stud-2': layout([studPositions[2][0], studY, studPositions[2][1]], [1, 1, 1], studsVisible),
     'stud-3': layout([studPositions[3][0], studY, studPositions[3][1]], [1, 1, 1], studsVisible),
-    'zip-tape': layout([0, 0, 0], bodyScale, zipVisible && !isCyl),
-    'zip-teeth': layout([0, 0, 0], bodyScale, zipVisible && !isCyl),
+    'zip-tape': layout([0, 0, 0], bodyScale, zipVisible && !isCyl && !zipTopOnly),
+    'zip-teeth': layout([0, 0, 0], bodyScale, zipVisible && !isCyl && !zipTopOnly),
+    'zip-tape-top': layout([0, 0, 0], bodyScale, zipVisible && zipTopOnly),
+    'zip-teeth-top': layout([0, 0, 0], bodyScale, zipVisible && zipTopOnly),
     'opening-mouth': layout([0, 0, 0], bodyScale, mouthVisible),
     frame: layout([0, 0, 0], bodyScale, frameVisible),
     'magnet-tab': layout([0, 0, 0], bodyScale, magnetVisible),
@@ -479,11 +483,11 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const rootScale = Math.min(3.2 / height, 3.9 / width, 1.15)
   const rootY = (-(archTop + bottomY) / 2) * rootScale
 
-  const handleBand: HandleBandSpec | null = dual
+  const handleBand: HandleBandSpec | null = dual || isStrap
     ? {
         halfSpan: ringX,
         height: M.ARCH_H * hl,
-        width: shape.handle.bandW ?? 0.08,
+        width: (shape.handle.bandW ?? 0.08) * (isStrap ? widthMult : 1),
         thickness: shape.handle.bandT ?? 0.05,
       }
     : null

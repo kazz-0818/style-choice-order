@@ -115,6 +115,7 @@ const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   chain: 'metal',
   frame: 'metal',
   'zip-teeth': 'metal',
+  'zip-teeth-top': 'metal',
   'magnet-snap': 'metal',
   'puller-slider': 'metal',
   'puller-ring': 'metal',
@@ -137,6 +138,7 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
     case 'side':
     case 'bottom':
     case 'belt':
+    case 'flap':
     case 'flap-round':
     case 'flap-curve':
     case 'flap-point':
@@ -153,8 +155,6 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
       return [sx, (sy * M.TOP + sz * (M.D / 2)) / 2 / ((M.TOP + M.D / 2) / 2)]
     case 'drum-side':
       return [sz, sy]
-    case 'flap':
-      return [(M.W - 0.44) * sx, M.FLAP_H * sy]
     case 'pocket':
     case 'pocket-back':
       return [M.POCKET_W * sx, M.POCKET_H * sy]
@@ -321,7 +321,7 @@ export function applyCustomizationToScene(
     }
 
     // ファスナーテープ・開口部の内側
-    if (name === 'zip-tape' || name === 'drum-zip-tape') {
+    if (name === 'zip-tape' || name === 'zip-tape-top' || name === 'drum-zip-tape') {
       paint(mesh, shade(getColorHex(layerColors.body), 0.45), MATTE_STYLE)
       return
     }

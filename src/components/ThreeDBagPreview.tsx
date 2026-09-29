@@ -16,6 +16,7 @@ import { getColorHex } from '../data/colors'
 import type { BagCustomization } from '../types/bag'
 import { BagArt, type BagView } from './illustrations/BagArt'
 import { BagModel } from './three/BagModel'
+import { registerPreviewCapturer, renderViews } from '../utils/threeD/previewCapture'
 
 export interface ViewRequest {
   view: BagView
@@ -104,6 +105,19 @@ function ViewController({ request }: { request: ViewRequest }) {
   return null
 }
 
+/** メール添付用：現在の見た目のまま 5 方向の画像を書き出せるよう登録する */
+function CaptureBridge() {
+  const gl = useThree((state) => state.gl)
+  const scene = useThree((state) => state.scene)
+
+  useEffect(() => {
+    registerPreviewCapturer(() => renderViews(gl, scene))
+    return () => registerPreviewCapturer(null)
+  }, [gl, scene])
+
+  return null
+}
+
 /** 金具や革のツヤ表現のための環境光（外部ファイル不要） */
 function StudioEnvironment() {
   const gl = useThree((state) => state.gl)
@@ -140,6 +154,7 @@ function R3FScene({
   return (
     <>
       <StudioEnvironment />
+      <CaptureBridge />
       <ambientLight intensity={0.35} />
       <directionalLight position={[5, 8, 5]} intensity={1.1} />
       <directionalLight position={[-4, 3, -4]} intensity={0.45} />

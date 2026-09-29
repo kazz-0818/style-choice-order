@@ -274,7 +274,7 @@ export function BagArt({
         {front && isFlapOpening && !isPouch && (
           <path d={flapPath('square', edgeL(0.02), edgeR(0.02), y0, y0 + ph * 0.42)} fill={bodyFill} />
         )}
-        {front && isZip && !isTopHandle && (
+        {front && isZip && !isTopHandle && type !== 'business' && type !== 'tote' && type !== 'shoulder' && (
           <>
             <path d={`M${x0 + pw * 0.16} ${y0 + 6.5}H${x0 + pw * 0.84}`} stroke={metalColor} strokeWidth={1.3} strokeDasharray="1 1.2" />
             <path d={`M${x0 + pw * 0.7} ${y0 + 6.5}v3`} stroke={metalColor} />

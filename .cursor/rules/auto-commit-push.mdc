@@ -1,0 +1,8 @@
+---
+description: このプロジェクトでは、変更を終えたら毎回コミットとプッシュまで行う
+alwaysApply: true
+---
+
+- コード変更が完了したら、確認なしで `git add` → `git commit`（日本語または英語の簡潔なメッセージ）→ `git push origin main` まで行う。
+- UI・3Dモデルに関わる変更は、続けて `npx vercel --prod --yes` で本番へデプロイする（3Dの生成物が変わる場合は先に `node scripts/generate-bag-glb.mjs`）。
+- 応答は日本語で行う。

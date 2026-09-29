@@ -49,6 +49,8 @@ export const MESH_NAMES = [
   'stud-3',
   'zip-tape',
   'zip-teeth',
+  'zip-tape-top',
+  'zip-teeth-top',
   'opening-mouth',
   'frame',
   'magnet-tab',

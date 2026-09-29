@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '../config/contact'
 import type { BagCustomization } from '../types/bag'
+import { createZip } from '../utils/zip'
+import { capturePreviewViews } from '../utils/threeD/previewCapture'
 import { buildInquiryMailtoUrl, buildInquiryText } from '../utils/inquiryText'
 import { GoldDivider } from './illustrations/Decor'
 import { Icon } from './illustrations/icons'
@@ -11,6 +13,34 @@ interface InquirySectionProps {
 
 export function InquirySection({ customization }: InquirySectionProps) {
   const [copied, setCopied] = useState(false)
+  const [photoState, setPhotoState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
+
+  /** プレビューの表・裏・側面・上・下の写真と仕様テキストを ZIP にして保存する */
+  const handleSavePhotos = async () => {
+    setPhotoState('busy')
+    try {
+      const views = await capturePreviewViews()
+      const entries = await Promise.all(
+        views.map(async (v) => ({ name: v.fileName, data: new Uint8Array(await v.blob.arrayBuffer()) })),
+      )
+      entries.push({
+        name: 'spec.txt',
+        data: new TextEncoder().encode(buildInquiryText(customization)),
+      })
+      const url = URL.createObjectURL(createZip(entries))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'desfy-original-preview.zip'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 10000)
+      setPhotoState('done')
+    } catch (e) {
+      console.error('[InquirySection] photo capture failed:', e)
+      setPhotoState('error')
+    }
+  }
 
   const handleCopy = async () => {
     try {
@@ -53,6 +83,15 @@ export function InquirySection({ customization }: InquirySectionProps) {
           >
             問い合わせ内容をコピー
           </button>
+          <button
+            type="button"
+            onClick={handleSavePhotos}
+            disabled={photoState === 'busy'}
+            className="flex items-center justify-center gap-2 rounded-full border border-navy px-6 py-3 text-sm tracking-wide text-navy transition hover:bg-navy hover:text-cream disabled:opacity-60"
+          >
+            <Icon name="bag" size={16} />
+            {photoState === 'busy' ? '写真を作成中…' : 'プレビュー写真を保存（5枚）'}
+          </button>
           <a
             href={`tel:${CONTACT_PHONE_TEL}`}
             className="flex items-center justify-center gap-2 rounded-full border border-gold bg-white px-6 py-3 text-sm tracking-wide text-navy transition hover:bg-gold-light/30"
@@ -64,6 +103,20 @@ export function InquirySection({ customization }: InquirySectionProps) {
         {copied && (
           <p className="mt-4 text-sm text-gold" role="status">
             コピーしました
+          </p>
+        )}
+        <p className="mt-4 text-xs leading-relaxed text-warm-gray">
+          メールにプレビュー写真（表・裏・側面・上・下）を添付する場合は、先に「プレビュー写真を保存」を押して、
+          保存されたZIPをメールに添付してください。
+        </p>
+        {photoState === 'done' && (
+          <p className="mt-2 text-sm text-gold" role="status">
+            ZIPを保存しました。メールに添付してお送りください
+          </p>
+        )}
+        {photoState === 'error' && (
+          <p className="mt-2 text-sm text-red-700" role="alert">
+            写真を作成できませんでした。3Dプレビューが表示されているか確認してください
           </p>
         )}
         <p className="mt-8 text-xs text-warm-gray">

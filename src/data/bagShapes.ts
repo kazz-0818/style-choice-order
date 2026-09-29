@@ -126,7 +126,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 0.7,
     body: 'box',
     taper: { x: 1, z: 1 },
-    handle: { mode: 'single', spread: 0.95, base: 1.5, tilt: 0.4, thick: 1.3 },
+    handle: { mode: 'single', spread: 0.95, base: 2.4, tilt: 0.3, thick: 1, bandW: 0.05, bandT: 0.022 },
   },
   // 横長トート。側面はA字
   tote: {

@@ -195,12 +195,65 @@ function extractPanel(bodyGeo, keep, scale) {
   return g
 }
 
+/**
+ * 本体を高さ [yLo, yHi] の帯で切り抜いたパネル。
+ * 三角形ごとの取捨ではなく、境界の三角形を水平面できれいに切る（ふちがギザギザにならない）。
+ */
+function clipBandPanel(bodyGeo, yLo, yHi, scale) {
+  const src = bodyGeo.index ? bodyGeo.toNonIndexed() : bodyGeo
+  const pos = src.getAttribute('position')
+  const nor = src.getAttribute('normal')
+  const uv = src.getAttribute('uv')
+  const outPos = []
+  const outNor = []
+  const outUv = []
+  const vert = (i) => [
+    pos.getX(i), pos.getY(i), pos.getZ(i),
+    nor.getX(i), nor.getY(i), nor.getZ(i),
+    uv.getX(i), uv.getY(i),
+  ]
+  const lerp = (a, b, t) => a.map((v, k) => v + (b[k] - v) * t)
+  /** 平面 y = level で多角形を切る（keepAbove: y >= level 側を残す） */
+  const clip = (poly, level, keepAbove) => {
+    const out = []
+    for (let i = 0; i < poly.length; i++) {
+      const cur = poly[i]
+      const nxt = poly[(i + 1) % poly.length]
+      const cIn = keepAbove ? cur[1] >= level : cur[1] <= level
+      const nIn = keepAbove ? nxt[1] >= level : nxt[1] <= level
+      if (cIn) out.push(cur)
+      if (cIn !== nIn) out.push(lerp(cur, nxt, (level - cur[1]) / (nxt[1] - cur[1])))
+    }
+    return out
+  }
+  for (let i = 0; i < pos.count; i += 3) {
+    let poly = [vert(i), vert(i + 1), vert(i + 2)]
+    poly = clip(poly, yLo, true)
+    if (poly.length < 3) continue
+    poly = clip(poly, yHi, false)
+    if (poly.length < 3) continue
+    for (let k = 1; k < poly.length - 1; k++) {
+      for (const v of [poly[0], poly[k], poly[k + 1]]) {
+        outPos.push(v[0] * scale, v[1] * scale, v[2] * scale)
+        const l = Math.hypot(v[3], v[4], v[5]) || 1
+        outNor.push(v[3] / l, v[4] / l, v[5] / l)
+        outUv.push(v[6], v[7])
+      }
+    }
+  }
+  const g = new THREE.BufferGeometry()
+  g.setAttribute('position', new THREE.Float32BufferAttribute(outPos, 3))
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(outNor, 3))
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(outUv, 2))
+  return g
+}
+
 /** 左右端（マチ） */
 const sideGeometry = (bodyGeo) =>
   extractPanel(bodyGeo, (cx) => Math.abs(cx) > W / 2 - RX - 0.03, 1.006)
 
 /** 底まわり（底面〜下端の丸み。前後面の下端にも回り込む） */
-const bottomGeometry = (bodyGeo) => extractPanel(bodyGeo, (_cx, cy) => cy < -TOP + 0.2, 1.012)
+const bottomGeometry = (bodyGeo) => clipBandPanel(bodyGeo, -TOP - 1, -TOP + 0.2, 1.012)
 
 // ── 開口部まわり（ファスナー・口金・マグネット） ────────
 const ZIP_L = W - 0.5
@@ -212,6 +265,24 @@ function zipTapeGeometry() {
     box(ZIP_L, 0.09, 0.03, 0, ZIP_Y, -D / 2 - bulgeAt(0, ZIP_Y) + 0.004),
     box(W - 0.35, 0.03, 0.14, 0, TOP, 0),
   ])
+}
+
+/** 天面だけのファスナー（ビジネス／ショルダー／トート用） */
+function zipTapeTopGeometry() {
+  return box(W - 0.35, 0.03, 0.14, 0, TOP, 0)
+}
+
+function zipTeethTopGeometry() {
+  const parts = []
+  const pitch = 0.03
+  const len = W - 0.35
+  const count = Math.floor(len / pitch)
+  for (let i = 0; i < count; i++) {
+    const x = -len / 2 + pitch / 2 + i * pitch
+    const sgn = i % 2 === 0 ? 1 : -1
+    parts.push(box(0.02, 0.018, 0.024, x, TOP + 0.012, sgn * 0.012))
+  }
+  return mergeGeometries(parts)
 }
 
 function zipTeethGeometry() {
@@ -471,7 +542,7 @@ const BELT_HALF = 0.08
 
 /** 本体をぐるっと一周するベルト（本体表面の帯を少し浮かせて抜き出す） */
 const beltGeometry = (bodyGeo) =>
-  extractPanel(bodyGeo, (_cx, cy) => Math.abs(cy - BELT_Y) < BELT_HALF, 1.012)
+  clipBandPanel(bodyGeo, BELT_Y - BELT_HALF, BELT_Y + BELT_HALF, 1.012)
 
 /** ベルトのステッチ（前面・背面の上下ふち） */
 function beltStitchGeometry() {
@@ -580,37 +651,178 @@ function sideRingsGeometry() {
 // ── フラップの形（ショルダーポーチ型） ──────────────
 const FLAP_W = W - 0.44
 
-function flapShapeGeometry(kind) {
+/** 前端（下側）の輪郭：天面から見た深さ（下方向）を x ごとに返す */
+function flapDepthAt(kind, x) {
   const hw = FLAP_W / 2
-  const hh = FLAP_H / 2
-  const shape = new THREE.Shape()
-  shape.moveTo(-hw, hh)
-  shape.lineTo(hw, hh)
+  const ax = Math.abs(x)
   if (kind === 'round') {
     const r = 0.28
-    shape.lineTo(hw, -hh + r)
-    shape.quadraticCurveTo(hw, -hh, hw - r, -hh)
-    shape.lineTo(-hw + r, -hh)
-    shape.quadraticCurveTo(-hw, -hh, -hw, -hh + r)
-  } else if (kind === 'curve') {
-    shape.lineTo(hw, -hh + 0.02)
-    shape.quadraticCurveTo(0, -hh - 0.26, -hw, -hh + 0.02)
-  } else {
-    // point: 中央が尖ったV字
-    shape.lineTo(hw, -hh + 0.1)
-    shape.lineTo(0, -hh - 0.2)
-    shape.lineTo(-hw, -hh + 0.1)
+    const d = hw - ax
+    if (d >= r) return FLAP_H
+    const t = Math.sqrt(Math.max(0, d) / r)
+    return FLAP_H - r * (1 - t) * (1 - t)
   }
-  shape.closePath()
-  const g = new THREE.ExtrudeGeometry(shape, {
-    depth: FLAP_T,
-    bevelEnabled: true,
-    bevelThickness: 0.008,
-    bevelSize: 0.008,
-    bevelSegments: 1,
-    curveSegments: 16,
-  })
-  g.translate(0, 0, -FLAP_T / 2)
+  if (kind === 'curve') {
+    const t = (1 - x / hw) / 2
+    return FLAP_H - 0.02 + 0.56 * t * (1 - t)
+  }
+  if (kind === 'point') return FLAP_H + 0.2 - 0.3 * (ax / hw)
+  return FLAP_H
+}
+
+/**
+ * 天面とつながったフラップ：背面の上部 → 天面 → 前面へ、本体の表面に沿って一枚の革でかぶせる。
+ * 本体と同じ写像（mapToRounded）で表面点を求めるので、丸みやふくらみにも沿う。
+ */
+function flapShapeGeometry(kind) {
+  const hw = FLAP_W / 2
+  const E = 0.04 // 革の厚み（本体表面から外側）
+  const GAP = 0.003
+  const BACK_LEN = 0.42 // 背面へ回り込む長さ
+  const NX = 72
+  const NB = 10
+  const NT = 30
+  const NF = 26
+
+  const surf = (x, y, z) => mapToRounded(x, y, z)
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+  const cross = (a, b) => [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ]
+  const norm = (v) => {
+    const l = Math.hypot(v[0], v[1], v[2]) || 1
+    return [v[0] / l, v[1] / l, v[2] / l]
+  }
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+  const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k]
+
+  // 各列：箱表面上のパス（背面 → 天面 → 前面）
+  const cols = []
+  for (let i = 0; i <= NX; i++) {
+    const x = -hw + (FLAP_W * i) / NX
+    const depth = flapDepthAt(kind, x)
+    const path = []
+    for (let k = 0; k < NB; k++) {
+      const t = k / NB
+      path.push([TOP - BACK_LEN * (1 - Math.sin((Math.PI / 2) * t)), -D / 2])
+    }
+    for (let k = 0; k <= NT; k++) {
+      path.push([TOP, -D / 2 + (D * (1 - Math.cos((Math.PI * k) / NT))) / 2])
+    }
+    for (let k = 1; k <= NF; k++) {
+      const u = k / NF
+      const f = 0.35 * u + 0.65 * (1 - Math.cos((Math.PI * u) / 2))
+      path.push([TOP - depth * f, D / 2])
+    }
+    const P = path.map(([y, z]) => surf(x, y, z))
+    const dx = 0.004
+    const outer = []
+    const inner = []
+    const normals = []
+    const sArr = []
+    let acc = 0
+    for (let j = 0; j < path.length; j++) {
+      const a = P[Math.max(0, j - 1)]
+      const b = P[Math.min(path.length - 1, j + 1)]
+      const ds = sub(b, a)
+      const [y, z] = path[j]
+      const dPdx = sub(surf(x + dx, y, z), surf(x - dx, y, z))
+      const n = norm(cross(ds, dPdx))
+      normals.push(n)
+      outer.push(add(P[j], n, E))
+      inner.push(add(P[j], n, GAP))
+      if (j > 0) acc += Math.hypot(...sub(P[j], P[j - 1]))
+      sArr.push(acc)
+    }
+    cols.push({ x, outer, inner, normals, sArr })
+  }
+
+  const pos = []
+  const nor = []
+  const uv = []
+  const push = (p, n, u, v) => {
+    pos.push(p[0], p[1], p[2])
+    nor.push(n[0], n[1], n[2])
+    uv.push(u, v)
+  }
+  /** 向きを hint に合わせて三角形を追加（法線が指定されていれば頂点法線として使う） */
+  const tri = (a, b, c, hint, ns) => {
+    const fn = cross(sub(b.p, a.p), sub(c.p, a.p))
+    let v = [a, b, c]
+    if (dot(fn, hint) < 0) v = [a, c, b]
+    const flat = norm(fn)
+    const face = dot(fn, hint) < 0 ? [-flat[0], -flat[1], -flat[2]] : flat
+    for (const q of v) push(q.p, ns ? q.n : face, q.u, q.v)
+  }
+  const V = (p, n, u, v) => ({ p, n, u, v })
+
+  const J = cols[0].outer.length
+  // 外面（滑らかな法線）と内面
+  for (let i = 0; i < NX; i++) {
+    for (let j = 0; j < J - 1; j++) {
+      const c0 = cols[i]
+      const c1 = cols[i + 1]
+      const o = [
+        V(c0.outer[j], c0.normals[j], c0.x, c0.sArr[j]),
+        V(c1.outer[j], c1.normals[j], c1.x, c1.sArr[j]),
+        V(c1.outer[j + 1], c1.normals[j + 1], c1.x, c1.sArr[j + 1]),
+        V(c0.outer[j + 1], c0.normals[j + 1], c0.x, c0.sArr[j + 1]),
+      ]
+      const hintO = add(add(c0.normals[j], c1.normals[j]), add(c0.normals[j + 1], c1.normals[j + 1]))
+      tri(o[0], o[1], o[2], hintO, true)
+      tri(o[0], o[2], o[3], hintO, true)
+      const q = [
+        V(c0.inner[j], c0.normals[j].map((t) => -t), c0.x, c0.sArr[j]),
+        V(c1.inner[j], c1.normals[j].map((t) => -t), c1.x, c1.sArr[j]),
+        V(c1.inner[j + 1], c1.normals[j + 1].map((t) => -t), c1.x, c1.sArr[j + 1]),
+        V(c0.inner[j + 1], c0.normals[j + 1].map((t) => -t), c0.x, c0.sArr[j + 1]),
+      ]
+      const hintI = hintO.map((t) => -t)
+      tri(q[0], q[1], q[2], hintI, true)
+      tri(q[0], q[2], q[3], hintI, true)
+    }
+  }
+  const wallV = (c, j, useOuter) =>
+    V(useOuter ? c.outer[j] : c.inner[j], [0, 0, 0], c.x, c.sArr[j])
+  // 左右の縁
+  for (const [c, dir] of [
+    [cols[0], [-1, 0, 0]],
+    [cols[NX], [1, 0, 0]],
+  ]) {
+    for (let j = 0; j < J - 1; j++) {
+      const a = wallV(c, j, true)
+      const b = wallV(c, j + 1, true)
+      const d = wallV(c, j, false)
+      const e = wallV(c, j + 1, false)
+      tri(a, b, e, dir, false)
+      tri(a, e, d, dir, false)
+    }
+  }
+  // 前端（下）と背面側の端
+  for (let i = 0; i < NX; i++) {
+    const c0 = cols[i]
+    const c1 = cols[i + 1]
+    for (const [j, sgn] of [
+      [J - 1, 1],
+      [0, -1],
+    ]) {
+      const jj = sgn > 0 ? J - 2 : 1
+      const tangent = sub(c0.outer[j], c0.outer[jj])
+      const a = wallV(c0, j, true)
+      const b = wallV(c1, j, true)
+      const d = wallV(c0, j, false)
+      const e = wallV(c1, j, false)
+      tri(a, b, e, tangent, false)
+      tri(a, e, d, tangent, false)
+    }
+  }
+
+  const g = new THREE.BufferGeometry()
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3))
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
   return g
 }
 
@@ -634,7 +846,7 @@ function createBagScene() {
 
   const flap = mesh(
     'flap',
-    rbox(W - 0.44, FLAP_H, FLAP_T, 0.02),
+    flapShapeGeometry('square'),
     mat(0x1e2a3a, 0.6, 0.05, 'flap'),
   )
   const pocket = mesh(
@@ -663,6 +875,8 @@ function createBagScene() {
 
   const zipTape = mesh('zip-tape', zipTapeGeometry(), mat(0x222222, 0.8, 0, 'zip-tape'))
   const zipTeeth = mesh('zip-teeth', zipTeethGeometry(), metalMat('zip-teeth'))
+  const zipTapeTop = mesh('zip-tape-top', zipTapeTopGeometry(), mat(0x222222, 0.8, 0, 'zip-tape-top'))
+  const zipTeethTop = mesh('zip-teeth-top', zipTeethTopGeometry(), metalMat('zip-teeth-top'))
   const openingMouth = mesh(
     'opening-mouth',
     box(ZIP_L - 0.2, 0.012, 0.28, 0, TOP, 0),
@@ -750,6 +964,8 @@ function createBagScene() {
     drumZipTeeth,
     zipTape,
     zipTeeth,
+    zipTapeTop,
+    zipTeethTop,
     openingMouth,
     frame,
     magnetTab,

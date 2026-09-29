@@ -55,8 +55,6 @@ export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherPr
                 charm={specs.charm === 'charm' || specs.charm === 'both'}
                 opening={specs.opening}
                 flap={specs.flap}
-                beltWidth={specs.beltWidth}
-                beltStitch={specs.beltStitch}
                 className="mx-auto aspect-square w-full"
               />
             </span>

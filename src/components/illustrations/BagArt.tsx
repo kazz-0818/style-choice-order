@@ -26,10 +26,6 @@ interface BagArtProps {
   opening?: string
   /** フラップの形（square / round / curve / point）— ショルダーポーチ型 */
   flap?: string
-  /** ベルトの太さ（thin / standard / thick）— トップハンドル型 */
-  beltWidth?: string
-  /** ベルトのステッチ（stitch / none） */
-  beltStitch?: string
   /** 線の色（紺地の上では金色を指定） */
   lineColor?: string
   /** 紙の色（塗りの既定色） */
@@ -86,8 +82,6 @@ export function BagArt({
   charm = false,
   opening,
   flap = 'square',
-  beltWidth = 'standard',
-  beltStitch = 'stitch',
   lineColor = NAVY,
   paper = PAPER,
   className,
@@ -153,11 +147,7 @@ export function BagArt({
     else if (isPouch) bodyPath = trapezoid(x0, y0, pw, ph, tx, 3, 2.5)
     else bodyPath = trapezoid(x0, y0, pw, ph, tx, 2.5, 1.5)
 
-    const beltK = beltWidth === 'thin' ? 0.6 : beltWidth === 'thick' ? 1.45 : 1
-    const beltH = ph * 0.1 * beltK
     const beltC = ph * 0.175
-    const bt = beltC - beltH / 2
-    const bb = beltC + beltH / 2
 
     content = (
       <g {...common}>
@@ -190,20 +180,9 @@ export function BagArt({
             {front && <circle cx={cx} cy={y0 + ph * 0.34} r={2.4} stroke={metalColor} fill={paper} />}
           </>
         )}
-        {/* トップハンドル：本体を一周するベルト */}
+        {/* トップハンドル：ターンロック（ベルトなし） */}
         {isTopHandle && (
           <>
-            <path
-              d={`M${edgeL(bt / ph)} ${y0 + bt}H${edgeR(bt / ph)}L${edgeR(bb / ph)} ${y0 + bb}H${edgeL(bb / ph)}Z`}
-              fill={handleColor}
-              strokeWidth={1}
-            />
-            {beltStitch !== 'none' && (
-              <>
-                <path d={`M${edgeL(bt / ph) + 1.5} ${y0 + bt + 1.2}H${edgeR(bt / ph) - 1.5}`} stroke={paper} strokeWidth={0.6} strokeDasharray="1.6 1.4" />
-                <path d={`M${edgeL(bb / ph) + 1.5} ${y0 + bb - 1.2}H${edgeR(bb / ph) - 1.5}`} stroke={paper} strokeWidth={0.6} strokeDasharray="1.6 1.4" />
-              </>
-            )}
             {front && <rect x={cx - 3.4} y={y0 + beltC - 2.6} width={6.8} height={5.2} rx={1.4} stroke={metalColor} fill={paper} strokeWidth={1.4} />}
             {isZip && <path d={`M${edgeL(0.06) + 3} ${y0 + 3}H${edgeR(0.06) - 3}`} stroke={metalColor} strokeWidth={1.1} strokeDasharray="1 1.2" />}
           </>

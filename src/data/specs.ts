@@ -57,7 +57,7 @@ const TEMPLATE_STEPS: Record<BagTemplateId, StepId[]> = {
   'mini-boston': ['silhouette', 'opening', 'handle', 'lock', 'charm'],
   shoulder: ['silhouette', 'opening', 'handle', 'strap', 'bottom'],
   tote: ['silhouette', 'opening', 'handle', 'pocket', 'studs'],
-  'top-handle': ['silhouette', 'opening', 'handle', 'lock', 'belt', 'studs'],
+  'top-handle': ['silhouette', 'opening', 'handle', 'lock', 'studs'],
 }
 
 function openingGroup(t: BagTemplateId): SpecGroup {

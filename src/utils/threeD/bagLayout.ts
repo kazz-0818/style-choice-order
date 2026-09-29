@@ -202,7 +202,8 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
 
   // ── ベルト（トップハンドル） ─────────────
   const beltK = BELT_WIDTH[specs.beltWidth ?? 'standard'] ?? 1
-  const beltVisible = isTopHandle
+  // トップハンドル型は横ベルト（帯）なし
+  const beltVisible = false
   const beltStitchVisible = beltVisible && specs.beltStitch !== 'none'
   const beltLayout = {
     pos: [0, BELT_Y * sy * (1 - beltK), 0] as [number, number, number],

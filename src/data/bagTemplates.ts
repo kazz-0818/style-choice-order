@@ -6,7 +6,7 @@ export const BAG_TEMPLATES: BagTemplate[] = [
     id: 'top-handle',
     name: 'トップハンドルバッグ型',
     nameEn: 'Top Handle Bag',
-    description: '台形の端正なフォルムに、ベルトとターンロック。持ち手の長さやベルト仕様まで設計。',
+    description: '台形の端正なフォルムに、ターンロック。持ち手の長さまで設計。',
   },
   {
     id: 'business',

@@ -1,4 +1,10 @@
-export type BagTemplateId = 'tote' | 'mini-hand' | 'shoulder'
+export type BagTemplateId =
+  | 'business'
+  | 'boston'
+  | 'shoulder-pouch'
+  | 'mini-boston'
+  | 'shoulder'
+  | 'tote'
 
 export type BagLayer = 'body' | 'handle' | 'side' | 'bottom' | 'metal' | 'accent'
 
@@ -14,16 +20,14 @@ export interface ColorOption {
 export interface BagTemplate {
   id: BagTemplateId
   name: string
+  nameEn: string
   description: string
-  basePrice: number
-  availableParts: string[]
 }
 
 export interface PartOption {
   id: string
   name: string
   description?: string
-  priceModifier: number
   /** 金具カラー選択時に metal レイヤーへ反映する色ID */
   metalColorId?: string
 }
@@ -37,12 +41,44 @@ export interface LayerColors {
   accent: string
 }
 
+/** 本体サイズ（標準を100とした％。高さ・幅・マチ） */
+export interface BagSize {
+  height: number
+  width: number
+  gusset: number
+}
+
+/** 提案書に記載されたカスタマイズ項目のキー */
+export type SpecKey =
+  | 'opening'
+  | 'puller'
+  | 'handle'
+  | 'pocket'
+  | 'inner'
+  | 'lock'
+  | 'studs'
+  | 'studColor'
+  | 'flap'
+  | 'piping'
+  | 'clasp'
+  | 'charm'
+  | 'charmDesign'
+  | 'chainLength'
+  | 'strapWidth'
+  | 'strapHook'
+  | 'strapAdjust'
+  | 'bottomPanel'
+  | 'reinforce'
+  | 'logo'
+
+export type BagSpecs = Partial<Record<SpecKey, string>>
+
 export interface BagCustomization {
   templateId: BagTemplateId
   materialId: string
-  handleTypeId: string
   hardwareColorId: string
-  decorationId: string
+  size: BagSize
+  specs: BagSpecs
   layerColors: LayerColors
 }
 
@@ -53,7 +89,7 @@ export interface LayerMeta {
 
 export const BAG_LAYERS: LayerMeta[] = [
   { id: 'body', label: '本体' },
-  { id: 'handle', label: '取手' },
+  { id: 'handle', label: '持ち手' },
   { id: 'side', label: 'サイド' },
   { id: 'bottom', label: '底' },
   { id: 'metal', label: '金具' },
@@ -61,19 +97,15 @@ export const BAG_LAYERS: LayerMeta[] = [
 ]
 
 export const DEFAULT_LAYER_COLORS: LayerColors = {
-  body: 'black',
+  body: 'navy',
   handle: 'brown',
-  side: 'black',
+  side: 'navy',
   bottom: 'dark-brown',
   metal: 'gold',
   accent: 'beige',
 }
 
-export const DEFAULT_CUSTOMIZATION: BagCustomization = {
-  templateId: 'tote',
-  materialId: 'smooth-leather',
-  handleTypeId: 'tote-long',
-  hardwareColorId: 'gold',
-  decorationId: 'none',
-  layerColors: { ...DEFAULT_LAYER_COLORS },
-}
+export const SIZE_MIN = 80
+export const SIZE_MAX = 130
+export const SIZE_STEP = 5
+export const DEFAULT_SIZE: BagSize = { height: 100, width: 100, gusset: 100 }

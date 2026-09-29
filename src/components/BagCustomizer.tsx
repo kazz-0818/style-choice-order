@@ -1,16 +1,24 @@
-import { StepCard } from './StepCard'
-import { ThreeDBagPreview } from './ThreeDBagPreview'
+import { useState, type ReactNode } from 'react'
 import { ColorSelector } from './ColorSelector'
+import { HardwareSelector } from './HardwareSelector'
+import { MaterialSelector } from './MaterialSelector'
 import { OptionSummary } from './OptionSummary'
-import { PartOptionGroup, DECORATIONS, HARDWARE_COLORS, MATERIALS } from './PartSelector'
+import { SilhouetteStep } from './SilhouetteStep'
+import { SpecStepView } from './SpecStepView'
+import { StepCard } from './StepCard'
 import { TemplateSelector } from './TemplateSelector'
-import {
-  getHandleStepLabel,
-  getHandlesForTemplate,
-  hardwareMap,
-  resolveHandleForTemplate,
-} from '../data/parts'
-import type { BagCustomization, BagLayer, BagTemplateId } from '../types/bag'
+import { ThreeDBagPreview, type ViewRequest } from './ThreeDBagPreview'
+import { ViewSwitcher } from './ViewSwitcher'
+import { GoldDivider } from './illustrations/Decor'
+import { hardwareMap } from '../data/parts'
+import { getLogoStep, getStepsForTemplate, resolveSpecsForTemplate } from '../data/specs'
+import type {
+  BagCustomization,
+  BagLayer,
+  BagSize,
+  BagTemplateId,
+  SpecKey,
+} from '../types/bag'
 
 interface BagCustomizerProps {
   customization: BagCustomization
@@ -19,15 +27,37 @@ interface BagCustomizerProps {
   onActiveLayerChange: (layer: BagLayer) => void
 }
 
+const STEP_WRAP =
+  'box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full'
+
+function StepSlot({ children }: { children: ReactNode }) {
+  return (
+    <div className={STEP_WRAP}>
+      <StepCard>{children}</StepCard>
+    </div>
+  )
+}
+
 export function BagCustomizer({
   customization,
   activeLayer,
   onCustomizationChange,
   onActiveLayerChange,
 }: BagCustomizerProps) {
+  const [viewRequest, setViewRequest] = useState<ViewRequest>({ view: 'front', nonce: 0 })
+
   const update = (partial: Partial<BagCustomization>) => {
     onCustomizationChange({ ...customization, ...partial })
   }
+
+  const updateSpec = (key: SpecKey, optionId: string) => {
+    onCustomizationChange({
+      ...customization,
+      specs: { ...customization.specs, [key]: optionId },
+    })
+  }
+
+  const updateSize = (size: BagSize) => update({ size })
 
   const updateLayerColor = (layer: BagLayer, colorId: string) => {
     onCustomizationChange({
@@ -40,12 +70,10 @@ export function BagCustomizer({
     onCustomizationChange({
       ...customization,
       templateId: id,
-      handleTypeId: resolveHandleForTemplate(id, customization.handleTypeId),
+      specs: resolveSpecsForTemplate(id, customization.specs),
     })
+    setViewRequest((prev) => ({ view: 'front', nonce: prev.nonce + 1 }))
   }
-
-  const templateHandles = getHandlesForTemplate(customization.templateId)
-  const handleStepLabel = getHandleStepLabel(customization.templateId)
 
   const handleHardwareChange = (id: string) => {
     const metalColorId = hardwareMap[id]?.metalColorId
@@ -58,13 +86,20 @@ export function BagCustomizer({
     })
   }
 
+  const templateSteps = getStepsForTemplate(customization.templateId)
+  const logoStep = getLogoStep()
+
+  // ステップ番号は表示順に採番
+  let stepNo = 0
+  const next = () => ++stepNo
+
   const customizerIntro = (
     <>
-      <h2 className="font-serif text-2xl font-light text-charcoal sm:text-3xl">
+      <h2 className="font-serif text-2xl font-light text-navy sm:text-3xl">
         バッグをカスタマイズ
       </h2>
       <p className="mt-2 text-sm text-warm-gray sm:mt-3">
-        型・パーツ・カラーを選び、プレビューで完成イメージをご確認ください。
+        型・サイズ・素材・パーツを選び、プレビューで完成イメージをご確認ください。
       </p>
     </>
   )
@@ -72,24 +107,28 @@ export function BagCustomizer({
   return (
     <section
       id="customizer"
-      className="scroll-mt-[4.5rem] border-b border-stone bg-cream py-10 sm:scroll-mt-24 sm:py-20"
+      className="border-b border-stone bg-cream py-10 sm:py-16"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
 
         <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2 lg:gap-12">
           <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:self-start">
-            <div className="mb-6 hidden max-w-2xl lg:block">{customizerIntro}</div>
-            <div className="relative mx-auto w-full max-w-[240px] sm:max-w-none">
-              <ThreeDBagPreview customization={customization} />
+            <div className="mb-5 hidden max-w-2xl lg:block">{customizerIntro}</div>
+            <div className="relative mx-auto w-full max-w-[280px] sm:max-w-none">
+              <ThreeDBagPreview customization={customization} viewRequest={viewRequest} />
+              <ViewSwitcher
+                customization={customization}
+                active={viewRequest.view}
+                onSelect={(view) =>
+                  setViewRequest((prev) => ({ view, nonce: prev.nonce + 1 }))
+                }
+              />
             </div>
           </div>
 
           <div className="order-2 min-w-0 w-full overflow-hidden">
-            <div
-              className="mb-6 hidden max-w-2xl lg:block lg:invisible"
-              aria-hidden="true"
-            >
+            <div className="mb-5 hidden max-w-2xl lg:invisible lg:block" aria-hidden="true">
               {customizerIntro}
             </div>
             <p className="mb-2 flex items-center justify-center gap-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
@@ -101,83 +140,78 @@ export function BagCustomizer({
                 →
               </span>
             </p>
-            <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-10 sm:overflow-visible sm:pb-0">
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <TemplateSelector
-                    step={1}
-                    value={customization.templateId}
-                    onChange={handleTemplateChange}
-                  />
-                </StepCard>
-              </div>
+            <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-8 sm:overflow-visible sm:pb-0">
+              <StepSlot>
+                <TemplateSelector
+                  step={next()}
+                  value={customization.templateId}
+                  onChange={handleTemplateChange}
+                />
+              </StepSlot>
 
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <PartOptionGroup
-                    step={2}
-                    label="本体素材"
-                    options={MATERIALS}
-                    value={customization.materialId}
-                    onChange={(id) => update({ materialId: id })}
-                  />
-                </StepCard>
-              </div>
+              <StepSlot>
+                <MaterialSelector
+                  step={next()}
+                  value={customization.materialId}
+                  onChange={(id) => update({ materialId: id })}
+                />
+              </StepSlot>
 
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <PartOptionGroup
-                    step={3}
-                    label={handleStepLabel}
-                    options={templateHandles}
-                    value={customization.handleTypeId}
-                    onChange={(id) => update({ handleTypeId: id })}
-                  />
-                </StepCard>
-              </div>
+              {templateSteps.map((spec) =>
+                spec.id === 'silhouette' ? (
+                  <StepSlot key={`${customization.templateId}-${spec.id}`}>
+                    <SilhouetteStep
+                      step={next()}
+                      spec={spec}
+                      templateId={customization.templateId}
+                      size={customization.size}
+                      onChange={updateSize}
+                    />
+                  </StepSlot>
+                ) : (
+                  <StepSlot key={`${customization.templateId}-${spec.id}`}>
+                    <SpecStepView
+                      step={next()}
+                      spec={spec}
+                      specs={customization.specs}
+                      onSelect={updateSpec}
+                    />
+                  </StepSlot>
+                ),
+              )}
 
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <PartOptionGroup
-                    step={4}
-                    label="金具カラー"
-                    options={HARDWARE_COLORS}
-                    value={customization.hardwareColorId}
-                    onChange={handleHardwareChange}
-                  />
-                </StepCard>
-              </div>
+              <StepSlot>
+                <HardwareSelector
+                  step={next()}
+                  value={customization.hardwareColorId}
+                  onChange={handleHardwareChange}
+                />
+              </StepSlot>
 
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <PartOptionGroup
-                    step={5}
-                    label="装飾オプション"
-                    options={DECORATIONS}
-                    value={customization.decorationId}
-                    onChange={(id) => update({ decorationId: id })}
-                  />
-                </StepCard>
-              </div>
+              <StepSlot>
+                <SpecStepView
+                  step={next()}
+                  spec={logoStep}
+                  specs={customization.specs}
+                  onSelect={updateSpec}
+                />
+              </StepSlot>
 
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <ColorSelector
-                    step={6}
-                    activeLayer={activeLayer}
-                    layerColors={customization.layerColors}
-                    onLayerChange={onActiveLayerChange}
-                    onColorSelect={updateLayerColor}
-                  />
-                </StepCard>
-              </div>
+              <StepSlot>
+                <ColorSelector
+                  step={next()}
+                  activeLayer={activeLayer}
+                  layerColors={customization.layerColors}
+                  onLayerChange={onActiveLayerChange}
+                  onColorSelect={updateLayerColor}
+                />
+              </StepSlot>
 
-              <div className="box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full">
-                <StepCard>
-                  <OptionSummary step={7} customization={customization} bare />
-                </StepCard>
-              </div>
+              <StepSlot>
+                <OptionSummary step={next()} customization={customization} bare />
+              </StepSlot>
             </div>
+            <GoldDivider className="mt-8 hidden sm:flex" />
           </div>
         </div>
       </div>

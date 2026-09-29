@@ -20,24 +20,34 @@ export function ColorSelector({
   return (
     <div className="space-y-3 sm:space-y-4">
       {step && (
-        <StepTitle step={step}>カラー</StepTitle>
+        <StepTitle
+          step={step}
+          icon="palette"
+          lead="パーツごとにカラーを変えて、配色を確かめられます。"
+        >
+          カラー
+        </StepTitle>
       )}
       <div>
-        <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
+        <h4 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
           編集するパーツ
-        </h3>
+        </h4>
         <div className="mt-2 flex flex-wrap gap-1.5 sm:mt-3 sm:gap-2">
           {BAG_LAYERS.map((layer) => (
             <button
               key={layer.id}
               type="button"
               onClick={() => onLayerChange(layer.id)}
-              className={`rounded-full px-2 py-1 text-[10px] transition sm:px-3 sm:py-1.5 sm:text-xs ${
+              className={`flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1.5 text-[11px] transition sm:text-xs ${
                 activeLayer === layer.id
-                  ? 'bg-kogicha text-cream'
+                  ? 'bg-navy text-cream'
                   : 'border border-stone bg-white text-warm-gray hover:border-gold'
               }`}
             >
+              <span
+                className="h-3.5 w-3.5 rounded-full border border-charcoal/20"
+                style={{ backgroundColor: COLORS.find((c) => c.id === layerColors[layer.id])?.hex }}
+              />
               {layer.label}
             </button>
           ))}
@@ -45,9 +55,9 @@ export function ColorSelector({
       </div>
 
       <div>
-        <h3 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
+        <h4 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
           カラー — {BAG_LAYERS.find((l) => l.id === activeLayer)?.label}
-        </h3>
+        </h4>
         <div className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-3 sm:grid-cols-6 sm:gap-2">
           {COLORS.map((color) => {
             const selected = layerColors[activeLayer] === color.id
@@ -65,9 +75,7 @@ export function ColorSelector({
                   className="h-6 w-6 rounded-full border border-charcoal/10 shadow-sm transition group-hover:scale-105 sm:h-8 sm:w-8"
                   style={{ backgroundColor: color.hex }}
                 />
-                <span className="max-w-full truncate text-[10px] text-warm-gray">
-                  {color.name}
-                </span>
+                <span className="max-w-full truncate text-[10px] text-warm-gray">{color.name}</span>
               </button>
             )
           })}

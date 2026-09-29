@@ -1,25 +1,29 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-cream: #f7f4ef;
-  --color-stone: #e8e2d9;
-  --color-charcoal: #1a1a1a;
-  --color-warm-gray: #6b6560;
-  --color-gold: #b8956a;
-  --color-gold-light: #d4bc96;
-  --color-brown-deep: #3d2f26;
   --color-kogicha: #523a2c;
   --color-kogicha-dark: #3d2c22;
+  --color-cream: #faf8f3;
+  --color-stone: #e6dfd0;
+  --color-charcoal: #1b2236;
+  --color-warm-gray: #5d6577;
+  --color-gold: #b8923f;
+  --color-gold-light: #dcc38a;
+  --color-navy: #1a2d4b;
+  --color-navy-dark: #0f1e36;
+  --color-navy-soft: #2a4066;
+  --font-serif:
+    'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', ui-serif, Georgia, serif;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4.5rem;
+  scroll-padding-top: 4rem;
 }
 
 @media (min-width: 640px) {
   html {
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 4.5rem;
   }
 }
 
@@ -31,6 +35,30 @@ body {
   -webkit-font-smoothing: antialiased;
   background-color: var(--color-cream);
   color: var(--color-charcoal);
+}
+
+/* 提案書風の方眼背景 */
+.art-grid {
+  background-color: #fbf9f4;
+  background-image:
+    linear-gradient(rgba(26, 45, 75, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 45, 75, 0.06) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* 紺地に金枠の表紙風 */
+.cover-navy {
+  background-color: var(--color-navy-dark);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(255, 255, 255, 0.06), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(197, 160, 89, 0.08), transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.015) 0,
+      rgba(255, 255, 255, 0.015) 2px,
+      transparent 2px,
+      transparent 6px
+    );
 }
 
 .customizer-steps {
@@ -62,17 +90,6 @@ body {
   border-radius: inherit;
 }
 
-.three-d-model-viewer {
-  --poster-color: transparent;
-  --progress-bar-color: #b8956a;
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 280px;
-  border-radius: 1rem;
-  background: linear-gradient(to bottom, #ffffff, rgba(232, 226, 217, 0.2));
-}
-
 .three-d-canvas {
   display: block !important;
   width: 100% !important;
@@ -84,244 +101,38 @@ body {
 }
 
 @media (min-width: 640px) {
-  .three-d-model-viewer,
   .three-d-canvas {
     min-height: 420px;
   }
 }
 
-.three-d-scene__stage {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-perspective: 900px;
-  perspective: 900px;
-}
-
-.three-d-scene__object {
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-  transition: transform 0.05s linear;
-}
-
-.three-d-bag {
-  position: relative;
-  width: 88px;
-  height: 104px;
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-}
-
-@media (min-width: 640px) {
-  .three-d-bag {
-    width: 108px;
-    height: 128px;
-  }
-}
-
-.three-d-bag__face {
-  position: absolute;
-  border: 1px solid rgba(26, 26, 26, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-.three-d-bag__face--front,
-.three-d-bag__face--back {
-  width: 88px;
-  height: 104px;
-}
-
-@media (min-width: 640px) {
-  .three-d-bag__face--front,
-  .three-d-bag__face--back {
-    width: 108px;
-    height: 128px;
-  }
-}
-
-.three-d-bag__face--left,
-.three-d-bag__face--right {
-  width: 36px;
-  height: 104px;
-  left: 26px;
-}
-
-@media (min-width: 640px) {
-  .three-d-bag__face--left,
-  .three-d-bag__face--right {
-    width: 44px;
-    height: 128px;
-    left: 32px;
-  }
-}
-
-.three-d-bag__face--top,
-.three-d-bag__face--bottom {
-  width: 88px;
-  height: 36px;
-  left: 0;
-}
-
-@media (min-width: 640px) {
-  .three-d-bag__face--top,
-  .three-d-bag__face--bottom {
-    width: 108px;
-    height: 44px;
-  }
-}
-
-.three-d-bag__face--front {
-  transform: translateZ(18px);
-}
-
-.three-d-bag__face--back {
-  transform: rotateY(180deg) translateZ(18px);
-}
-
-.three-d-bag__face--left {
-  transform: rotateY(-90deg) translateZ(44px);
-}
-
-.three-d-bag__face--right {
-  transform: rotateY(90deg) translateZ(44px);
-}
-
-@media (min-width: 640px) {
-  .three-d-bag__face--front {
-    transform: translateZ(22px);
-  }
-
-  .three-d-bag__face--back {
-    transform: rotateY(180deg) translateZ(22px);
-  }
-
-  .three-d-bag__face--left {
-    transform: rotateY(-90deg) translateZ(54px);
-  }
-
-  .three-d-bag__face--right {
-    transform: rotateY(90deg) translateZ(54px);
-  }
-}
-
-.three-d-bag__face--top {
-  top: 0;
-  transform: rotateX(90deg) translateZ(0);
-}
-
-.three-d-bag__face--bottom {
-  bottom: 0;
-  transform: rotateX(-90deg) translateZ(104px);
-}
-
-@media (min-width: 640px) {
-  .three-d-bag__face--bottom {
-    transform: rotateX(-90deg) translateZ(128px);
-  }
-}
-
-.three-d-bag__handle {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  width: 56px;
-  height: 14px;
-  margin-left: -28px;
-  border-radius: 999px;
-  transform: translateZ(24px);
-  box-shadow: 0 6px 14px rgba(26, 26, 26, 0.15);
-}
-
-.three-d-bag__metal {
-  position: absolute;
-  bottom: 18px;
-  left: 50%;
-  width: 32px;
+/* スライダー（本体シルエット） */
+input[type='range'].size-range {
+  -webkit-appearance: none;
+  appearance: none;
   height: 4px;
-  margin-left: -16px;
+  width: 100%;
   border-radius: 999px;
-  transform: translateZ(26px);
+  background: linear-gradient(to right, var(--color-gold) var(--fill, 50%), var(--color-stone) var(--fill, 50%));
+  outline: none;
 }
 
-.three-d-bag__face--accent {
-  width: 88px;
-  height: 82px;
-  left: 0;
-  top: 10px;
-  transform: translateZ(18px);
+input[type='range'].size-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--color-navy);
+  border: 2px solid var(--color-gold);
+  cursor: pointer;
 }
 
-.three-d-bag.handle-tote-long .three-d-bag__handle,
-.three-d-bag.handle-shoulder-standard .three-d-bag__handle,
-.three-d-bag.handle-shoulder-wide .three-d-bag__handle {
-  width: 64px;
+input[type='range'].size-range::-moz-range-thumb {
+  width: 16px;
   height: 16px;
-  top: -22px;
-}
-
-.three-d-bag.handle-tote-rope .three-d-bag__handle {
-  width: 48px;
-  height: 12px;
-  top: -16px;
-}
-
-.three-d-bag.handle-shoulder-standard .three-d-bag__handle,
-.three-d-bag.handle-shoulder-wide .three-d-bag__handle,
-.three-d-bag.handle-shoulder-chain .three-d-bag__handle {
-  width: 72px;
-  top: -8px;
-  transform: translateZ(24px) rotateZ(28deg);
-}
-
-.three-d-bag.handle-mini-chain .three-d-bag__handle,
-.three-d-bag.handle-shoulder-chain .three-d-bag__handle {
-  height: 10px;
-  box-shadow: 0 0 8px rgba(184, 149, 106, 0.45);
-}
-
-.three-d-bag.handle-mini-bow .three-d-bag__handle {
-  width: 68px;
-  height: 12px;
-  top: -14px;
-}
-
-.three-d-bag.material-canvas .three-d-bag__face,
-.three-d-bag.material-nylon-like .three-d-bag__face {
-  box-shadow: none;
-}
-
-.three-d-bag.material-textured-leather .three-d-bag__face--front {
-  background-image: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(0, 0, 0, 0.06) 100%
-  ) !important;
-  background-blend-mode: overlay;
-}
-
-.three-d-bag.template-mini-hand {
-  transform: scale(0.82);
-}
-
-.three-d-bag.template-shoulder {
-  transform: scale(0.94);
-}
-
-.three-d-bag.decoration-stitch-accent .three-d-bag__face--accent {
-  height: 6px;
-  top: 48px;
-}
-
-.three-d-bag.decoration-front-pocket .three-d-bag__face--accent {
-  opacity: 0.95;
-}
-
-.three-d-bag.decoration-charm .three-d-bag__face--accent {
-  width: 28px;
-  height: 28px;
   border-radius: 999px;
-  top: 56px;
-  left: 52px;
+  background: var(--color-navy);
+  border: 2px solid var(--color-gold);
+  cursor: pointer;
 }

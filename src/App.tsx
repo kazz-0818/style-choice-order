@@ -7,22 +7,28 @@ import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { InquirySection } from './components/InquirySection'
 import { OrderFlow } from './components/OrderFlow'
-import {
-  DEFAULT_CUSTOMIZATION,
-  type BagCustomization,
-  type BagLayer,
-} from './types/bag'
+import { createDefaultCustomization } from './data/defaults'
+import { resolveSpecsForTemplate } from './data/specs'
+import type { BagCustomization, BagLayer, BagTemplateId } from './types/bag'
 
 function App() {
   const [customization, setCustomization] =
-    useState<BagCustomization>(DEFAULT_CUSTOMIZATION)
+    useState<BagCustomization>(() => createDefaultCustomization())
   const [activeLayer, setActiveLayer] = useState<BagLayer>('body')
+
+  const handleSelectTemplate = (id: BagTemplateId) => {
+    setCustomization((prev) => ({
+      ...prev,
+      templateId: id,
+      specs: resolveSpecsForTemplate(id, prev.specs),
+    }))
+  }
 
   return (
     <div className="min-h-screen bg-cream text-charcoal">
       <Header />
       <main>
-        <Hero />
+        <Hero onSelectTemplate={handleSelectTemplate} />
         <Features />
         <BagCustomizer
           customization={customization}

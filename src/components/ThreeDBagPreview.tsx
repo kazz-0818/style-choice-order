@@ -1,9 +1,12 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
+import { PMREMGenerator } from 'three'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import {
   Component,
   Suspense,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -11,17 +14,29 @@ import {
 } from 'react'
 import { getColorHex } from '../data/colors'
 import type { BagCustomization } from '../types/bag'
-import { isChainHandleId } from '../data/handlesByTemplate'
-import { getPreviewCssModifiers, getPreviewVisualConfig } from '../utils/preview/previewVisualConfig'
-import { MESH_LAYER_NAMES } from '../utils/threeD/modelConfig'
+import { BagArt, type BagView } from './illustrations/BagArt'
 import { BagModel } from './three/BagModel'
+
+export interface ViewRequest {
+  view: BagView
+  nonce: number
+}
 
 export interface ThreeDBagPreviewProps {
   customization: BagCustomization
+  viewRequest: ViewRequest
 }
 
 const FRAME_CLASS =
-  'three-d-preview-frame relative mx-auto w-full max-w-[240px] rounded-2xl border border-stone bg-gradient-to-b from-[#faf8f5] via-white to-stone/50 shadow-[0_20px_60px_rgba(26,26,26,0.06)] sm:max-w-none'
+  'three-d-preview-frame relative mx-auto w-full max-w-[240px] rounded-2xl border border-stone bg-gradient-to-b from-[#fbf9f4] via-white to-stone/50 shadow-[0_20px_60px_rgba(26,45,75,0.08)] sm:max-w-none'
+
+const CAMERA_POSITIONS: Record<BagView, [number, number, number]> = {
+  front: [0, 1.5, 5.2],
+  back: [0, 1.5, -5.2],
+  side: [5.5, 0.4, 0],
+  top: [0, 5.6, 0.001],
+  bottom: [0, -5.6, 0.001],
+}
 
 class GlbErrorBoundary extends Component<
   { children: ReactNode; onError: () => void },
@@ -44,112 +59,23 @@ class GlbErrorBoundary extends Component<
   }
 }
 
-function ColorSwatchRow({ customization }: { customization: BagCustomization }) {
-  return (
-    <div className="mt-4 flex flex-wrap justify-center gap-2">
-      {MESH_LAYER_NAMES.map((name) => (
-        <span
-          key={name}
-          title={name}
-          className="h-4 w-4 rounded-full border border-charcoal/10 shadow-sm sm:h-5 sm:w-5"
-          style={{ backgroundColor: getColorHex(customization.layerColors[name]) }}
-        />
-      ))}
-    </div>
-  )
-}
-
-function Css3dBagScene({ customization }: { customization: BagCustomization }) {
-  const dragRef = useRef({ active: false, startX: 0, startY: 0, rotX: -12, rotY: 24 })
-  const [rotation, setRotation] = useState({ x: -12, y: 24 })
-  const visual = getPreviewVisualConfig(customization)
-  const cssMods = getPreviewCssModifiers(customization)
-  const { layerColors } = customization
-
-  const onPointerDown = useCallback((event: React.PointerEvent) => {
-    dragRef.current = {
-      ...dragRef.current,
-      active: true,
-      startX: event.clientX,
-      startY: event.clientY,
-      rotX: rotation.x,
-      rotY: rotation.y,
-    }
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }, [rotation.x, rotation.y])
-
-  const onPointerMove = useCallback((event: React.PointerEvent) => {
-    if (!dragRef.current.active) return
-    const dx = event.clientX - dragRef.current.startX
-    const dy = event.clientY - dragRef.current.startY
-    setRotation({
-      x: Math.max(-35, Math.min(35, dragRef.current.rotX - dy * 0.35)),
-      y: dragRef.current.rotY + dx * 0.45,
-    })
-  }, [])
-
-  const onPointerUp = useCallback((event: React.PointerEvent) => {
-    dragRef.current.active = false
-    event.currentTarget.releasePointerCapture(event.pointerId)
-  }, [])
-
-  return (
-    <div
-      className="three-d-scene relative h-44 w-full cursor-grab touch-none select-none active:cursor-grabbing sm:h-48"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-    >
-      <div className="three-d-scene__stage">
-        <div
-          className="three-d-scene__object"
-          style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}
-        >
-          <div
-            className={['three-d-bag', ...cssMods].join(' ')}
-            style={{ transform: `scale(${visual.templateScale})` }}
-          >
-            <div className="three-d-bag__face three-d-bag__face--front" style={{ background: getColorHex(layerColors.body) }} />
-            <div className="three-d-bag__face three-d-bag__face--back" style={{ background: getColorHex(layerColors.side) }} />
-            <div className="three-d-bag__face three-d-bag__face--left" style={{ background: getColorHex(layerColors.side) }} />
-            <div className="three-d-bag__face three-d-bag__face--right" style={{ background: getColorHex(layerColors.side) }} />
-            <div className="three-d-bag__face three-d-bag__face--bottom" style={{ background: getColorHex(layerColors.bottom) }} />
-            <div className="three-d-bag__face three-d-bag__face--top" style={{ background: getColorHex(layerColors.accent) }} />
-            {visual.meshes.accent.visible && (
-              <div
-                className="three-d-bag__face three-d-bag__face--accent"
-                style={{
-                  background: visual.accentUsesMetal
-                    ? getColorHex(layerColors.metal)
-                    : getColorHex(layerColors.accent),
-                }}
-              />
-            )}
-            <div
-              className="three-d-bag__handle"
-              style={{
-                background: isChainHandleId(customization.handleTypeId)
-                  ? `linear-gradient(135deg, ${getColorHex(layerColors.metal)}, ${getColorHex(layerColors.handle)})`
-                  : getColorHex(layerColors.handle),
-              }}
-            />
-            <div className="three-d-bag__metal" style={{ background: getColorHex(layerColors.metal) }} />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
+/** 3D が使えない環境向けのイラスト表示 */
 function PreviewFallback({ customization }: { customization: BagCustomization }) {
+  const { layerColors, specs } = customization
   return (
-    <div className={`${FRAME_CLASS} overflow-hidden p-4 sm:p-8`}>
-      <div className="relative flex w-full flex-col items-center px-2 pt-6 text-center">
-        <Css3dBagScene customization={customization} />
-        <p className="mt-3 font-serif text-sm text-charcoal">カラーイメージ</p>
-        <ColorSwatchRow customization={customization} />
-      </div>
+    <div className={`${FRAME_CLASS} flex items-center justify-center overflow-hidden p-4 sm:p-8`}>
+      <BagArt
+        type={customization.templateId}
+        size={customization.size}
+        fills={{
+          body: getColorHex(layerColors.body),
+          handle: getColorHex(layerColors.handle),
+          metal: getColorHex(layerColors.metal),
+          accent: getColorHex(layerColors.accent),
+        }}
+        charm={specs.charm === 'charm' || specs.charm === 'both'}
+        className="h-full w-full max-w-sm"
+      />
     </div>
   )
 }
@@ -161,28 +87,75 @@ function SceneReadyMarker({ onReady }: { onReady: () => void }) {
   return null
 }
 
+/** 「OTHER VIEWS」ボタンからの視点切り替え */
+function ViewController({ request }: { request: ViewRequest }) {
+  const camera = useThree((state) => state.camera)
+  const controls = useThree((state) => state.controls) as { update?: () => void } | null
+
+  useEffect(() => {
+    const [x, y, z] = CAMERA_POSITIONS[request.view]
+    camera.position.set(x, y, z)
+    camera.lookAt(0, 0, 0)
+    controls?.update?.()
+  }, [request, camera, controls])
+
+  return null
+}
+
+/** 金具や革のツヤ表現のための環境光（外部ファイル不要） */
+function StudioEnvironment() {
+  const gl = useThree((state) => state.gl)
+  const scene = useThree((state) => state.scene)
+
+  useLayoutEffect(() => {
+    const pmrem = new PMREMGenerator(gl)
+    const room = new RoomEnvironment()
+    const target = pmrem.fromScene(room, 0.04)
+    scene.environment = target.texture
+    scene.environmentIntensity = 0.75
+    return () => {
+      scene.environment = null
+      target.dispose()
+      pmrem.dispose()
+      room.dispose()
+    }
+  }, [gl, scene])
+
+  return null
+}
+
 function R3FScene({
   customization,
+  viewRequest,
   onReady,
 }: {
   customization: BagCustomization
+  viewRequest: ViewRequest
   onReady: () => void
 }) {
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[5, 8, 5]} intensity={1.15} />
-      <directionalLight position={[-4, 2, -3]} intensity={0.35} />
+      <StudioEnvironment />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[5, 8, 5]} intensity={1.1} />
+      <directionalLight position={[-4, 3, -4]} intensity={0.45} />
       <Suspense fallback={null}>
         <BagModel customization={customization} />
         <SceneReadyMarker onReady={onReady} />
       </Suspense>
-      <OrbitControls enablePan={false} minDistance={3} maxDistance={8.5} target={[0, 0, 0]} />
+      <OrbitControls
+        makeDefault
+        enablePan={false}
+        minDistance={3}
+        maxDistance={8.5}
+        target={[0, 0, 0]}
+      />
+      <ViewController request={viewRequest} />
     </>
   )
 }
 
-export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
+export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPreviewProps) {
   const [useFallback, setUseFallback] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const hasLoadedRef = useRef(false)
@@ -215,12 +188,16 @@ export function ThreeDBagPreview({ customization }: ThreeDBagPreviewProps) {
         <GlbErrorBoundary onError={() => setUseFallback(true)}>
           <Canvas
             className="three-d-canvas"
-            camera={{ position: [0, 0.1, 5.6], fov: 40 }}
+            camera={{ position: CAMERA_POSITIONS.front, fov: 40 }}
             gl={{ antialias: true, alpha: true }}
             dpr={[1, 2]}
           >
-            <color attach="background" args={['#faf8f5']} />
-            <R3FScene customization={customization} onReady={handleReady} />
+            <color attach="background" args={['#fbf9f4']} />
+            <R3FScene
+              customization={customization}
+              viewRequest={viewRequest}
+              onReady={handleReady}
+            />
           </Canvas>
         </GlbErrorBoundary>
       </div>

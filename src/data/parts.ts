@@ -1,100 +1,36 @@
 import type { PartOption } from '../types/bag'
-import { handleMap as templateHandleMap } from './handlesByTemplate'
 
-export {
-  getDefaultHandleForTemplate,
-  getHandleStepLabel,
-  getHandlesForTemplate,
-  handleMap,
-  isChainHandleId,
-  resolveHandleForTemplate,
-} from './handlesByTemplate'
-
+/** 素材（パンフレット P2：本革・合皮・布・化学繊維） */
 export const MATERIALS: PartOption[] = [
   {
-    id: 'smooth-leather',
-    name: 'Smooth Leather',
-    description: '上質なスムースレザー。店舗別注でも人気の定番素材。',
-    priceModifier: 0,
+    id: 'genuine-leather',
+    name: '本革',
+    description: '上質な天然皮革。経年変化まで楽しめる本格仕様。',
   },
   {
-    id: 'textured-leather',
-    name: 'Textured Leather',
-    description: '革の風合いを活かしたテクスチャードレザー。',
-    priceModifier: 3000,
+    id: 'synthetic-leather',
+    name: '合皮',
+    description: 'カラーが豊富で扱いやすい。軽さとお手入れのしやすさが魅力。',
   },
   {
-    id: 'canvas',
-    name: 'Canvas',
-    description: 'カジュアルからイベント販売まで使いやすいキャンバス。',
-    priceModifier: -2000,
+    id: 'fabric',
+    name: '布',
+    description: 'キャンバスなどの生地。カジュアルで軽やかな仕上がりに。',
   },
   {
-    id: 'nylon-like',
-    name: 'Nylon Like',
-    description: '軽量で耐久性のあるナイロン風素材。',
-    priceModifier: -1500,
+    id: 'tech-fiber',
+    name: '化学繊維',
+    description: 'ナイロン等の機能素材。撥水性・耐久性に優れます。',
   },
 ]
 
-/** @deprecated 全取手一覧。テンプレート別は getHandlesForTemplate を使用 */
-export const HANDLE_TYPES = Object.values(templateHandleMap)
-
+/** 金具のカラー・素材 */
 export const HARDWARE_COLORS: PartOption[] = [
-  {
-    id: 'gold',
-    name: 'Gold',
-    priceModifier: 0,
-    metalColorId: 'gold',
-  },
-  {
-    id: 'silver',
-    name: 'Silver',
-    priceModifier: 0,
-    metalColorId: 'gray',
-  },
-  {
-    id: 'black-nickel',
-    name: 'Black Nickel',
-    priceModifier: 200,
-    metalColorId: 'black',
-  },
-  {
-    id: 'antique-brass',
-    name: 'Antique Brass',
-    priceModifier: 300,
-    metalColorId: 'brown',
-  },
-]
-
-export const DECORATIONS: PartOption[] = [
-  { id: 'none', name: 'None', description: '装飾なしのシンプル仕様。', priceModifier: 0 },
-  {
-    id: 'stitch-accent',
-    name: 'Stitch Accent',
-    description: 'ステッチのアクセントを入れた仕様。',
-    priceModifier: 1500,
-  },
-  {
-    id: 'front-pocket',
-    name: 'Front Pocket',
-    description: 'フロントポケット付き。',
-    priceModifier: 2000,
-  },
-  {
-    id: 'metal-plate',
-    name: 'Metal Plate',
-    description: 'メタルプレートのブランド表示向けオプション。',
-    priceModifier: 2500,
-  },
-  {
-    id: 'charm',
-    name: 'Charm',
-    description: 'チャーム付き。ギフト・限定向けにも。',
-    priceModifier: 1800,
-  },
+  { id: 'gold', name: 'ゴールド', metalColorId: 'gold' },
+  { id: 'silver', name: 'シルバー', metalColorId: 'gray' },
+  { id: 'black-nickel', name: 'ブラックニッケル', metalColorId: 'black' },
+  { id: 'antique-brass', name: 'アンティークブラス', metalColorId: 'brown' },
 ]
 
 export const materialMap = Object.fromEntries(MATERIALS.map((p) => [p.id, p]))
 export const hardwareMap = Object.fromEntries(HARDWARE_COLORS.map((p) => [p.id, p]))
-export const decorationMap = Object.fromEntries(DECORATIONS.map((p) => [p.id, p]))

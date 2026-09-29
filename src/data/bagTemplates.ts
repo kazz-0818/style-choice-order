@@ -1,62 +1,45 @@
 import type { BagTemplate } from '../types/bag'
 
+/** パンフレット（2026/08/06版）記載の6型 */
 export const BAG_TEMPLATES: BagTemplate[] = [
   {
-    id: 'tote',
-    name: 'Tote Bag',
-    description: '日常使いから店舗別注まで対応しやすい定番トート型。',
-    basePrice: 12000,
-    availableParts: [
-      'material',
-      'handle',
-      'hardware',
-      'decoration',
-      'body',
-      'handle-layer',
-      'side',
-      'bottom',
-      'metal',
-      'accent',
-    ],
+    id: 'business',
+    name: 'ビジネスバッグ型',
+    nameEn: 'Business Bag',
+    description: '整ったスクエアフォルム。外ポケットや内仕切りまで仕様を細かく設計。',
   },
   {
-    id: 'mini-hand',
-    name: 'Mini Hand Bag',
-    description: '小ぶりなハンドバッグ。取手と金具の組み合わせが印象を左右します。',
-    basePrice: 15000,
-    availableParts: [
-      'material',
-      'handle',
-      'hardware',
-      'decoration',
-      'body',
-      'handle-layer',
-      'side',
-      'bottom',
-      'metal',
-      'accent',
-    ],
+    id: 'boston',
+    name: 'ボストンバッグ型',
+    nameEn: 'Boston Bag',
+    description: '口金フレームとツイストロックが印象的な、横長でエレガントな一型。',
+  },
+  {
+    id: 'shoulder-pouch',
+    name: 'ショルダーポーチ型',
+    nameEn: 'Shoulder Pouch',
+    description: 'フラップ付きの縦型ポーチ。チャーム・チェーンでアレンジ自在。',
+  },
+  {
+    id: 'mini-boston',
+    name: 'ミニボストンバッグ型',
+    nameEn: 'Mini Boston Bag',
+    description: 'ころんと丸みのあるミニボストン。引き手やチェーンで表情が変わります。',
   },
   {
     id: 'shoulder',
-    name: 'Shoulder Bag',
-    description: 'ショルダーストラップ付き。サイドやストラップのカラー変更に最適。',
-    basePrice: 14000,
-    availableParts: [
-      'material',
-      'handle',
-      'hardware',
-      'decoration',
-      'body',
-      'handle-layer',
-      'side',
-      'bottom',
-      'metal',
-      'accent',
-    ],
+    name: 'ショルダーバッグ型',
+    nameEn: 'Shoulder Bag',
+    description: '丸みのある横型フォルム。ストラップ幅や金具まで選べます。',
+  },
+  {
+    id: 'tote',
+    name: 'トートバッグ型',
+    nameEn: 'Tote Bag',
+    description: 'シャープな縦型トート。マチ・外ポケット・底鋲を自由に設計。',
   },
 ]
 
 export const templateMap = Object.fromEntries(
   BAG_TEMPLATES.map((t) => [t.id, t]),
-)
+) as Record<string, (typeof BAG_TEMPLATES)[number]>

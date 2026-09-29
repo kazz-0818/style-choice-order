@@ -146,6 +146,7 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const hl = shape.handle.base * lengthMult
   const hx = sx * topF.fx * shape.handle.spread
   const widthMult = specs.strapWidth ? (STRAP_WIDTH[specs.strapWidth] ?? 1) : 1
+  const tz = shape.handle.thick * (isStrap ? widthMult : 1)
   const zc = !dual
     ? 0
     : hasTabs
@@ -172,6 +173,8 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
       ? Math.min(0.5, ((1 - converge) * zc) / (M.ARCH_H * hl))
       : Math.sin(shape.handle.tilt)
   const theta = -Math.asin(leanSin)
+  const handleY = handleTop - M.TOP * hl * Math.cos(theta)
+  const handleZ = (sign: number, th: number = theta) => sign * zc - M.TOP * hl * Math.sin(th)
   const ringX = M.ATTACH_X * hx
 
   // ── 前面パーツの表示判定 ─────────────
@@ -385,7 +388,9 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     'belt-stitch': layout(beltLayout.pos, beltLayout.scale, beltStitchVisible),
     handle: dual
       ? layout([0, handleTop, zc], [1, 1, 1], true, [theta, 0, 0])
-      : layout([0, handleTop, 0], [1, 1, 1], true, [theta, 0, 0]),
+      : isStrap
+        ? layout([0, handleTop, 0], [1, 1, 1], true, [theta, 0, 0])
+        : layout([0, handleY, handleZ(1)], [hx, hl, tz], true, [theta, 0, 0]),
     'strap-chain': layout([0, 0, 0], [1, 1, 1], !!chain),
     handle2: layout([0, handleTop, -zc], [1, 1, 1], dual, [-theta, 0, 0]),
     'ring-single': layout([0, top, 0], [1, 1, 1], isStrap || isTop),

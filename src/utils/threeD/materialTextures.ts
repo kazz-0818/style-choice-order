@@ -77,6 +77,34 @@ function voronoiHeight(cells: number, seed: number, groove: number): HeightFn {
   }
 }
 
+/** シボに、やわらかいシワ（低周波のうねり）を重ねる。革を柔らかく見せる */
+function withWrinkles(base: HeightFn, seed: number, amount: number): HeightFn {
+  const rand = mulberry32(seed)
+  const G = 5
+  const grid = new Float32Array(G * G)
+  for (let i = 0; i < grid.length; i++) grid[i] = rand()
+  const G2 = 11
+  const grid2 = new Float32Array(G2 * G2)
+  for (let i = 0; i < grid2.length; i++) grid2[i] = rand()
+  const smooth = (t: number) => t * t * (3 - 2 * t)
+  const sample = (g: Float32Array, n: number, x: number, y: number) => {
+    const u = (x / SIZE) * n
+    const v = (y / SIZE) * n
+    const x0 = Math.floor(u)
+    const y0 = Math.floor(v)
+    const tx = smooth(u - x0)
+    const ty = smooth(v - y0)
+    const at = (ix: number, iy: number) => g[(iy % n) * n + (ix % n)]
+    const a = at(x0, y0) * (1 - tx) + at(x0 + 1, y0) * tx
+    const b = at(x0, y0 + 1) * (1 - tx) + at(x0 + 1, y0 + 1) * tx
+    return a * (1 - ty) + b * ty
+  }
+  return (x, y) => {
+    const wr = sample(grid, G, x, y) * 0.65 + sample(grid2, G2, x, y) * 0.35
+    return clamp01(base(x, y) * (1 - amount) + wr * amount)
+  }
+}
+
 /** 平織り（布・化学繊維）。period ピクセルごとに縦糸・横糸が交差 */
 function weaveHeight(period: number, seed: number, ripstop: boolean): HeightFn {
   const rand = mulberry32(seed)
@@ -195,15 +223,15 @@ const RECIPES: Record<
 > = {
   // 本革：大きめのシボ（凹凸くっきり）
   'genuine-leather': {
-    height: () => voronoiHeight(12, 11, 0.32),
-    strength: 2.8,
-    toneMin: 0.88,
+    height: () => withWrinkles(voronoiHeight(12, 11, 0.32), 101, 0.4),
+    strength: 3.4,
+    toneMin: 0.82,
     tile: 0.42,
     normalScale: 0.75,
   },
   // 合皮：細かく均一なエンボス
   'synthetic-leather': {
-    height: () => voronoiHeight(26, 23, 0.4),
+    height: () => withWrinkles(voronoiHeight(26, 23, 0.4), 103, 0.25),
     strength: 3,
     toneMin: 0.9,
     tile: 0.42,

@@ -22,19 +22,23 @@ interface MaterialStyle {
 
 /** 素材ごとの質感（本革・合皮・布・化学繊維） */
 const MATERIAL_STYLE: Record<string, MaterialStyle> = {
-  // 本革：しっとりした半ツヤ
+  // 本革：しっとり柔らかい、ツヤ控えめのマット寄り（縁がやわらかく光る）
   'genuine-leather': {
-    roughness: 0.6,
+    roughness: 0.78,
     metalness: 0,
-    clearcoat: 0.08,
-    clearcoatRoughness: 0.55,
+    sheen: 0.7,
+    sheenRoughness: 0.55,
+    sheenColor: '#efe4d3',
   },
   // 合皮：均一でツヤのある表面
   'synthetic-leather': {
-    roughness: 0.42,
+    roughness: 0.6,
     metalness: 0,
-    clearcoat: 0.5,
-    clearcoatRoughness: 0.28,
+    clearcoat: 0.12,
+    clearcoatRoughness: 0.45,
+    sheen: 0.35,
+    sheenRoughness: 0.6,
+    sheenColor: '#f2ece2',
   },
   // 布：マットで毛羽立った光沢（シーン）
   fabric: {

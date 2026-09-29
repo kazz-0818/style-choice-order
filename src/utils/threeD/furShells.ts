@@ -14,17 +14,27 @@ import {
  * ファー・ボアの毛足を「シェル法」で表現する。
  * 本体メッシュと同じ形を法線方向へ少しずつ膨らませて何層も重ね、
  * 各層は毛の長さに応じたアルファマスクで毛先だけを残す。
+ * 毛は細かく・数多く・色ムラと緩いカールを付けて、硬いプラスチックの毛に見えないようにする。
  */
 
-/** 毛の層の数（多いほどふさふさだが描画は重くなる） */
-const SHELLS = 16
+/** 毛の層の数（多いほどふんわりするが描画は重くなる） */
+const SHELLS = 22
 /** 毛足の長さ（モデル座標） */
-const FUR_LENGTH = 0.11
+const FUR_LENGTH = 0.12
 /** 毛の密度テクスチャ1枚が実寸で何ユニットか */
 export const FUR_TILE = 0.6
 
-const SIZE = 256
-let strandTexture: Texture | null = null
+const SIZE = 512
+/** 1タイルあたりの毛の本数（片側） */
+const STRANDS = 110
+
+interface StrandTextures {
+  /** 緑チャンネル＝毛の長さ */
+  alpha: Texture
+  /** 毛1本ごとの明るさのムラ */
+  tone: Texture
+}
+let strandTextures: StrandTextures | null = null
 
 function mulberry32(seed: number) {
   let a = seed
@@ -37,14 +47,25 @@ function mulberry32(seed: number) {
   }
 }
 
+function makeTexture(canvas: HTMLCanvasElement): Texture {
+  const tex = new CanvasTexture(canvas)
+  tex.wrapS = tex.wrapT = RepeatWrapping
+  tex.colorSpace = NoColorSpace
+  tex.magFilter = LinearFilter
+  tex.minFilter = LinearMipmapLinearFilter
+  tex.generateMipmaps = true
+  tex.anisotropy = 4
+  return tex
+}
+
 /**
- * 毛の長さ分布（緑チャンネル）。1本ごとに円錐形（根元が太く毛先が細い）の毛を並べ、
+ * 毛の長さ分布と毛ごとの色ムラ。1本ごとに円錐形（根元が太く毛先が細い）の毛を並べ、
  * 低周波の毛束ムラで長さに偏りを付ける。
  */
-function getStrandTexture(): Texture {
-  if (strandTexture) return strandTexture
+function getStrandTextures(): StrandTextures {
+  if (strandTextures) return strandTextures
   const rand = mulberry32(77)
-  const G = 16
+  const G = 20
   const clump = new Float32Array(G * G)
   for (let i = 0; i < clump.length; i++) clump[i] = rand()
   const smooth = (t: number) => t * t * (3 - 2 * t)
@@ -60,29 +81,36 @@ function getStrandTexture(): Texture {
     const b = g(x0, y0 + 1) * (1 - tx) + g(x0 + 1, y0 + 1) * tx
     return a * (1 - ty) + b * ty
   }
-  // 1タイルに STRANDS × STRANDS 本の毛
-  const STRANDS = 48
+
   const cell = SIZE / STRANDS
   const cx: number[] = []
   const cy: number[] = []
   const len: number[] = []
+  const tone: number[] = []
   for (let j = 0; j < STRANDS; j++) {
     for (let i = 0; i < STRANDS; i++) {
-      cx.push((i + 0.2 + rand() * 0.6) * cell)
-      cy.push((j + 0.2 + rand() * 0.6) * cell)
+      cx.push((i + 0.15 + rand() * 0.7) * cell)
+      cy.push((j + 0.15 + rand() * 0.7) * cell)
       const bundle = bundleAt((i + 0.5) * cell, (j + 0.5) * cell)
-      len.push(Math.min(1, (0.55 + rand() * 0.45) * (0.8 + bundle * 0.45)))
+      len.push(Math.min(1, (0.5 + rand() * 0.5) * (0.78 + bundle * 0.5)))
+      tone.push(0.72 + rand() * 0.34 + (bundle - 0.5) * 0.12)
     }
   }
-  const canvas = document.createElement('canvas')
-  canvas.width = canvas.height = SIZE
-  const ctx = canvas.getContext('2d')!
-  const img = ctx.createImageData(SIZE, SIZE)
+
+  const alphaCanvas = document.createElement('canvas')
+  alphaCanvas.width = alphaCanvas.height = SIZE
+  const toneCanvas = document.createElement('canvas')
+  toneCanvas.width = toneCanvas.height = SIZE
+  const actx = alphaCanvas.getContext('2d')!
+  const tctx = toneCanvas.getContext('2d')!
+  const aImg = actx.createImageData(SIZE, SIZE)
+  const tImg = tctx.createImageData(SIZE, SIZE)
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       const gi = Math.floor(x / cell)
       const gj = Math.floor(y / cell)
       let best = 0
+      let bestTone = 0.85
       for (let dj = -1; dj <= 1; dj++) {
         for (let di = -1; di <= 1; di++) {
           const wi = (gi + di + STRANDS) % STRANDS
@@ -90,26 +118,26 @@ function getStrandTexture(): Texture {
           const k = wj * STRANDS + wi
           const px = cx[k] + (gi + di - wi) * cell
           const py = cy[k] + (gj + dj - wj) * cell
-          const r = Math.hypot(x + 0.5 - px, y + 0.5 - py) / (cell * 1.45)
+          const r = Math.hypot(x + 0.5 - px, y + 0.5 - py) / (cell * 1.5)
           const v = len[k] * (1 - Math.min(1, r) ** 0.7)
-          if (v > best) best = v
+          if (v > best) {
+            best = v
+            bestTone = tone[k]
+          }
         }
       }
       const i = (y * SIZE + x) * 4
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = best * 255
-      img.data[i + 3] = 255
+      aImg.data[i] = aImg.data[i + 1] = aImg.data[i + 2] = best * 255
+      aImg.data[i + 3] = 255
+      const t = Math.max(0, Math.min(1, bestTone)) * 255
+      tImg.data[i] = tImg.data[i + 1] = tImg.data[i + 2] = t
+      tImg.data[i + 3] = 255
     }
   }
-  ctx.putImageData(img, 0, 0)
-  const tex = new CanvasTexture(canvas)
-  tex.wrapS = tex.wrapT = RepeatWrapping
-  tex.colorSpace = NoColorSpace
-  tex.magFilter = LinearFilter
-  tex.minFilter = LinearMipmapLinearFilter
-  tex.generateMipmaps = true
-  tex.anisotropy = 4
-  strandTexture = tex
-  return tex
+  actx.putImageData(aImg, 0, 0)
+  tctx.putImageData(tImg, 0, 0)
+  strandTextures = { alpha: makeTexture(alphaCanvas), tone: makeTexture(toneCanvas) }
+  return strandTextures
 }
 
 interface ShellData {
@@ -117,14 +145,19 @@ interface ShellData {
 }
 
 function makeShellMaterial(h: number, offset: number): MeshStandardMaterial {
+  const tex = getStrandTextures()
   const mat = new MeshStandardMaterial({
     roughness: 1,
     metalness: 0,
-    alphaMap: getStrandTexture().clone(),
-    alphaTest: 0.04 + h * 0.92,
+    map: tex.tone.clone(),
+    alphaMap: tex.alpha.clone(),
+    alphaTest: 0.04 + h * 0.9,
+    // 毛先の縁をやわらかく（ギザギザ・プラスチックの毛に見えないように）
+    alphaToCoverage: true,
+    envMapIntensity: 0.4,
   })
+  mat.map!.needsUpdate = true
   mat.alphaMap!.needsUpdate = true
-  mat.userData.offset = offset
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uFurOffset = { value: offset }
     shader.vertexShader = shader.vertexShader
@@ -133,12 +166,20 @@ function makeShellMaterial(h: number, offset: number): MeshStandardMaterial {
         '#include <begin_vertex>',
         `#include <begin_vertex>
         transformed += normal * uFurOffset;
-        // 毛先はわずかに垂れ下がる
-        transformed.y -= uFurOffset * uFurOffset * 2.2;`,
+        // 毛先はやわらかく垂れ下がり、ゆるくカールする
+        transformed.y -= uFurOffset * uFurOffset * 2.6;
+        transformed.x += sin(position.y * 23.0 + position.z * 17.0) * uFurOffset * 0.22;
+        transformed.z += cos(position.x * 19.0 + position.y * 13.0) * uFurOffset * 0.22;`,
       )
   }
-  mat.customProgramCacheKey = () => 'fur-shell'
+  mat.customProgramCacheKey = () => 'fur-shell-soft'
   return mat
+}
+
+function disposeShellMaterial(mat: MeshStandardMaterial) {
+  mat.map?.dispose()
+  mat.alphaMap?.dispose()
+  mat.dispose()
 }
 
 /**
@@ -157,8 +198,7 @@ export function syncFurShells(
     if (data) {
       for (const s of data.shells) {
         mesh.remove(s)
-        ;(s.material as MeshStandardMaterial).alphaMap?.dispose()
-        ;(s.material as MeshStandardMaterial).dispose()
+        disposeShellMaterial(s.material as MeshStandardMaterial)
       }
       mesh.userData.fur = undefined
     }
@@ -188,7 +228,8 @@ export function syncFurShells(
     shell.geometry = mesh.geometry
     const mat = shell.material as MeshStandardMaterial
     // 根元は暗く、毛先は明るく（奥行き感）
-    mat.color.copy(base).multiplyScalar(0.55 + 0.6 * h)
+    mat.color.copy(base).multiplyScalar(0.62 + 0.55 * h)
     mat.alphaMap!.repeat.set(rx, ry)
+    mat.map!.repeat.set(rx, ry)
   })
 }

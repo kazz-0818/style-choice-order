@@ -28,7 +28,7 @@ export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherPr
   }
 
   return (
-    <div className="w-[42px] shrink-0 sm:mt-4 sm:w-auto">
+    <div className="w-[36px] shrink-0 sm:mt-4 sm:w-auto">
       <p className="mb-1.5 hidden items-center sm:flex gap-2 text-[10px] tracking-[0.25em] text-gold uppercase">
         <span className="h-px flex-1 bg-gold/40" />
         Other Views

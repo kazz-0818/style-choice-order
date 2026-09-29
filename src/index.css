@@ -74,7 +74,7 @@ body {
 
 .three-d-preview-frame {
   /* プレビュー＋Other Views を固定表示するため、画面の高さに収まるサイズにする */
-  height: clamp(290px, 36vh, 340px);
+  height: clamp(272px, 32vh, 310px);
 }
 
 @media (min-width: 640px) {

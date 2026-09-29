@@ -18,14 +18,14 @@ export function StepTitle({ step, children, icon, lead }: StepTitleProps) {
 
   return (
     <div className="flex items-start gap-3">
-      {icon && <IconBadge name={icon} size={44} className="sm:!h-14 sm:!w-14" />}
+      {icon && <IconBadge name={icon} size={36} className="sm:!h-14 sm:!w-14" />}
       <div className="min-w-0 flex-1">
         <h3 className="font-serif text-base font-medium tracking-wide text-navy sm:text-lg">
           <span className="mr-1.5 text-gold">{number}</span>
           {children}
         </h3>
         {lead && (
-          <p className="mt-1 text-[11px] leading-relaxed text-warm-gray sm:text-xs">{lead}</p>
+          <p className="mt-1 hidden text-[11px] leading-relaxed text-warm-gray sm:block sm:text-xs">{lead}</p>
         )}
       </div>
     </div>

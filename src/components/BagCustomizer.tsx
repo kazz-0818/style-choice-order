@@ -98,7 +98,7 @@ export function BagCustomizer({
       <h2 className="font-serif text-2xl font-light text-navy sm:text-3xl">
         バッグをカスタマイズ
       </h2>
-      <p className="mt-2 text-sm text-warm-gray sm:mt-3">
+      <p className="mt-2 hidden text-sm text-warm-gray sm:mt-3 sm:block">
         型・サイズ・素材・パーツを選び、プレビューで完成イメージをご確認ください。
       </p>
     </>
@@ -107,10 +107,10 @@ export function BagCustomizer({
   return (
     <section
       id="customizer"
-      className="border-b border-stone bg-cream py-10 sm:py-16"
+      className="border-b border-stone bg-cream py-5 sm:py-16"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mb-6 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
+        <div className="mb-3 max-w-2xl sm:mb-10 lg:hidden">{customizerIntro}</div>
 
         <div className="flex min-w-0 flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
           <div className="sticky top-[60px] z-30 order-1 -mx-4 min-w-0 border-b border-stone/60 bg-cream/95 px-4 pt-2 pb-2 shadow-sm backdrop-blur-sm sm:top-[64px] sm:-mx-6 sm:px-6 lg:top-24 lg:z-10 lg:mx-0 lg:self-start lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
@@ -143,7 +143,7 @@ export function BagCustomizer({
                 →
               </span>
             </p>
-            <div className="customizer-steps flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-8 sm:overflow-visible sm:pb-0">
+            <div className="customizer-steps flex w-full snap-x snap-mandatory items-start gap-3 sm:items-stretch overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-8 sm:overflow-visible sm:pb-0">
               <StepSlot>
                 <TemplateSelector
                   step={next()}

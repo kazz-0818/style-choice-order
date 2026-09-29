@@ -19,7 +19,7 @@ export function TemplateSelector({ value, onChange, step = 1 }: TemplateSelector
       >
         バッグ型
       </StepTitle>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4 sm:grid-cols-3 sm:gap-3">
+      <div className="mt-3 grid grid-cols-4 gap-1.5 sm:mt-4 sm:grid-cols-3 sm:gap-3">
         {BAG_TEMPLATES.map((template) => {
           const selected = value === template.id
           return (
@@ -34,17 +34,19 @@ export function TemplateSelector({ value, onChange, step = 1 }: TemplateSelector
                   : 'border-stone bg-white hover:border-gold'
               }`}
             >
-              <span className="art-grid block p-1.5">
-                <BagArt type={template.id} className="mx-auto aspect-square w-full max-w-[112px]" />
+              <span className="art-grid block p-0.5 sm:p-1.5">
+                <BagArt type={template.id} className="mx-auto aspect-square w-full max-w-[64px] sm:max-w-[112px]" />
               </span>
               <span
-                className={`block px-2 py-2 sm:px-3 ${
+                className={`flex-1 px-1 py-1.5 text-center sm:block sm:px-3 sm:py-2 sm:text-left ${
                   selected ? 'bg-navy text-cream' : 'bg-white text-charcoal'
                 }`}
               >
-                <span className="block text-xs font-medium sm:text-sm">{template.name}</span>
+                <span className="block text-[10px] leading-tight font-medium sm:text-sm sm:leading-normal">
+                  {template.name}
+                </span>
                 <span
-                  className={`block text-[9px] tracking-widest uppercase ${
+                  className={`hidden text-[9px] tracking-widest uppercase sm:block ${
                     selected ? 'text-gold-light' : 'text-gold'
                   }`}
                 >

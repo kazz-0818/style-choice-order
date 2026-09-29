@@ -72,7 +72,7 @@ export function BagCustomizer({
       templateId: id,
       specs: resolveSpecsForTemplate(id, customization.specs),
     })
-    setViewRequest((prev) => ({ view: 'front', nonce: prev.nonce + 1 }))
+    setViewRequest((prev) => ({ view: 'front', nonce: prev.nonce + 1, source: 'reset' }))
   }
 
   const handleHardwareChange = (id: string) => {
@@ -121,7 +121,7 @@ export function BagCustomizer({
                 customization={customization}
                 active={viewRequest.view}
                 onSelect={(view) =>
-                  setViewRequest((prev) => ({ view, nonce: prev.nonce + 1 }))
+                  setViewRequest((prev) => ({ view, nonce: prev.nonce + 1, source: 'user' }))
                 }
               />
             </div>

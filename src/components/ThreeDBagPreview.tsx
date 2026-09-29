@@ -20,6 +20,8 @@ import { BagModel } from './three/BagModel'
 export interface ViewRequest {
   view: BagView
   nonce: number
+  /** 'reset' = バッグ型の変更に伴う正面リセット（自動回転は維持） */
+  source?: 'user' | 'reset'
 }
 
 export interface ThreeDBagPreviewProps {
@@ -168,8 +170,10 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
 
   // 「OTHER VIEWS」で視点を選んだら、その向きで止めて見られるよう自動回転を止める
   useEffect(() => {
-    if (viewRequest.nonce !== initialNonceRef.current) setAutoRotate(false)
-  }, [viewRequest.nonce])
+    if (viewRequest.nonce !== initialNonceRef.current && viewRequest.source !== 'reset') {
+      setAutoRotate(false)
+    }
+  }, [viewRequest.nonce, viewRequest.source])
 
   const handleReady = useCallback(() => {
     if (!hasLoadedRef.current) {

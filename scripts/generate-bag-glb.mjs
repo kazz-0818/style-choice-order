@@ -274,7 +274,7 @@ function zipTapeTopGeometry() {
 
 function zipTeethTopGeometry() {
   const parts = []
-  const pitch = 0.03
+  const pitch = 0.022
   const len = W - 0.35
   const count = Math.floor(len / pitch)
   for (let i = 0; i < count; i++) {
@@ -287,7 +287,7 @@ function zipTeethTopGeometry() {
 
 function zipTeethGeometry() {
   const parts = []
-  const pitch = 0.03
+  const pitch = 0.022
   const count = Math.floor(ZIP_L / pitch)
   for (let i = 0; i < count; i++) {
     const x = -ZIP_L / 2 + pitch / 2 + i * pitch
@@ -526,7 +526,7 @@ function drumZipTapeGeometry() {
 
 function drumZipTeethGeometry() {
   const parts = []
-  const pitch = 0.04
+  const pitch = 0.03
   const count = Math.floor(DRUM_ZIP_L / pitch)
   for (let i = 0; i < count; i++) {
     const x = -DRUM_ZIP_L / 2 + pitch / 2 + i * pitch

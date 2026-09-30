@@ -295,7 +295,7 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     isCyl ? 0 : zipTopOnly ? 0.03 : surfaceZ(xm, M.TOP - 0.24) + 0.014
   // 円筒型は天面に寝かせ、カーブに沿って手前へ垂らす
   const pullerRot: [number, number, number] = zipOnTop ? [isCyl ? -1.15 : -1.3, 0, 0] : [0, 0, 0]
-  const pu = Math.max(0.6, Math.min(1.1, u))
+  const pu = Math.max(0.5, Math.min(0.85, u * 0.78))
   const puller = (idx: 0 | 1) => {
     const visible = zipVisible && (idx === 0 || opening === 'zip-double')
     const px = pullerXs[idx] ?? 0

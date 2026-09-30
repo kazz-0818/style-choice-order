@@ -261,15 +261,15 @@ const ZIP_Y = TOP - 0.24
 
 function zipTapeGeometry() {
   return mergeGeometries([
-    box(ZIP_L, 0.09, 0.03, 0, ZIP_Y, D / 2 + bulgeAt(0, ZIP_Y) - 0.004),
-    box(ZIP_L, 0.09, 0.03, 0, ZIP_Y, -D / 2 - bulgeAt(0, ZIP_Y) + 0.004),
-    box(W - 0.35, 0.03, 0.14, 0, TOP, 0),
+    box(ZIP_L, 0.06, 0.022, 0, ZIP_Y, D / 2 + bulgeAt(0, ZIP_Y) - 0.004),
+    box(ZIP_L, 0.06, 0.022, 0, ZIP_Y, -D / 2 - bulgeAt(0, ZIP_Y) + 0.004),
+    box(W - 0.35, 0.024, 0.095, 0, TOP, 0),
   ])
 }
 
 /** 天面だけのファスナー（ビジネス／ショルダー／トート用） */
 function zipTapeTopGeometry() {
-  return box(W - 0.35, 0.03, 0.14, 0, TOP, 0)
+  return box(W - 0.35, 0.024, 0.095, 0, TOP, 0)
 }
 
 function zipTeethTopGeometry() {
@@ -280,7 +280,7 @@ function zipTeethTopGeometry() {
   for (let i = 0; i < count; i++) {
     const x = -len / 2 + pitch / 2 + i * pitch
     const sgn = i % 2 === 0 ? 1 : -1
-    parts.push(box(0.02, 0.018, 0.024, x, TOP + 0.012, sgn * 0.012))
+    parts.push(box(0.014, 0.012, 0.016, x, TOP + 0.009, sgn * 0.008))
   }
   return mergeGeometries(parts)
 }
@@ -293,9 +293,9 @@ function zipTeethGeometry() {
     const x = -ZIP_L / 2 + pitch / 2 + i * pitch
     const sgn = i % 2 === 0 ? 1 : -1
     const bz = bulgeAt(x, ZIP_Y)
-    parts.push(box(0.02, 0.024, 0.018, x, ZIP_Y + sgn * 0.012, D / 2 + bz + 0.01))
-    parts.push(box(0.02, 0.024, 0.018, x, ZIP_Y + sgn * 0.012, -D / 2 - bz - 0.01))
-    if (Math.abs(x) < (W - 0.35) / 2 - 0.02) parts.push(box(0.02, 0.018, 0.024, x, TOP + 0.012, sgn * 0.012))
+    parts.push(box(0.014, 0.016, 0.012, x, ZIP_Y + sgn * 0.008, D / 2 + bz + 0.008))
+    parts.push(box(0.014, 0.016, 0.012, x, ZIP_Y + sgn * 0.008, -D / 2 - bz - 0.008))
+    if (Math.abs(x) < (W - 0.35) / 2 - 0.02) parts.push(box(0.014, 0.012, 0.016, x, TOP + 0.009, sgn * 0.008))
   }
   return mergeGeometries(parts)
 }
@@ -521,7 +521,7 @@ const drumSideGeometry = (geo) =>
 const DRUM_ZIP_L = W - 0.55
 
 function drumZipTapeGeometry() {
-  return box(DRUM_ZIP_L, 0.02, 0.16, 0, TOP + 0.004, 0)
+  return box(DRUM_ZIP_L, 0.016, 0.11, 0, TOP + 0.004, 0)
 }
 
 function drumZipTeethGeometry() {
@@ -531,7 +531,7 @@ function drumZipTeethGeometry() {
   for (let i = 0; i < count; i++) {
     const x = -DRUM_ZIP_L / 2 + pitch / 2 + i * pitch
     const sgn = i % 2 === 0 ? 1 : -1
-    parts.push(box(0.028, 0.022, 0.034, x, TOP + 0.02, sgn * 0.016))
+    parts.push(box(0.02, 0.015, 0.024, x, TOP + 0.016, sgn * 0.011))
   }
   return mergeGeometries(parts)
 }

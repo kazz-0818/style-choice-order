@@ -118,7 +118,7 @@ function getStrandTextures(): StrandTextures {
           const k = wj * STRANDS + wi
           const px = cx[k] + (gi + di - wi) * cell
           const py = cy[k] + (gj + dj - wj) * cell
-          const r = Math.hypot(x + 0.5 - px, y + 0.5 - py) / (cell * 1.5)
+          const r = Math.hypot(x + 0.5 - px, y + 0.5 - py) / (cell * 1.9)
           const v = len[k] * (1 - Math.min(1, r) ** 0.7)
           if (v > best) {
             best = v
@@ -228,7 +228,7 @@ export function syncFurShells(
     shell.geometry = mesh.geometry
     const mat = shell.material as MeshStandardMaterial
     // 根元は暗く、毛先は明るく（奥行き感）
-    mat.color.copy(base).multiplyScalar(0.78 + 0.42 * h)
+    mat.color.copy(base).multiplyScalar(0.74 + 0.46 * h)
     mat.alphaMap!.repeat.set(rx, ry)
     mat.map!.repeat.set(rx, ry)
   })

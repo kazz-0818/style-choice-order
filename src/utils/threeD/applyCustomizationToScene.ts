@@ -343,7 +343,13 @@ export function applyCustomizationToScene(
     // ファー・ボア：本体まわりは毛層（シェル）を重ねてふわふわにする
     const furry =
       materialId === 'fur' && !!extent && !isBand && ['body', 'side', 'bottom', 'accent'].includes(layer)
-    paint(mesh, furry ? shade(hex, 0.85) : hex, bodyStyle, extent ? { materialId, extent } : null)
+    // ファーの下地は柄のない無地（毛の隙間から暗い斑点が見えないよう、毛の根元に近い色でそろえる）
+    paint(
+      mesh,
+      furry ? shade(hex, 0.74) : hex,
+      bodyStyle,
+      extent && !furry ? { materialId, extent } : null,
+    )
     syncFurShells(mesh, furry, hex, extent)
   })
 }

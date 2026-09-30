@@ -61,17 +61,6 @@ body {
     );
 }
 
-.customizer-steps {
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  touch-action: pan-x pan-y;
-}
-
-.customizer-steps::-webkit-scrollbar {
-  display: none;
-}
-
 .three-d-preview-frame {
   /* プレビュー＋Other Views を固定表示するため、画面の高さに収まるサイズにする */
   height: clamp(272px, 32vh, 310px);
@@ -134,28 +123,4 @@ input[type='range'].size-range::-moz-range-thumb {
   background: var(--color-navy);
   border: 2px solid var(--color-gold);
   cursor: pointer;
-}
-
-/* スワイプできる方向（右）を知らせる点滅矢印 */
-.swipe-hint-right {
-  display: inline-block;
-  animation: swipe-hint-blink 1s ease-in-out infinite;
-}
-
-@keyframes swipe-hint-blink {
-  0%,
-  100% {
-    opacity: 0.15;
-    transform: translateX(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(3px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .swipe-hint-right {
-    animation: none;
-  }
 }

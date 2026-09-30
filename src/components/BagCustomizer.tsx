@@ -28,7 +28,7 @@ interface BagCustomizerProps {
 }
 
 const STEP_WRAP =
-  'box-border min-w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] shrink-0 grow-0 snap-center sm:min-w-0 sm:max-w-none sm:w-full'
+  'box-border w-full min-w-0'
 
 function StepSlot({ children }: { children: ReactNode }) {
   return (
@@ -134,16 +134,7 @@ export function BagCustomizer({
             <div className="mb-5 hidden max-w-2xl lg:invisible lg:block" aria-hidden="true">
               {customizerIntro}
             </div>
-            <p className="mb-2 flex items-center justify-center gap-2 text-[10px] tracking-wide text-warm-gray sm:hidden">
-              <span className="text-gold" aria-hidden>
-                ←
-              </span>
-              <span>左右にスワイプして選択</span>
-              <span className="swipe-hint-right text-sm leading-none font-bold text-gold" aria-hidden>
-                →
-              </span>
-            </p>
-            <div className="customizer-steps flex w-full snap-x snap-mandatory items-start gap-3 sm:items-stretch overflow-x-auto overscroll-x-contain pb-2 sm:flex-col sm:gap-8 sm:overflow-visible sm:pb-0">
+            <div className="customizer-steps flex w-full flex-col gap-4 sm:gap-8">
               <StepSlot>
                 <TemplateSelector
                   step={next()}

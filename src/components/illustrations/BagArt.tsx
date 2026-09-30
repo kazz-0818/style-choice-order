@@ -99,7 +99,7 @@ export function BagArt({
   const isCyl = shape.body === 'cylinder'
   const isPouch = type === 'shoulder-pouch'
   const isTopHandle = type === 'top-handle'
-  const hasTabs = type === 'business' || type === 'tote' || type === 'top-handle'
+  const hasTabs = type === 'business' || type === 'top-handle'
   const tx = shape.taper.x
   const tzz = shape.taper.z
 
@@ -204,9 +204,17 @@ export function BagArt({
             {front && <circle cx={cx} cy={y0 + ph * 0.16} r={2.6} stroke={metalColor} fill={paper} />}
           </>
         )}
-        {type === 'tote' && front && (
+        {type === 'tote' && front && isZip && (
           <path d={`M${edgeL(0.05) + 3} ${y0 + 4}H${edgeR(0.05) - 3}`} strokeDasharray="2 2" strokeWidth={1} />
         )}
+        {/* トート：持ち手の付け根を四角く縫い留める */}
+        {type === 'tote' &&
+          [hl, hr].map((hx0) => (
+            <g key={hx0} strokeWidth={0.9} strokeDasharray="1.4 1.2">
+              <rect x={hx0 - 3.4} y={y0 + 1.2} width={6.8} height={ph * 0.2} />
+              <path d={`M${hx0 - 3.4} ${y0 + 1.2}L${hx0 + 3.4} ${y0 + 1.2 + ph * 0.2}M${hx0 + 3.4} ${y0 + 1.2}L${hx0 - 3.4} ${y0 + 1.2 + ph * 0.2}`} />
+            </g>
+          ))}
         {type === 'tote' && !front && (
           <path d={`M${x0 + 5} ${y0 + ph * 0.45}h${pw - 10}v${ph * 0.38}h-${pw - 10}z`} strokeWidth={1.1} />
         )}
@@ -214,7 +222,7 @@ export function BagArt({
         {hasTabs && front && (
           <>
             {[hl, hr].map((tx0) => {
-              const L = ph * (type === 'business' ? 0.47 : type === 'tote' ? 0.45 : 0.43)
+              const L = ph * (type === 'business' ? 0.47 : 0.43)
               return (
                 <path
                   key={tx0}

@@ -93,6 +93,17 @@ function openingGroup(t: BagTemplateId): SpecGroup {
           { id: 'zip-double', name: 'ダブルファスナー', description: '両側から開閉できる仕様' },
         ],
       }
+    case 'tote':
+      return {
+        key: 'opening',
+        label,
+        defaultId: 'open',
+        options: [
+          { id: 'open', name: 'オープントップ', description: 'トートらしい、出し入れが楽な開口' },
+          { id: 'magnet', name: 'マグネット', description: 'ワンタッチで開閉' },
+          { id: 'zipper', name: 'ファスナー', description: '天面をしっかり閉じる仕様' },
+        ],
+      }
     default:
       return {
         key: 'opening',

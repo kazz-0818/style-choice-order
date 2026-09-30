@@ -128,14 +128,14 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     taper: { x: 1, z: 1 },
     handle: { mode: 'single', spread: 0.95, base: 2.4, tilt: 0.3, thick: 1, bandW: 0.05, bandT: 0.022 },
   },
-  // 横長トート。側面はA字
+  // 横長トート。ほぼまっすぐな壁、縫い付けの平たい2本持ち手
   tote: {
-    sx: 0.95,
-    sy: 0.85,
-    sz: 0.9,
+    sx: 1.0,
+    sy: 0.8,
+    sz: 0.72,
     body: 'box',
-    taper: { x: 0.95, z: 0.6 },
-    handle: { mode: 'dual', spread: 0.44, base: 1.65, tilt: 0, thick: 1, converge: 0.5, bandW: 0.084, bandT: 0.05 },
+    taper: { x: 1, z: 0.9 },
+    handle: { mode: 'dual', spread: 0.4, base: 1.5, tilt: 0, thick: 1, edge: 0.8, bandW: 0.11, bandT: 0.04 },
   },
 }
 

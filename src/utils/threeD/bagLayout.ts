@@ -111,7 +111,9 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const isPouch = templateId === 'shoulder-pouch'
   const isMini = templateId === 'mini-boston'
   const isTopHandle = templateId === 'top-handle'
-  const hasTabs = templateId === 'business' || templateId === 'tote' || templateId === 'top-handle'
+  // トートは革タブ・金具リングなしで、持ち手を本体へ縫い付けた見た目にする
+  const isTote = templateId === 'tote'
+  const hasTabs = templateId === 'business' || templateId === 'top-handle'
 
   /** 円筒（ミニボストン）の前面：正面中心から角度 phi（上向き正）の位置と、面に沿う傾き */
   const cylPoint = (phi: number) => {
@@ -395,7 +397,7 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     'strap-chain': layout([0, 0, 0], [1, 1, 1], !!chain),
     handle2: layout([0, handleTop, -zc], [1, 1, 1], dual, [-theta, 0, 0]),
     'ring-single': layout([0, top, 0], [1, 1, 1], isStrap || isTop),
-    'ring-dual': layout([0, handleTop, 0], [1, 1, 1], dual && !hasTabs),
+    'ring-dual': layout([0, handleTop, 0], [1, 1, 1], dual && !hasTabs && !isTote),
     'tab-0': tabLayout(0),
     'tab-1': tabLayout(1),
     'tab-2': tabLayout(2),

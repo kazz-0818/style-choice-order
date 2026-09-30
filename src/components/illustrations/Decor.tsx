@@ -1,6 +1,6 @@
 import { GOLD, NAVY } from './icons'
 
-/** 「DO」モノグラム（Desfy Original） */
+/** 「DO」モノグラム（Desfy Origouf） */
 export function DoLogo({ size = 56, className }: { size?: number; className?: string }) {
   return (
     <svg
@@ -9,7 +9,7 @@ export function DoLogo({ size = 56, className }: { size?: number; className?: st
       height={size}
       className={className}
       role="img"
-      aria-label="Desfy Original"
+      aria-label="Desfy Origouf"
     >
       <circle cx="40" cy="40" r="37" fill="none" stroke={GOLD} strokeWidth="1.2" />
       <circle cx="40" cy="40" r="33" fill="none" stroke={GOLD} strokeWidth="0.6" opacity="0.7" />

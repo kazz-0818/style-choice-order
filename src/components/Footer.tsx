@@ -10,7 +10,7 @@ export function Footer() {
         <div className="flex items-center gap-3">
           <DoLogo size={44} />
           <div>
-            <p className="font-serif text-sm tracking-[0.15em] text-gold-light">Desfy Original</p>
+            <p className="font-serif text-sm tracking-[0.15em] text-gold-light">Desfy Origouf</p>
             <p className="mt-0.5 text-[10px] tracking-[0.3em] text-cream/50">FULL ORDER MADE</p>
           </div>
         </div>

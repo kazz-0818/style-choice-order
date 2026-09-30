@@ -18,7 +18,7 @@ export function buildInquiryText(customization: BagCustomization): string {
     (layer) => `${layer.label}：${getColorName(customization.layerColors[layer.id])}`,
   ).join('\n')
 
-  return `Desfy Original（フルオーダーメイド）の製作について相談したいです。
+  return `Desfy Origouf（フルオーダーメイド）の製作について相談したいです。
 
 【バッグ型】
 ${template?.name ?? customization.templateId}

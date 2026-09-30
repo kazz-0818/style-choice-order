@@ -12,11 +12,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-stone/80 bg-cream/95 text-charcoal backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6">
-        <a href="#" className="flex shrink-0 items-center gap-2.5" aria-label="Desfy Original トップへ">
+        <a href="#" className="flex shrink-0 items-center gap-2.5" aria-label="Desfy Origouf トップへ">
           <DoLogo size={38} />
           <span className="leading-tight">
             <span className="block font-serif text-sm tracking-[0.12em] text-charcoal sm:text-base">
-              Desfy Original
+              Desfy Origouf
             </span>
             <span className="hidden text-[9px] tracking-[0.3em] text-warm-gray sm:block">
               FULL ORDER MADE

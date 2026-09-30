@@ -35,7 +35,7 @@ export function Features() {
       <section id="features" className="border-b border-stone bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="text-center">
-            <p className="text-[10px] tracking-[0.4em] text-gold uppercase">Desfy Original</p>
+            <p className="text-[10px] tracking-[0.4em] text-gold uppercase">Desfy Origouf</p>
             <h2 className="mt-2 font-serif text-2xl font-light text-navy sm:text-3xl">
               自由なサイズと仕様でつくる
               <br className="sm:hidden" />

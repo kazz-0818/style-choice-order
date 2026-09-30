@@ -21,7 +21,7 @@ export function Hero({ onSelectTemplate }: HeroProps) {
       <div className="relative mx-auto max-w-4xl px-6 py-16 text-center sm:px-10 sm:py-24">
         <DoLogo size={84} className="mx-auto" />
         <h1 className="mt-4 font-serif text-3xl font-light tracking-[0.14em] text-kogicha sm:text-5xl">
-          Desfy Original
+          Desfy Origouf
         </h1>
         <p className="mt-2 text-[10px] tracking-[0.5em] text-gold sm:text-xs">FULL ORDER MADE</p>
         <GoldDivider className="mt-5" />

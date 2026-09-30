@@ -1,4 +1,4 @@
-# Desfy Original フルオーダーメイドバッグ カスタマイザー
+# Desfy Origouf フルオーダーメイドバッグ カスタマイザー
 
 パンフレット（`docs/brochure/brochure-20260806.pdf`）の仕様に沿って作成した、バッグのカスタマイズ＆問い合わせサイトです。
 

@@ -30,7 +30,7 @@ export function InquirySection({ customization }: InquirySectionProps) {
       const url = URL.createObjectURL(createZip(entries))
       const a = document.createElement('a')
       a.href = url
-      a.download = 'desfy-original-preview.zip'
+      a.download = 'desfy-origouf-preview.zip'
       document.body.appendChild(a)
       a.click()
       a.remove()

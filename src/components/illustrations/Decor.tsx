@@ -14,8 +14,8 @@ export function DoLogo({ size = 56, className }: { size?: number; className?: st
       <circle cx="40" cy="40" r="37" fill="none" stroke={GOLD} strokeWidth="1.2" />
       <circle cx="40" cy="40" r="33" fill="none" stroke={GOLD} strokeWidth="0.6" opacity="0.7" />
       <text
-        x="39"
-        y="51.8"
+        x="36.6"
+        y="52.4"
         textAnchor="middle"
         fontSize="34"
         fontStyle="italic"

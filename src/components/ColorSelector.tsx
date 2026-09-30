@@ -7,6 +7,8 @@ interface ColorSelectorProps {
   layerColors: Record<BagLayer, string>
   onLayerChange: (layer: BagLayer) => void
   onColorSelect: (layer: BagLayer, colorId: string) => void
+  colorRequest: string
+  onColorRequestChange: (value: string) => void
   step?: number
 }
 
@@ -15,6 +17,8 @@ export function ColorSelector({
   layerColors,
   onLayerChange,
   onColorSelect,
+  colorRequest,
+  onColorRequestChange,
   step,
 }: ColorSelectorProps) {
   return (
@@ -80,6 +84,27 @@ export function ColorSelector({
             )
           })}
         </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor="color-request"
+          className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs"
+        >
+          備考（色調のご希望）
+        </label>
+        <p className="mt-1 text-[11px] leading-relaxed text-warm-gray sm:text-xs">
+          色調をリクエストされたい方はパントーンカラーでご指定ください
+        </p>
+        <textarea
+          id="color-request"
+          value={colorRequest}
+          onChange={(e) => onColorRequestChange(e.target.value)}
+          rows={3}
+          maxLength={500}
+          placeholder="例：本体 PANTONE 19-4052（Classic Blue）／持ち手 PANTONE 18-1663"
+          className="mt-2 w-full resize-y rounded-lg border border-stone bg-white px-3 py-2 text-xs text-charcoal placeholder:text-warm-gray/60 focus:border-gold focus:outline-none sm:text-sm"
+        />
       </div>
     </div>
   )

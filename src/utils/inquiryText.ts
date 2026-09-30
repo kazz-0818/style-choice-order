@@ -18,6 +18,8 @@ export function buildInquiryText(customization: BagCustomization): string {
     (layer) => `${layer.label}：${getColorName(customization.layerColors[layer.id])}`,
   ).join('\n')
 
+  const colorRequest = (customization.colorRequest ?? '').trim()
+
   return `Desfy Origouf（フルオーダーメイド）の製作について相談したいです。
 
 【バッグ型】
@@ -32,7 +34,7 @@ ${specLines}
 
 【カラー】
 ${colorLines}
-
+${colorRequest ? `\n【色調のご希望（パントーンカラー）】\n${colorRequest}\n` : ''}
 【ご相談内容】
 数量：
 希望納期：

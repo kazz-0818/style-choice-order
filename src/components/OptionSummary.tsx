@@ -24,6 +24,9 @@ export function OptionSummary({ customization, step, bare = false }: OptionSumma
       label: `${layer.label}カラー`,
       value: getColorName(customization.layerColors[layer.id]),
     })),
+    ...(customization.colorRequest?.trim()
+      ? [{ label: '色調のご希望', value: customization.colorRequest.trim() }]
+      : []),
   ]
 
   const content = (

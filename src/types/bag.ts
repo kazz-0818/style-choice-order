@@ -83,6 +83,8 @@ export interface BagCustomization {
   size: BagSize
   specs: BagSpecs
   layerColors: LayerColors
+  /** 色調のご希望（パントーンカラーなど・自由記入） */
+  colorRequest?: string
 }
 
 export interface LayerMeta {

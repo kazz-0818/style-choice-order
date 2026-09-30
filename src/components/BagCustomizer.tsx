@@ -158,6 +158,8 @@ export function BagCustomizer({
                   layerColors={customization.layerColors}
                   onLayerChange={onActiveLayerChange}
                   onColorSelect={updateLayerColor}
+                  colorRequest={customization.colorRequest ?? ''}
+                  onColorRequestChange={(colorRequest) => update({ colorRequest })}
                 />
               </StepSlot>
 

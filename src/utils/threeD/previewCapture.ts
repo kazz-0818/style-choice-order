@@ -58,7 +58,7 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 
 /** 画面の 3D キャンバスとは別のレンダーターゲットに 5 方向を描画して PNG にする */
 export async function renderViews(gl: WebGLRenderer, scene: Scene): Promise<CapturedView[]> {
-  const target = new WebGLRenderTarget(SIZE, SIZE, { samples: 4, colorSpace: SRGBColorSpace })
+  const target = new WebGLRenderTarget(SIZE, SIZE, { samples: 4, colorSpace: SRGBColorSpace, stencilBuffer: true })
   const camera = new PerspectiveCamera(40, 1, 0.1, 100)
   const pixels = new Uint8Array(SIZE * SIZE * 4)
   const prevTarget = gl.getRenderTarget()

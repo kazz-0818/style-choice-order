@@ -3,8 +3,13 @@ import {
   Color,
   LinearFilter,
   LinearMipmapLinearFilter,
+  AlwaysStencilFunc,
+  KeepStencilOp,
+  Material,
   Mesh,
   MeshStandardMaterial,
+  NotEqualStencilFunc,
+  ReplaceStencilOp,
   NoColorSpace,
   RepeatWrapping,
   type Texture,
@@ -140,6 +145,34 @@ function getStrandTextures(): StrandTextures {
   return strandTextures
 }
 
+/**
+ * 本体の毛が、上に重ねたパネル（ポケット・サイド・底など）を突き抜けて別の色で見えないように、
+ * 重ねパネル（とその毛）はステンシルに印を付け、本体の毛はその印のある画素へは描かない。
+ */
+const OVERLAY_STENCIL_REF = 1
+
+function markAsOverlay(mat: Material, on: boolean) {
+  mat.stencilWrite = on
+  mat.stencilRef = OVERLAY_STENCIL_REF
+  mat.stencilFunc = AlwaysStencilFunc
+  mat.stencilFail = KeepStencilOp
+  mat.stencilZFail = KeepStencilOp
+  mat.stencilZPass = on ? ReplaceStencilOp : KeepStencilOp
+}
+
+function maskedByOverlay(mat: Material) {
+  mat.stencilWrite = true
+  mat.stencilRef = OVERLAY_STENCIL_REF
+  mat.stencilFunc = NotEqualStencilFunc
+  mat.stencilFail = KeepStencilOp
+  mat.stencilZFail = KeepStencilOp
+  mat.stencilZPass = KeepStencilOp
+}
+
+function isBaseBodyMesh(mesh: Mesh) {
+  return mesh.name === 'body' || mesh.name === 'drum-body'
+}
+
 interface ShellData {
   shells: Mesh[]
 }
@@ -193,8 +226,10 @@ export function syncFurShells(
   extent: [number, number] | null,
 ) {
   let data = mesh.userData.fur as ShellData | undefined
+  const baseMat = mesh.material as Material
 
   if (!enabled || !extent) {
+    if (!Array.isArray(baseMat)) markAsOverlay(baseMat, false)
     if (data) {
       for (const s of data.shells) {
         mesh.remove(s)
@@ -211,13 +246,19 @@ export function syncFurShells(
       const h = (i + 1) / SHELLS
       const shell = new Mesh(mesh.geometry, makeShellMaterial(h, h * FUR_LENGTH))
       shell.userData.furShell = true
-      shell.renderOrder = 1
+      // 重ねパネルの毛を先に描いてステンシルに印を付け、そのあとに本体の毛を描く
+      shell.renderOrder = isBaseBodyMesh(mesh) ? 3 : 1
       shell.frustumCulled = false
       mesh.add(shell)
       shells.push(shell)
     }
     data = { shells }
     mesh.userData.fur = data
+  }
+
+  if (!Array.isArray(baseMat)) {
+    if (isBaseBodyMesh(mesh)) markAsOverlay(baseMat, false)
+    else markAsOverlay(baseMat, true)
   }
 
   const base = new Color(hex)
@@ -227,6 +268,8 @@ export function syncFurShells(
     const h = (i + 1) / SHELLS
     shell.geometry = mesh.geometry
     const mat = shell.material as MeshStandardMaterial
+    if (isBaseBodyMesh(mesh)) maskedByOverlay(mat)
+    else markAsOverlay(mat, true)
     // 根元はわずかに暗く、毛先は明るく（下地の暗い色が透けて見えないよう差は小さめ）
     mat.color.copy(base).multiplyScalar(0.86 + 0.26 * h)
     mat.alphaMap!.repeat.set(rx, ry)

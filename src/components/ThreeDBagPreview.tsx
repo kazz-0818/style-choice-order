@@ -235,7 +235,7 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
           <Canvas
             className="three-d-canvas"
             camera={{ position: CAMERA_POSITIONS.front, fov: 40 }}
-            gl={{ antialias: true, alpha: true }}
+            gl={{ antialias: true, alpha: true, stencil: true }}
             dpr={[1, 2]}
           >
             <color attach="background" args={['#fbf9f4']} />

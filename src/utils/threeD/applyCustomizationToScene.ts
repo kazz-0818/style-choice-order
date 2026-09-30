@@ -346,7 +346,7 @@ export function applyCustomizationToScene(
     // ファーの下地は柄のない無地（毛の隙間から暗い斑点が見えないよう、毛の根元に近い色でそろえる）
     paint(
       mesh,
-      furry ? shade(hex, 0.74) : hex,
+      furry ? shade(hex, 0.8) : hex,
       bodyStyle,
       extent && !furry ? { materialId, extent } : null,
     )

@@ -93,7 +93,7 @@ function getStrandTextures(): StrandTextures {
       cy.push((j + 0.15 + rand() * 0.7) * cell)
       const bundle = bundleAt((i + 0.5) * cell, (j + 0.5) * cell)
       len.push(Math.min(1, (0.5 + rand() * 0.5) * (0.78 + bundle * 0.5)))
-      tone.push(0.72 + rand() * 0.34 + (bundle - 0.5) * 0.12)
+      tone.push(0.88 + rand() * 0.2 + (bundle - 0.5) * 0.06)
     }
   }
 
@@ -110,7 +110,7 @@ function getStrandTextures(): StrandTextures {
       const gi = Math.floor(x / cell)
       const gj = Math.floor(y / cell)
       let best = 0
-      let bestTone = 0.85
+      let bestTone = 0.95
       for (let dj = -1; dj <= 1; dj++) {
         for (let di = -1; di <= 1; di++) {
           const wi = (gi + di + STRANDS) % STRANDS
@@ -227,8 +227,8 @@ export function syncFurShells(
     const h = (i + 1) / SHELLS
     shell.geometry = mesh.geometry
     const mat = shell.material as MeshStandardMaterial
-    // 根元は暗く、毛先は明るく（奥行き感）
-    mat.color.copy(base).multiplyScalar(0.74 + 0.46 * h)
+    // 根元はわずかに暗く、毛先は明るく（下地の暗い色が透けて見えないよう差は小さめ）
+    mat.color.copy(base).multiplyScalar(0.86 + 0.26 * h)
     mat.alphaMap!.repeat.set(rx, ry)
     mat.map!.repeat.set(rx, ry)
   })

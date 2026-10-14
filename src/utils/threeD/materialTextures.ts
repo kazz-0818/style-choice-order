@@ -265,10 +265,10 @@ const RECIPES: Record<
   },
   // キルティング：菱形の膨らみと縫い目
   quilting: {
-    height: () => quiltHeight(64, 41),
+    height: () => quiltHeight(128, 41),
     strength: 6.2,
     toneMin: 0.72,
-    tile: 0.38,
+    tile: 0.95,
     normalScale: 1.55,
   },
   // 布：粗い平織りのキャンバス

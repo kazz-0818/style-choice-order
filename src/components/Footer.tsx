@@ -1,4 +1,10 @@
-import { COMPANY_NAME, CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '../config/contact'
+import {
+  COMPANY_NAME,
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_NOTE,
+  CONTACT_PHONE_TEL,
+} from '../config/contact'
 import { DoLogo } from './illustrations/Decor'
 
 export function Footer() {
@@ -16,7 +22,7 @@ export function Footer() {
         </div>
         <div className="text-xs leading-relaxed">
           <a href={`tel:${CONTACT_PHONE_TEL}`} className="block hover:text-gold-light">
-            TEL {CONTACT_PHONE_DISPLAY}
+            TEL {CONTACT_PHONE_DISPLAY}（{CONTACT_PHONE_NOTE}）
           </a>
           <a href={`mailto:${CONTACT_EMAIL}`} className="block hover:text-gold-light">
             {CONTACT_EMAIL}

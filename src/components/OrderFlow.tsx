@@ -1,6 +1,11 @@
 import { FlowArt, GoldDivider } from './illustrations/Decor'
 import { Icon, IconBadge, type IconName } from './illustrations/icons'
-import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '../config/contact'
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_NOTE,
+  CONTACT_PHONE_TEL,
+} from '../config/contact'
 
 /** 製作の流れ（パンフレット P3） */
 const STEPS: { title: string; body: string; icon: IconName }[] = [
@@ -90,10 +95,13 @@ export function OrderFlow() {
           <p className="font-serif text-lg text-gold-light sm:text-2xl">お見積もり・ご依頼はこちら</p>
           <a
             href={`tel:${CONTACT_PHONE_TEL}`}
-            className="mt-3 inline-flex items-center gap-2 font-serif text-2xl tracking-wider text-cream transition hover:text-gold-light sm:text-4xl"
+            className="mt-3 inline-flex flex-col items-center gap-1 font-serif text-cream transition hover:text-gold-light"
           >
-            <Icon name="phone" size={28} />
-            {CONTACT_PHONE_DISPLAY}
+            <span className="inline-flex items-center gap-2 text-2xl tracking-wider sm:text-4xl">
+              <Icon name="phone" size={28} />
+              {CONTACT_PHONE_DISPLAY}
+            </span>
+            <span className="text-xs tracking-[0.2em] text-gold-light sm:text-sm">{CONTACT_PHONE_NOTE}</span>
           </a>
           <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a

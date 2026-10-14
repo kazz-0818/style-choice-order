@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY } from '../config/contact'
+import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_NOTE } from '../config/contact'
 import type { BagCustomization } from '../types/bag'
 import { GoldDivider } from './illustrations/Decor'
 import { InquiryActions } from './InquiryActions'
@@ -26,7 +26,7 @@ export function InquirySection({ customization }: InquirySectionProps) {
           <InquiryActions customization={customization} />
         </div>
         <p className="mt-8 text-xs text-warm-gray">
-          {CONTACT_EMAIL} / {CONTACT_PHONE_DISPLAY}
+          {CONTACT_EMAIL} / {CONTACT_PHONE_DISPLAY}（{CONTACT_PHONE_NOTE}）
         </p>
       </div>
     </section>

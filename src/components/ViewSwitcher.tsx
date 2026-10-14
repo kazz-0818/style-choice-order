@@ -21,7 +21,7 @@ export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherPr
   const { layerColors, size, specs, templateId } = customization
   const fillsFor = (view: BagView) => ({
     body: getColorHex(
-      view === 'back' && templateId === 'tote'
+      view === 'back'
         ? layerColors.back
         : view === 'top' && templateId === 'tote'
           ? layerColors.side

@@ -252,38 +252,41 @@ function clipBandPanel(bodyGeo, yLo, yHi, scale) {
   return g
 }
 
-const BOT_Y = -TOP + 0.2
-
 /** 左右マチ（前後面の角はフロント／バックへ譲る） */
 const sideGeometry = (bodyGeo) =>
   extractPanel(
     bodyGeo,
-    (_cx, cy, _cz, nx, _ny, nz) => Math.abs(nx) > 0.45 && Math.abs(nz) <= 0.5 && cy >= BOT_Y,
+    (_cx, _cy, _cz, nx, ny, nz) => Math.abs(nx) > 0.45 && Math.abs(nz) <= 0.5 && Math.abs(ny) <= 0.55,
     1.006,
   )
 
-/** 前面いち面（角の丸みまで前の色） */
+/** 前面いち面（下端の丸みまで前の色。ボトムは真下だけ） */
 const frontGeometry = (bodyGeo) =>
   extractPanel(
     bodyGeo,
-    (_cx, cy, _cz, _nx, ny, nz) => nz > 0.2 && cy >= BOT_Y && ny <= 0.55,
-    1.01,
+    (_cx, _cy, _cz, _nx, ny, nz) => nz > 0.2 && ny <= 0.55,
+    1.012,
   )
 
 /** 背面いち面 */
 const backGeometry = (bodyGeo) =>
   extractPanel(
     bodyGeo,
-    (_cx, cy, _cz, _nx, ny, nz) => nz < -0.2 && cy >= BOT_Y && ny <= 0.55,
-    1.01,
+    (_cx, _cy, _cz, _nx, ny, nz) => nz < -0.2 && ny <= 0.55,
+    1.012,
   )
 
 /** 天面 */
 const topPanelGeometry = (bodyGeo) =>
   extractPanel(bodyGeo, (_cx, _cy, _cz, _nx, ny) => ny > 0.55, 1.01)
 
-/** 底まわり（底面〜下端の丸み。前後面の下端にも回り込む） */
-const bottomGeometry = (bodyGeo) => clipBandPanel(bodyGeo, -TOP - 1, -TOP + 0.2, 1.012)
+/** 底面（真下を向いた面だけ。前後面へは回り込まない） */
+const bottomGeometry = (bodyGeo) =>
+  extractPanel(
+    bodyGeo,
+    (_cx, _cy, _cz, nx, ny, nz) => ny < -0.55 && Math.abs(nz) <= 0.35 && Math.abs(nx) <= 0.45,
+    1.008,
+  )
 
 // ── 開口部まわり（ファスナー・口金・マグネット） ────────
 const ZIP_L = W - 0.5

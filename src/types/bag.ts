@@ -104,10 +104,9 @@ export const BAG_LAYERS: LayerMeta[] = [
   { id: 'accent', label: '装飾' },
 ]
 
-/** トートだけ前後を別色。他型はフロントが前後・天面をまとめて塗る */
-export function getLayersForTemplate(templateId: BagTemplateId): LayerMeta[] {
-  if (templateId === 'tote') return BAG_LAYERS
-  return BAG_LAYERS.filter((layer) => layer.id !== 'back')
+/** 全型でフロント／バックを別色にできる */
+export function getLayersForTemplate(_templateId: BagTemplateId): LayerMeta[] {
+  return BAG_LAYERS
 }
 
 export const DEFAULT_LAYER_COLORS: LayerColors = {

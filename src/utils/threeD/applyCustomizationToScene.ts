@@ -247,10 +247,10 @@ function shade(hex: string, factor: number): string {
   return `#${new Color(hex).multiplyScalar(factor).getHexString()}`
 }
 
-/** トートだけ前後を別色。他型はフロント色が前後・天面をまとめて塗る */
+/** フロントとバックは別色。トートの天面だけマチ色に合わせる */
 function colorLayerOf(name: MeshName, templateId: string): BagLayer | undefined {
   if (name === 'front' || name === 'pocket') return 'body'
-  if (name === 'back' || name === 'pocket-back') return templateId === 'tote' ? 'back' : 'body'
+  if (name === 'back' || name === 'pocket-back') return 'back'
   if (name === 'top-panel') return templateId === 'tote' ? 'side' : 'body'
   return LAYER_OF[name]
 }

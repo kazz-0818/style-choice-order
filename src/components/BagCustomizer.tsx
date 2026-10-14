@@ -61,7 +61,6 @@ export function BagCustomizer({
 
   const updateLayerColor = (layer: BagLayer, colorId: string) => {
     const layerColors = { ...customization.layerColors, [layer]: colorId }
-    if (layer === 'body' && customization.templateId !== 'tote') layerColors.back = colorId
     onCustomizationChange({
       ...customization,
       layerColors,
@@ -74,7 +73,6 @@ export function BagCustomizer({
       templateId: id,
       specs: resolveSpecsForTemplate(id, customization.specs),
     })
-    if (id !== 'tote' && activeLayer === 'back') onActiveLayerChange('body')
     setViewRequest((prev) => ({ view: 'front', nonce: prev.nonce + 1, source: 'reset' }))
   }
 

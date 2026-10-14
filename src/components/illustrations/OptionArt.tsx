@@ -150,6 +150,16 @@ const ART: Record<string, ReactNode> = {
       <rect x="14" y="44" width="36" height="16" rx="3.5" fill="#fffdf8" />
     </>
   ),
+  'shoulderBelt:none': <Body handle={14} y={36} h={22} />,
+  'shoulderBelt:detachable': (
+    <>
+      <path d="M16 40C4 26 8 2 32 2s28 24 16 38" strokeDasharray="2.4 1.8" />
+      <path d="M22 40C22 22 42 22 42 40" />
+      <rect x="12" y="40" width="40" height="18" rx="3.5" fill="#fffdf8" />
+      <circle cx="16" cy="40" r="2" {...g} />
+      <circle cx="48" cy="40" r="2" {...g} />
+    </>
+  ),
 
   // ── 外ポケット／内仕様 ──────────────────
   'pocket:none': <Body />,

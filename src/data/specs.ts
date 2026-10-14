@@ -155,6 +155,20 @@ function handleGroup(t: BagTemplateId): SpecGroup {
   }
 }
 
+const SHOULDER_BELT_GROUP: SpecGroup = {
+  key: 'shoulderBelt',
+  label: '肩掛けベルト',
+  defaultId: 'none',
+  options: [
+    { id: 'none', name: 'なし', description: '持ち手のみの仕様' },
+    {
+      id: 'detachable',
+      name: '取り外し可能な肩掛けベルト',
+      description: '着脱できる肩掛け用ベルトを追加（プレビューには反映されません）',
+    },
+  ],
+}
+
 function lockGroup(t: BagTemplateId): SpecGroup {
   const label = '金具のデザイン'
   switch (t) {
@@ -239,9 +253,9 @@ const STEP_BUILDERS: Record<StepId, (t: BagTemplateId) => SpecStep> = {
     label: HAND_CARRY.includes(t) ? '持ち手の長さ' : 'ストラップの長さ',
     icon: 'handle',
     lead: HAND_CARRY.includes(t)
-      ? '手持ち用・肩掛け用など、使い方に合わせて長さを調整できます。'
+      ? '手持ち用・肩掛け用など、使い方に合わせて長さを調整できます。取り外し可能な肩掛けベルトも選べます。'
       : '肩掛けに最適な長さに調整できます。',
-    groups: [handleGroup(t)],
+    groups: HAND_CARRY.includes(t) ? [handleGroup(t), SHOULDER_BELT_GROUP] : [handleGroup(t)],
   }),
   pocket: () => ({
     id: 'pocket',

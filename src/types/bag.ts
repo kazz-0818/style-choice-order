@@ -54,6 +54,7 @@ export type SpecKey =
   | 'opening'
   | 'puller'
   | 'handle'
+  | 'shoulderBelt'
   | 'pocket'
   | 'inner'
   | 'lock'

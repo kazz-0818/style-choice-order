@@ -18,6 +18,11 @@ export const MATERIALS: PartOption[] = [
     description: 'キャンバスなどの生地。カジュアルで軽やかな仕上がりに。',
   },
   {
+    id: 'quilting',
+    name: 'キルティング',
+    description: '菱形の縫い目で膨らませたキルト。上品でボリュームのある仕上がりに。',
+  },
+  {
     id: 'fur',
     name: 'ファー・ボア',
     description: 'ふわふわのフェイクファー。縁や持ち手を革でまとめるのがおすすめ。',

@@ -30,7 +30,7 @@ export function Hero({ onSelectTemplate }: HeroProps) {
           あなたの『欲しい』をカタチにします。
         </p>
         <p className="mx-auto mt-4 max-w-xl text-xs leading-relaxed text-warm-gray sm:text-sm">
-          本革・合皮・布・ファー・化学繊維から素材を選び、デザイン・サイズ・細部の仕様まで。
+          本革・合皮・布・キルティング・ファー・化学繊維から素材を選び、デザイン・サイズ・細部の仕様まで。
           1点から製作できるフルオーダーメイドバッグです。
         </p>
 

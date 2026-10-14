@@ -42,6 +42,14 @@ const MATERIAL_STYLE: Record<string, MaterialStyle> = {
     sheenRoughness: 0.6,
     sheenColor: '#f2ece2',
   },
+  // キルティング：柔らかく膨らんだ革の光沢
+  quilting: {
+    roughness: 0.7,
+    metalness: 0,
+    sheen: 0.85,
+    sheenRoughness: 0.5,
+    sheenColor: '#f3eadc',
+  },
   // 布：マットで毛羽立った光沢（シーン）
   fabric: {
     roughness: 1,

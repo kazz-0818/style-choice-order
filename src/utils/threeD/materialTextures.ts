@@ -129,6 +129,29 @@ function weaveHeight(period: number, seed: number, ripstop: boolean): HeightFn {
 }
 
 /**
+ * キルティング：45度の菱形に膨らみ、縫い目の溝で区切る。
+ * period が SIZE の約数なら、タイルとして継ぎ目なく繰り返せる。
+ */
+function quiltHeight(period: number, seed: number): HeightFn {
+  const rand = mulberry32(seed)
+  const noise = new Float32Array(SIZE * SIZE)
+  for (let i = 0; i < noise.length; i++) noise[i] = rand()
+  return (x, y) => {
+    const u = (x + y) / period
+    const v = (x - y + SIZE) / period
+    const fu = Math.abs(u - Math.round(u))
+    const fv = Math.abs(v - Math.round(v))
+    const groove = Math.min(fu, fv)
+    const stitch = groove < 0.09 ? Math.pow(groove / 0.09, 1.4) : 1
+    const cu = u - Math.floor(u) - 0.5
+    const cv = v - Math.floor(v) - 0.5
+    const puff = Math.pow(Math.max(0, 1 - Math.hypot(cu, cv) * 1.75), 1.15)
+    const h = 0.16 + 0.78 * puff * stitch + (noise[y * SIZE + x] - 0.5) * 0.04
+    return clamp01(h)
+  }
+}
+
+/**
  * ファー・ボア：毛足の方向（縦）に細長くなじむノイズを重ねた、ふわふわの凹凸。
  * 格子を折り返して、タイルとして継ぎ目なく繰り返せるようにする。
  */
@@ -239,6 +262,14 @@ const RECIPES: Record<
     toneMin: 0.9,
     tile: 0.42,
     normalScale: 0.7,
+  },
+  // キルティング：菱形の膨らみと縫い目
+  quilting: {
+    height: () => quiltHeight(64, 41),
+    strength: 6.2,
+    toneMin: 0.72,
+    tile: 0.38,
+    normalScale: 1.55,
   },
   // 布：粗い平織りのキャンバス
   fabric: {

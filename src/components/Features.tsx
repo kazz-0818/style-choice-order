@@ -9,7 +9,7 @@ const FEATURES: { icon: IconName; title: string; body: string }[] = [
   {
     icon: 'hide',
     title: '素材選びも自由自在',
-    body: '上質な本革、扱いやすい合皮、個性的な布など、お好みに合わせてお選びいただけます。',
+    body: '上質な本革、扱いやすい合皮、キルティング、個性的な布など、お好みに合わせてお選びいただけます。',
   },
   {
     icon: 'sewing',
@@ -43,7 +43,7 @@ export function Features() {
             </h2>
             <GoldDivider className="mt-4" />
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-warm-gray">
-              本革・合皮・布・化学繊維など、さまざまな素材を使い、デザイン・サイズ・細かな仕様まで
+              本革・合皮・布・キルティング・化学繊維など、さまざまな素材を使い、デザイン・サイズ・細かな仕様まで
               ご希望を反映した、世界にひとつのオリジナルバッグをお作りします。
             </p>
           </div>
@@ -63,7 +63,7 @@ export function Features() {
 
           <div className="mt-12 sm:mt-16">
             <h3 className="text-center font-serif text-lg text-navy sm:text-xl">選べる素材</h3>
-            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
               {MATERIALS.map((material) => (
                 <a
                   key={material.id}

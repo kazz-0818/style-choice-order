@@ -271,7 +271,6 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
             className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow transition-transform ${autoRotate ? 'translate-x-3' : ''}`}
           />
         </span>
-        <span className="w-4 text-left font-medium">{autoRotate ? 'ON' : 'OFF'}</span>
       </button>
       <PreviewInquiryButton customization={customization} />
       <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-[10px] whitespace-nowrap tracking-widest text-warm-gray">

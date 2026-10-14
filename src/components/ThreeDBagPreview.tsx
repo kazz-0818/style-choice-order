@@ -17,6 +17,7 @@ import type { BagCustomization } from '../types/bag'
 import { BagArt, type BagView } from './illustrations/BagArt'
 import { Icon } from './illustrations/icons'
 import { BagModel } from './three/BagModel'
+import { sendInquiryWithPhotos } from '../utils/inquiryMail'
 import { registerPreviewCapturer, renderViews } from '../utils/threeD/previewCapture'
 
 export interface ViewRequest {
@@ -63,11 +64,55 @@ class GlbErrorBoundary extends Component<
   }
 }
 
+function PreviewInquiryButton({ customization }: { customization: BagCustomization }) {
+  const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
+
+  const handleClick = async () => {
+    setState('busy')
+    try {
+      await sendInquiryWithPhotos(customization)
+      setState('done')
+      window.setTimeout(() => setState('idle'), 4000)
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'AbortError') {
+        setState('idle')
+        return
+      }
+      console.error('[PreviewInquiryButton]', e)
+      setState('error')
+    }
+  }
+
+  const label =
+    state === 'busy' ? '添付中…' : state === 'done' ? '下書きを開きました' : state === 'error' ? '再試行' : 'こちらで問い合わせ'
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={state === 'busy'}
+        aria-label="こちらの内容で問い合わせる"
+        className="absolute top-3 right-3 z-20 flex max-w-[calc(100%-4.5rem)] items-center justify-center gap-1 rounded-full border border-navy bg-navy px-2 py-1.5 text-[9px] leading-none tracking-wide text-cream shadow-sm transition hover:bg-navy-dark disabled:opacity-60 sm:max-w-none sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-widest"
+      >
+        <Icon name="mail" size={12} className="shrink-0" />
+        <span className="truncate">{label}</span>
+      </button>
+      {state === 'error' && (
+        <p className="absolute top-11 right-3 z-20 max-w-[11rem] rounded-md bg-white/90 px-2 py-1 text-[9px] leading-snug text-red-700 shadow-sm" role="alert">
+          メールを用意できませんでした
+        </p>
+      )}
+    </>
+  )
+}
+
 /** 3D が使えない環境向けのイラスト表示 */
 function PreviewFallback({ customization }: { customization: BagCustomization }) {
   const { layerColors, specs } = customization
   return (
     <div className={`${FRAME_CLASS} flex items-center justify-center overflow-hidden p-4 sm:p-8`}>
+      <PreviewInquiryButton customization={customization} />
       <BagArt
         type={customization.templateId}
         size={customization.size}
@@ -228,6 +273,7 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
         </span>
         <span className="hidden w-4 text-left font-medium sm:inline">{autoRotate ? 'ON' : 'OFF'}</span>
       </button>
+      <PreviewInquiryButton customization={customization} />
       <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-[10px] whitespace-nowrap tracking-widest text-warm-gray">
         <span className="lg:hidden">ピンチで拡大 · ドラッグで回転</span>
         <span className="hidden lg:inline">ドラッグで回転 · ピンチでズーム</span>

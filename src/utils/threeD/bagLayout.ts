@@ -387,12 +387,15 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
 
   const meshes = {
     // 前後・天面・マチ・底のパネルで色を分けるため、箱型の下地本体は隠す
+    // トートだけ前後2面皮（ラップ面）。他型は5面パネル
     body: layout([0, 0, 0], [sx, sy, sz], false),
-    front: layout([0, 0, 0], [sx, sy, sz], !isCyl),
-    back: layout([0, 0, 0], [sx, sy, sz], !isCyl),
-    'top-panel': layout([0, 0, 0], [sx, sy, sz], !isCyl),
-    side: layout([0, 0, 0], [sx, sy, sz], !isCyl),
-    bottom: layout([0, 0, 0], [sx, sy, sz], !isCyl),
+    front: layout([0, 0, 0], [sx, sy, sz], !isCyl && !isTote),
+    back: layout([0, 0, 0], [sx, sy, sz], !isCyl && !isTote),
+    'top-panel': layout([0, 0, 0], [sx, sy, sz], !isCyl && !isTote),
+    side: layout([0, 0, 0], [sx, sy, sz], !isCyl && !isTote),
+    bottom: layout([0, 0, 0], [sx, sy, sz], !isCyl && !isTote),
+    'front-wrap': layout([0, 0, 0], [sx, sy, sz], !isCyl && isTote),
+    'back-wrap': layout([0, 0, 0], [sx, sy, sz], !isCyl && isTote),
     'drum-body': layout([0, 0, 0], [sx, sy, sz], isCyl),
     'drum-side': layout([0, 0, 0], [sx, sy, sz], isCyl),
     'drum-zip-tape': layout([0, 0, 0], bodyScale, zipVisible && isCyl),

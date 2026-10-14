@@ -288,6 +288,13 @@ const bottomGeometry = (bodyGeo) =>
     1.008,
   )
 
+/** トート用：前後2面皮（z=0 で分割。天面・マチ・底も前後へ含む） */
+const frontWrapGeometry = (bodyGeo) =>
+  extractPanel(bodyGeo, (_cx, _cy, cz) => cz >= 0, 1.012)
+
+const backWrapGeometry = (bodyGeo) =>
+  extractPanel(bodyGeo, (_cx, _cy, cz) => cz < 0, 1.012)
+
 // ── 開口部まわり（ファスナー・口金・マグネット） ────────
 const ZIP_L = W - 0.5
 const ZIP_Y = TOP - 0.24
@@ -871,6 +878,8 @@ function createBagScene() {
   const side = mesh('side', sideGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'side'))
 
   const bottom = mesh('bottom', bottomGeometry(bodyGeo), mat(0x4a3428, 0.6, 0.05, 'bottom'))
+  const frontWrap = mesh('front-wrap', frontWrapGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'front-wrap'))
+  const backWrap = mesh('back-wrap', backWrapGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'back-wrap'))
 
   const handle = mesh('handle', handleGeometry(), mat(0x8b6f4e, 0.55, 0.05, 'handle'))
   const handle2 = mesh('handle2', handleGeometry(), mat(0x8b6f4e, 0.55, 0.05, 'handle2'))
@@ -970,6 +979,8 @@ function createBagScene() {
     topPanel,
     side,
     bottom,
+    frontWrap,
+    backWrap,
     handle,
     handle2,
     ringSingle,

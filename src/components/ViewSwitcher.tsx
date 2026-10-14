@@ -20,17 +20,11 @@ interface ViewSwitcherProps {
 export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherProps) {
   const { layerColors, size, specs, templateId } = customization
   const fillsFor = (view: BagView) => ({
-    body: getColorHex(
-      view === 'back'
-        ? layerColors.back
-        : view === 'top' && templateId === 'tote'
-          ? layerColors.side
-          : layerColors.body,
-    ),
+    body: getColorHex(view === 'back' ? layerColors.back : layerColors.body),
     handle: getColorHex(layerColors.handle),
     metal: getColorHex(layerColors.metal),
     accent: getColorHex(layerColors.accent),
-    bottom: getColorHex(layerColors.bottom),
+    bottom: getColorHex(templateId === 'tote' ? layerColors.body : layerColors.bottom),
   })
 
   return (

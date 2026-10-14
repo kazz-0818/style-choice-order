@@ -104,8 +104,11 @@ export const BAG_LAYERS: LayerMeta[] = [
   { id: 'accent', label: '装飾' },
 ]
 
-/** 全型でフロント／バックを別色にできる */
-export function getLayersForTemplate(_templateId: BagTemplateId): LayerMeta[] {
+/** トートは前後2面皮。他型はフロント／バック／サイド／底を分けられる */
+export function getLayersForTemplate(templateId: BagTemplateId): LayerMeta[] {
+  if (templateId === 'tote') {
+    return BAG_LAYERS.filter((layer) => layer.id !== 'side' && layer.id !== 'bottom')
+  }
   return BAG_LAYERS
 }
 

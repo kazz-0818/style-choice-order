@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { StepTitle } from './StepTitle'
 import { COLORS } from '../data/colors'
 import { getLayersForTemplate, type BagLayer, type BagTemplateId } from '../types/bag'
@@ -24,6 +25,13 @@ export function ColorSelector({
   step,
 }: ColorSelectorProps) {
   const layers = getLayersForTemplate(templateId)
+
+  useEffect(() => {
+    if (!getLayersForTemplate(templateId).some((layer) => layer.id === activeLayer)) {
+      onLayerChange('body')
+    }
+  }, [templateId, activeLayer, onLayerChange])
+
   return (
     <div className="space-y-3 sm:space-y-4">
       {step && (

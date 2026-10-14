@@ -87,6 +87,8 @@ const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   body: 'body',
   front: 'body',
   back: 'back',
+  'front-wrap': 'body',
+  'back-wrap': 'back',
   'top-panel': 'body',
   'drum-body': 'body',
   'drum-side': 'side',
@@ -148,6 +150,8 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
     case 'body':
     case 'front':
     case 'back':
+    case 'front-wrap':
+    case 'back-wrap':
     case 'top-panel':
     case 'side':
     case 'bottom':
@@ -247,11 +251,10 @@ function shade(hex: string, factor: number): string {
   return `#${new Color(hex).multiplyScalar(factor).getHexString()}`
 }
 
-/** フロントとバックは別色。トートの天面だけマチ色に合わせる */
-function colorLayerOf(name: MeshName, templateId: string): BagLayer | undefined {
-  if (name === 'front' || name === 'pocket') return 'body'
-  if (name === 'back' || name === 'pocket-back') return 'back'
-  if (name === 'top-panel') return templateId === 'tote' ? 'side' : 'body'
+/** フロントとバックは別色。トートは前後2面皮（ラップ面） */
+function colorLayerOf(name: MeshName, _templateId: string): BagLayer | undefined {
+  if (name === 'front' || name === 'front-wrap' || name === 'pocket') return 'body'
+  if (name === 'back' || name === 'back-wrap' || name === 'pocket-back') return 'back'
   return LAYER_OF[name]
 }
 

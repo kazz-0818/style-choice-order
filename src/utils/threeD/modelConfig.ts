@@ -1,5 +1,5 @@
 /** GLB配置パス（public/models/ 配下） */
-export const CUSTOM_BAG_MODEL_URL = '/models/custom-bag.glb?v=front-full'
+export const CUSTOM_BAG_MODEL_URL = '/models/custom-bag.glb?v=tote-2face'
 
 /** GLB内メッシュ名（scripts/generate-bag-glb.mjs と一致させる） */
 export const MESH_NAMES = [
@@ -9,6 +9,8 @@ export const MESH_NAMES = [
   'top-panel',
   'side',
   'bottom',
+  'front-wrap',
+  'back-wrap',
   'handle',
   'handle2',
   'ring-single',

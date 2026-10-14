@@ -93,7 +93,7 @@ function PreviewInquiryButton({ customization }: { customization: BagCustomizati
         onClick={handleClick}
         disabled={state === 'busy'}
         aria-label="こちらの内容で問い合わせる"
-        className="absolute top-3 right-3 z-20 flex max-w-[calc(100%-4.5rem)] items-center justify-center gap-1 rounded-full border border-navy bg-navy px-2 py-1.5 text-[9px] leading-none tracking-wide text-cream shadow-sm transition hover:bg-navy-dark disabled:opacity-60 sm:max-w-none sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-widest"
+        className="absolute top-3 right-3 z-20 flex max-w-[calc(100%-7.5rem)] items-center justify-center gap-1 rounded-full border border-navy bg-navy px-2 py-1.5 text-[9px] leading-none tracking-wide text-cream shadow-sm transition hover:bg-navy-dark disabled:opacity-60 sm:max-w-none sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-widest"
       >
         <Icon name="mail" size={12} className="shrink-0" />
         <span className="truncate">{label}</span>
@@ -255,23 +255,23 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
         aria-checked={autoRotate}
         aria-label={autoRotate ? '自動回転 ON' : '自動回転 OFF'}
         onClick={() => setAutoRotate((v) => !v)}
-        className="absolute top-3 left-3 z-20 flex items-center justify-center rounded-full border border-stone bg-white/85 p-1.5 text-navy shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:gap-2 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-widest"
+        className="absolute top-3 left-3 z-20 flex items-center justify-center gap-1.5 rounded-full border border-stone bg-white/85 px-2 py-1 text-[9px] tracking-widest text-navy shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:gap-2 sm:px-2.5 sm:text-[10px]"
       >
         <Icon
           name="rotate"
-          size={16}
+          size={14}
           className={`sm:hidden ${autoRotate ? 'animate-[spin_3s_linear_infinite] text-gold' : 'text-warm-gray'}`}
         />
         <span className="hidden sm:inline">自動回転</span>
         <span
           aria-hidden="true"
-          className={`relative hidden h-4 w-7 rounded-full transition-colors sm:inline-block ${autoRotate ? 'bg-gold' : 'bg-stone'}`}
+          className={`relative inline-block h-4 w-7 rounded-full transition-colors ${autoRotate ? 'bg-gold' : 'bg-stone'}`}
         >
           <span
             className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow transition-transform ${autoRotate ? 'translate-x-3' : ''}`}
           />
         </span>
-        <span className="hidden w-4 text-left font-medium sm:inline">{autoRotate ? 'ON' : 'OFF'}</span>
+        <span className="w-4 text-left font-medium">{autoRotate ? 'ON' : 'OFF'}</span>
       </button>
       <PreviewInquiryButton customization={customization} />
       <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-[10px] whitespace-nowrap tracking-widest text-warm-gray">

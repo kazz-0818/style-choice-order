@@ -3,8 +3,9 @@ import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '../conf
 import type { BagCustomization } from '../types/bag'
 import { createZip } from '../utils/zip'
 import { capturePreviewViews } from '../utils/threeD/previewCapture'
-import { buildInquiryMailtoUrl, buildInquiryText } from '../utils/inquiryText'
+import { buildInquiryText } from '../utils/inquiryText'
 import { GoldDivider } from './illustrations/Decor'
+import { InquirySendButton } from './InquirySendButton'
 import { Icon } from './illustrations/icons'
 
 interface InquirySectionProps {
@@ -52,8 +53,6 @@ export function InquirySection({ customization }: InquirySectionProps) {
     }
   }
 
-  const mailto = buildInquiryMailtoUrl(customization)
-
   return (
     <section id="inquiry" className="border-b border-stone bg-cream py-16 sm:py-20">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
@@ -69,13 +68,10 @@ export function InquirySection({ customization }: InquirySectionProps) {
           ロゴ刻印やオリジナル金具のご要望まで、用途に合わせてご提案いたします。
         </p>
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <a
-            href={mailto}
-            className="flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-navy-dark"
-          >
-            <Icon name="mail" size={16} />
-            こちらの内容で問い合わせる
-          </a>
+          <InquirySendButton
+            customization={customization}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-navy-dark disabled:opacity-60 sm:w-auto"
+          />
           <button
             type="button"
             onClick={handleCopy}
@@ -106,8 +102,8 @@ export function InquirySection({ customization }: InquirySectionProps) {
           </p>
         )}
         <p className="mt-4 text-xs leading-relaxed text-warm-gray">
-          メールにプレビュー写真（表・裏・側面・上・下）を添付する場合は、先に「プレビュー写真を保存」を押して、
-          保存されたZIPをメールに添付してください。
+          「こちらの内容で問い合わせる」を押すと、プレビュー写真（表・裏・側面・上・下）が自動で添付されます。
+          メーラーが開いたら、そのまま送信してください。
         </p>
         {photoState === 'done' && (
           <p className="mt-2 text-sm text-gold" role="status">

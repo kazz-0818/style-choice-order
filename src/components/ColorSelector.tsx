@@ -62,9 +62,32 @@ export function ColorSelector({
       </div>
 
       <div>
-        <h4 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
-          カラー — {layers.find((l) => l.id === activeLayer)?.label}
-        </h4>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h4 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
+            カラー — {layers.find((l) => l.id === activeLayer)?.label}
+          </h4>
+          {(activeLayer === 'body' || activeLayer === 'back') && (
+            <button
+              type="button"
+              onClick={() => {
+                const source = activeLayer === 'body' ? 'back' : 'body'
+                onColorSelect(activeLayer, layerColors[source])
+              }}
+              disabled={layerColors.body === layerColors.back}
+              className="flex items-center gap-1.5 rounded-full border border-navy px-2.5 py-1 text-[10px] tracking-wide text-navy transition hover:bg-navy hover:text-cream disabled:cursor-default disabled:border-stone disabled:text-warm-gray disabled:hover:bg-transparent disabled:hover:text-warm-gray sm:text-xs"
+            >
+              <span
+                className="h-3 w-3 rounded-full border border-charcoal/20"
+                style={{
+                  backgroundColor: COLORS.find(
+                    (c) => c.id === layerColors[activeLayer === 'body' ? 'back' : 'body'],
+                  )?.hex,
+                }}
+              />
+              {activeLayer === 'body' ? 'バックと同色' : 'フロントと同色'}
+            </button>
+          )}
+        </div>
         <div className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-3 sm:grid-cols-6 sm:gap-2">
           {COLORS.map((color) => {
             const selected = layerColors[activeLayer] === color.id

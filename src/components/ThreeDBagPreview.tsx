@@ -15,6 +15,7 @@ import {
 import { getColorHex } from '../data/colors'
 import type { BagCustomization } from '../types/bag'
 import { BagArt, type BagView } from './illustrations/BagArt'
+import { Icon } from './illustrations/icons'
 import { BagModel } from './three/BagModel'
 import { registerPreviewCapturer, renderViews } from '../utils/threeD/previewCapture'
 
@@ -207,19 +208,25 @@ export function ThreeDBagPreview({ customization, viewRequest }: ThreeDBagPrevie
         type="button"
         role="switch"
         aria-checked={autoRotate}
+        aria-label={autoRotate ? '自動回転 ON' : '自動回転 OFF'}
         onClick={() => setAutoRotate((v) => !v)}
-        className="absolute top-3 left-3 z-20 flex items-center gap-2 rounded-full border border-stone bg-white/85 px-2.5 py-1 text-[10px] tracking-widest text-navy shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+        className="absolute top-3 left-3 z-20 flex items-center justify-center rounded-full border border-stone bg-white/85 p-1.5 text-navy shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:gap-2 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-widest"
       >
-        <span>自動回転</span>
+        <Icon
+          name="rotate"
+          size={16}
+          className={`sm:hidden ${autoRotate ? 'animate-[spin_3s_linear_infinite] text-gold' : 'text-warm-gray'}`}
+        />
+        <span className="hidden sm:inline">自動回転</span>
         <span
           aria-hidden="true"
-          className={`relative inline-block h-4 w-7 rounded-full transition-colors ${autoRotate ? 'bg-gold' : 'bg-stone'}`}
+          className={`relative hidden h-4 w-7 rounded-full transition-colors sm:inline-block ${autoRotate ? 'bg-gold' : 'bg-stone'}`}
         >
           <span
             className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow transition-transform ${autoRotate ? 'translate-x-3' : ''}`}
           />
         </span>
-        <span className="w-4 text-left font-medium">{autoRotate ? 'ON' : 'OFF'}</span>
+        <span className="hidden w-4 text-left font-medium sm:inline">{autoRotate ? 'ON' : 'OFF'}</span>
       </button>
       <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-[10px] whitespace-nowrap tracking-widest text-warm-gray">
         <span className="lg:hidden">ピンチで拡大 · ドラッグで回転</span>

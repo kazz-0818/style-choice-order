@@ -37,6 +37,7 @@ export type IconName =
   | 'palette'
   | 'check'
   | 'bag'
+  | 'rotate'
 
 /** 48x48 の線画アイコン（stroke は currentColor） */
 const PATHS: Record<IconName, ReactNode> = {
@@ -264,6 +265,14 @@ const PATHS: Record<IconName, ReactNode> = {
     <>
       <path d="M9 17h30l3 25H6z" />
       <path d="M17 17V13a7 7 0 0114 0v4" />
+    </>
+  ),
+  rotate: (
+    <>
+      <path d="M38 24A14 14 0 0 0 14 14.4L10 18" />
+      <path d="M10 10v8h8" />
+      <path d="M10 24a14 14 0 0 0 24 9.6L38 30" />
+      <path d="M38 38v-8h-8" />
     </>
   ),
 }

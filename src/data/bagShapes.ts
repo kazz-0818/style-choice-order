@@ -76,13 +76,13 @@ export function taperFactor(shape: BagShape, ym: number): { fx: number; fz: numb
 
 /** パンフレット（2026/08/06版）7型の標準プロポーション（線画の縦横比・側面の傾きに合わせる） */
 export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
-  // 台形のトップハンドル。正面は上がやや細く、側面（マチ）は上下で同じ奥行き
+  // トップハンドル。正面の幅は上下同じ。マチ（奥行き）は上に向かって細くなる
   'top-handle': {
     sx: 0.8,
     sy: 0.78,
     sz: 0.62,
     body: 'box',
-    taper: { x: 0.85, z: 1 },
+    taper: { x: 1, z: 0.6 },
     sideDent: 0.14,
     handle: { mode: 'dual', spread: 0.49, base: 1.27, tilt: 0, thick: 1, converge: 0.42, bandW: 0.066, bandT: 0.05 },
   },

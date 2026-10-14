@@ -6,9 +6,14 @@ import { Icon } from './illustrations/icons'
 interface InquirySendButtonProps {
   customization: BagCustomization
   className?: string
+  wrapClassName?: string
 }
 
-export function InquirySendButton({ customization, className }: InquirySendButtonProps) {
+export function InquirySendButton({
+  customization,
+  className,
+  wrapClassName = 'w-full sm:w-auto',
+}: InquirySendButtonProps) {
   const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
 
   const handleClick = async () => {
@@ -28,7 +33,7 @@ export function InquirySendButton({ customization, className }: InquirySendButto
   }
 
   return (
-    <div className="w-full sm:w-auto">
+    <div className={wrapClassName}>
       <button
         type="button"
         onClick={handleClick}

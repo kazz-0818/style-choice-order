@@ -4,7 +4,7 @@ import { getColorName } from '../data/colors'
 import { hardwareMap, materialMap } from '../data/parts'
 import { getSpecSummaryRows } from '../data/specs'
 import { getLayersForTemplate, type BagCustomization } from '../types/bag'
-import { InquirySendButton } from './InquirySendButton'
+import { InquiryActions } from './InquiryActions'
 
 interface OptionSummaryProps {
   customization: BagCustomization
@@ -51,10 +51,7 @@ export function OptionSummary({ customization, step, bare = false }: OptionSumma
       <p className="mt-3 rounded-lg bg-cream px-3 py-2 text-[10px] leading-relaxed text-warm-gray sm:text-xs">
         価格・サイズは記載しておりません。仕様に応じて個別にご提案いたします。希少素材などは別途ご相談ください。
       </p>
-      <InquirySendButton
-        customization={customization}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-navy bg-navy py-2.5 text-center text-xs tracking-wide text-cream transition hover:bg-navy-dark disabled:opacity-60 sm:mt-5 sm:py-3 sm:text-sm"
-      />
+      <InquiryActions customization={customization} layout="stack" />
     </>
   )
 

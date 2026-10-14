@@ -22,8 +22,58 @@ export const TAPER_MESHES = new Set<string>([
   'magnet-snap',
 ])
 
-function deform(orig: BufferGeometry, tx: number, tz: number): BufferGeometry {
+/** サイドのへこみ（マチの折り込み）を適用する本体系メッシュ */
+export const DENT_MESHES = new Set<string>(['body', 'side', 'bottom'])
+
+const smooth = (a: number, b: number, v: number) => {
+  const t = Math.max(0, Math.min(1, (v - a) / (b - a)))
+  return t * t * (3 - 2 * t)
+}
+
+/** サイド面を内側へへこませる量（x 方向・符号付き）。中央が深く、上下端と前後の角では 0 */
+function dentDelta(x: number, y: number, z: number, depth: number): number {
+  const wall = M.W / 2 - 0.26
+  const wx = smooth(0, 0.26, Math.abs(x) - wall)
+  if (wx <= 0) return 0
+  const gz = 0.5 * (1 + Math.cos(Math.PI * Math.min(1, Math.abs(z) / 0.2)))
+  const gy = smooth(-M.TOP + 0.2, -M.TOP + 0.5, y) * (1 - smooth(M.TOP - 0.55, M.TOP - 0.25, y))
+  return -Math.sign(x) * depth * wx * gz * gy
+}
+
+/** へこみを頂点と法線へ反映（法線は逆転置ヤコビアンで補正） */
+function applyDent(g: BufferGeometry, depth: number) {
+  const pos = g.getAttribute('position')
+  const nor = g.getAttribute('normal')
+  const e = 1e-3
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i)
+    const y = pos.getY(i)
+    const z = pos.getZ(i)
+    const d = dentDelta(x, y, z, depth)
+    if (d === 0 && dentDelta(x, y + e, z, depth) === 0 && dentDelta(x, y, z + e, depth) === 0) continue
+    if (nor) {
+      const dx = (dentDelta(x + e, y, z, depth) - dentDelta(x - e, y, z, depth)) / (2 * e)
+      const dy = (dentDelta(x, y + e, z, depth) - dentDelta(x, y - e, z, depth)) / (2 * e)
+      const dz = (dentDelta(x, y, z + e, depth) - dentDelta(x, y, z - e, depth)) / (2 * e)
+      const n0 = nor.getX(i)
+      const n1 = nor.getY(i)
+      const n2 = nor.getZ(i)
+      const k = n0 / (1 + dx)
+      const m0 = n0 - dx * k
+      const m1 = n1 - dy * k
+      const m2 = n2 - dz * k
+      const len = Math.hypot(m0, m1, m2) || 1
+      nor.setXYZ(i, m0 / len, m1 / len, m2 / len)
+    }
+    pos.setX(i, x + d)
+  }
+  pos.needsUpdate = true
+  if (nor) nor.needsUpdate = true
+}
+
+function deform(orig: BufferGeometry, tx: number, tz: number, dent: number): BufferGeometry {
   const g = orig.clone()
+  if (dent > 0) applyDent(g, dent)
   const pos = g.getAttribute('position')
   const nor = g.getAttribute('normal')
   const H = 2 * M.TOP
@@ -57,12 +107,12 @@ function deform(orig: BufferGeometry, tx: number, tz: number): BufferGeometry {
 }
 
 /** メッシュに上すぼまりを適用（元ジオメトリは userData に保持して再計算に備える） */
-export function applyTaper(mesh: Mesh, tx: number, tz: number) {
-  const key = `${tx}|${tz}`
+export function applyTaper(mesh: Mesh, tx: number, tz: number, dent = 0) {
+  const key = `${tx}|${tz}|${dent}`
   if (mesh.userData.taperKey === key) return
   if (!mesh.userData.origGeometry) mesh.userData.origGeometry = mesh.geometry
   const orig = mesh.userData.origGeometry as BufferGeometry
   if (mesh.geometry !== orig) mesh.geometry.dispose()
-  mesh.geometry = tx === 1 && tz === 1 ? orig : deform(orig, tx, tz)
+  mesh.geometry = tx === 1 && tz === 1 && dent === 0 ? orig : deform(orig, tx, tz, dent)
   mesh.userData.taperKey = key
 }

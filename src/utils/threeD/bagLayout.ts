@@ -31,6 +31,8 @@ export interface BagLayout {
   rings: { single: RingSpec; dual: RingSpec }
   /** 本体の上すぼまり（上端の幅・奥行き倍率） */
   taper: { x: number; z: number }
+  /** サイド面のへこみ量（モデル単位。0 でなし） */
+  sideDent: number
 }
 
 const HAND_LENGTH: Record<string, number> = { short: 0.7, standard: 1, long: 1.35, shoulder: 1.9 }
@@ -505,5 +507,5 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     dual: { x: ringX, zs: [-zc, zc] },
   }
 
-  return { meshes, rootScale, rootY, chain, handleBand, rings, taper: shape.taper }
+  return { meshes, rootScale, rootY, chain, handleBand, rings, taper: shape.taper, sideDent: shape.sideDent ?? 0 }
 }

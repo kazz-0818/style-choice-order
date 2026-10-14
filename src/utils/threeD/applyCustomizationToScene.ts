@@ -10,7 +10,7 @@ import { isMeshName, type MeshName } from './modelConfig'
 import { buildChainGeometry } from './strapChain'
 import { buildHandleBandGeometry } from './handleBand'
 import { buildRingGeometry, ringSpecKey } from './ringGeometry'
-import { TAPER_MESHES, applyTaper } from './taper'
+import { DENT_MESHES, TAPER_MESHES, applyTaper } from './taper'
 
 interface MaterialStyle {
   roughness: number
@@ -294,7 +294,9 @@ export function applyCustomizationToScene(
     }
 
     // 上すぼまり（台形・A字）を本体系のジオメトリへ反映
-    if (TAPER_MESHES.has(name)) applyTaper(mesh, layout.taper.x, layout.taper.z)
+    if (TAPER_MESHES.has(name)) {
+      applyTaper(mesh, layout.taper.x, layout.taper.z, DENT_MESHES.has(name) ? layout.sideDent : 0)
+    }
 
     // ベルトのステッチ：淡いクリーム色の糸
     if (name === 'belt-stitch') {

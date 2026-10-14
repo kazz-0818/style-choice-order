@@ -43,6 +43,8 @@ export interface BagShape {
   body: 'box' | 'cylinder'
   /** 上端の幅・奥行きが底に対して何倍か（1 = 直方体、小さいほど台形・A字） */
   taper: { x: number; z: number }
+  /** サイド（マチ）中央のへこみ量（モデル単位）。未指定＝へこみなし */
+  sideDent?: number
   handle: {
     mode: HandleMode
     /** 取付幅（上端の本体幅に対する比率） */
@@ -81,6 +83,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 0.62,
     body: 'box',
     taper: { x: 0.85, z: 0.6 },
+    sideDent: 0.1,
     handle: { mode: 'dual', spread: 0.49, base: 1.27, tilt: 0, thick: 1, converge: 0.42, bandW: 0.066, bandT: 0.05 },
   },
   // 横長の角型。側面は底が広い台形
@@ -90,6 +93,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 0.75,
     body: 'box',
     taper: { x: 0.96, z: 0.7 },
+    sideDent: 0.1,
     handle: { mode: 'dual', spread: 0.39, base: 1.22, tilt: 0, thick: 1, converge: 0.5, bandW: 0.085, bandT: 0.05 },
   },
   // 口金付きの台形。側面は三角に近い
@@ -108,6 +112,7 @@ export const BAG_SHAPES: Record<BagTemplateId, BagShape> = {
     sz: 0.5,
     body: 'box',
     taper: { x: 0.92, z: 0.8 },
+    sideDent: 0.1,
     handle: { mode: 'top', spread: 0.32, base: 0.3, tilt: 0, thick: 1 },
   },
   // 円筒（ドラム）形の横長ミニボストン

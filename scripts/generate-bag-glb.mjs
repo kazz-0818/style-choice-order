@@ -119,7 +119,7 @@ function mapToRounded(px, py, pz) {
 function bodyGeometry() {
   const xs = axisCoords(W / 2, RX, RX, 5, 8)
   const ys = axisCoords(H / 2, RY_BOT, RY_TOP, 5, 8)
-  const zs = axisCoords(D / 2, RZ, RZ, 5, 2)
+  const zs = axisCoords(D / 2, RZ, RZ, 5, 6)
   const lists = [xs, ys, zs]
   const positions = []
   const uvs = []

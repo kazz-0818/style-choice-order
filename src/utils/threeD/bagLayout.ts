@@ -5,6 +5,7 @@ import {
   getBodyDimensions,
   taperFactor,
 } from '../../data/bagShapes'
+import { sideDentLevel } from './taper'
 import type { BagCustomization } from '../../types/bag'
 import type { MeshName } from './modelConfig'
 import type { HandleBandSpec } from './handleBand'
@@ -410,7 +411,14 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
     'tab-ring-3': tabRingLayout(3),
     'side-rings': layout(
       [0, ringsY, 0],
-      [sx * fxAt(M.TOP - 0.16), 1, 1],
+      // サイドが内側へ折れ込む型は、リングもへこみに合わせて内側へ寄せる
+      [
+        sx *
+          fxAt(M.TOP - 0.16) *
+          (1 - ((shape.sideDent ?? 0) * sideDentLevel(M.TOP - 0.16)) / (M.W / 2 + 0.035)),
+        1,
+        1,
+      ],
       hasTabs && !isTopHandle,
     ),
     clasp: layout(

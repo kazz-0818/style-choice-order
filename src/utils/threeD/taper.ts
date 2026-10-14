@@ -30,14 +30,21 @@ const smooth = (a: number, b: number, v: number) => {
   return t * t * (3 - 2 * t)
 }
 
-/** サイド面を内側へへこませる量（x 方向・符号付き）。中央が深く、上下端と前後の角では 0 */
+/** サイドのへこみの高さ方向の強さ（上端で最大、下へ向かって 0 になる三角形の折り込み） */
+export function sideDentLevel(y: number): number {
+  const lo = -M.TOP + 0.3
+  const hi = M.TOP - 0.05
+  const t = Math.max(0, Math.min(1, (y - lo) / (hi - lo)))
+  return Math.pow(t, 1.3)
+}
+
+/** サイド面を内側へへこませる量（x 方向・符号付き）。上端の中央が最も深く、下に向かって浅くなる */
 function dentDelta(x: number, y: number, z: number, depth: number): number {
   const wall = M.W / 2 - 0.26
   const wx = smooth(0, 0.26, Math.abs(x) - wall)
   if (wx <= 0) return 0
-  const gz = 0.5 * (1 + Math.cos(Math.PI * Math.min(1, Math.abs(z) / 0.2)))
-  const gy = smooth(-M.TOP + 0.2, -M.TOP + 0.5, y) * (1 - smooth(M.TOP - 0.55, M.TOP - 0.25, y))
-  return -Math.sign(x) * depth * wx * gz * gy
+  const gz = Math.pow(Math.max(0, 1 - Math.abs(z) / 0.22), 1.2)
+  return -Math.sign(x) * depth * wx * gz * sideDentLevel(y)
 }
 
 /** へこみを頂点と法線へ反映（法線は逆転置ヤコビアンで補正） */

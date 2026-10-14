@@ -100,8 +100,8 @@ const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   'tab-ring-2': 'metal',
   'tab-ring-3': 'metal',
   'side-rings': 'metal',
-  'pocket-l': 'accent',
-  'pocket-r': 'accent',
+  'pocket-l': 'body',
+  'pocket-r': 'body',
   'magnet-tab': 'body',
   side: 'side',
   bottom: 'bottom',
@@ -149,7 +149,7 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
       return [sx, sy]
     case 'pocket-l':
     case 'pocket-r':
-      return [0.64 * sx, M.POCKET_H * sy]
+      return [0.64 * sx * 0.86, M.POCKET_H * sy * 1.12]
     case 'drum-body':
       // UV は (X, 円周方向の長さ)。円周の実寸は楕円断面の平均半径に比例
       return [sx, (sy * M.TOP + sz * (M.D / 2)) / 2 / ((M.TOP + M.D / 2) / 2)]

@@ -326,10 +326,13 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
   const flapRot: [number, number, number] = [0, 0, 0]
   const flapOf = (kind: string) => hasFlap && flapKind === kind
 
-  const pocketH = splitPockets ? 1.4 : 1
+  const pocketH = splitPockets ? 1.12 : 1
+  const pocketScaleX = splitPockets ? 0.86 : 1
+  const pocketScaleZ = splitPockets ? 0.52 : 1
   const pocketFit = fitPlate(-0.2 + (M.POCKET_H * pocketH) / 2, -0.2 - (M.POCKET_H * pocketH) / 2)
   const pocketFx = fxAt(-0.2)
-  const pocketZ = pocketFit.z + M.POCKET_T / 2 - 0.008
+  const pocketZ = pocketFit.z + (M.POCKET_T * pocketScaleZ) / 2 - 0.006
+  const pocketOffX = 0.29
 
   // ── 革タブ・金具リング・サイドリング（ビジネス／トート／トップハンドル） ──
   const tabX = ringX
@@ -439,14 +442,14 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
       [pocketFit.rot, 0, 0],
     ),
     'pocket-l': layout(
-      [-0.335 * sx * pocketFx, -0.2 * sy, pocketZ],
-      [sx * pocketFx, sy * pocketH, 1],
+      [-pocketOffX * sx * pocketFx, -0.2 * sy, pocketZ],
+      [sx * pocketFx * pocketScaleX, sy * pocketH, pocketScaleZ],
       pocketFront && splitPockets,
       [pocketFit.rot, 0, 0],
     ),
     'pocket-r': layout(
-      [0.335 * sx * pocketFx, -0.2 * sy, pocketZ],
-      [sx * pocketFx, sy * pocketH, 1],
+      [pocketOffX * sx * pocketFx, -0.2 * sy, pocketZ],
+      [sx * pocketFx * pocketScaleX, sy * pocketH, pocketScaleZ],
       pocketFront && splitPockets,
       [pocketFit.rot, 0, 0],
     ),

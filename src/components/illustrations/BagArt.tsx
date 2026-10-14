@@ -192,8 +192,8 @@ export function BagArt({
             <path d={`M${edgeL(0.05) + 3} ${y0 + 4}H${edgeR(0.05) - 3}`} strokeDasharray="2 2" strokeWidth={1} />
             {front && (
               <>
-                <path d={roundedRect(x0 + pw * 0.08, y0 + ph * 0.38, pw * 0.4, ph * 0.56, 1.5)} fill={accentFill} strokeWidth={1.1} />
-                <path d={roundedRect(x0 + pw * 0.52, y0 + ph * 0.38, pw * 0.4, ph * 0.56, 1.5)} fill={accentFill} strokeWidth={1.1} />
+                <path d={roundedRect(x0 + pw * 0.12, y0 + ph * 0.42, pw * 0.36, ph * 0.46, 1.5)} fill={bodyFill} strokeWidth={1.1} />
+                <path d={roundedRect(x0 + pw * 0.52, y0 + ph * 0.42, pw * 0.36, ph * 0.46, 1.5)} fill={bodyFill} strokeWidth={1.1} />
               </>
             )}
           </>

@@ -60,9 +60,11 @@ export function BagCustomizer({
   const updateSize = (size: BagSize) => update({ size })
 
   const updateLayerColor = (layer: BagLayer, colorId: string) => {
+    const layerColors = { ...customization.layerColors, [layer]: colorId }
+    if (layer === 'body' && customization.templateId !== 'tote') layerColors.back = colorId
     onCustomizationChange({
       ...customization,
-      layerColors: { ...customization.layerColors, [layer]: colorId },
+      layerColors,
     })
   }
 
@@ -72,6 +74,7 @@ export function BagCustomizer({
       templateId: id,
       specs: resolveSpecsForTemplate(id, customization.specs),
     })
+    if (id !== 'tote' && activeLayer === 'back') onActiveLayerChange('body')
     setViewRequest((prev) => ({ view: 'front', nonce: prev.nonce + 1, source: 'reset' }))
   }
 
@@ -154,6 +157,7 @@ export function BagCustomizer({
               <StepSlot>
                 <ColorSelector
                   step={next()}
+                  templateId={customization.templateId}
                   activeLayer={activeLayer}
                   layerColors={customization.layerColors}
                   onLayerChange={onActiveLayerChange}

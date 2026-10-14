@@ -1,8 +1,9 @@
 import { StepTitle } from './StepTitle'
 import { COLORS } from '../data/colors'
-import { BAG_LAYERS, type BagLayer } from '../types/bag'
+import { getLayersForTemplate, type BagLayer, type BagTemplateId } from '../types/bag'
 
 interface ColorSelectorProps {
+  templateId: BagTemplateId
   activeLayer: BagLayer
   layerColors: Record<BagLayer, string>
   onLayerChange: (layer: BagLayer) => void
@@ -13,6 +14,7 @@ interface ColorSelectorProps {
 }
 
 export function ColorSelector({
+  templateId,
   activeLayer,
   layerColors,
   onLayerChange,
@@ -21,6 +23,7 @@ export function ColorSelector({
   onColorRequestChange,
   step,
 }: ColorSelectorProps) {
+  const layers = getLayersForTemplate(templateId)
   return (
     <div className="space-y-3 sm:space-y-4">
       {step && (
@@ -37,7 +40,7 @@ export function ColorSelector({
           編集するパーツ
         </h4>
         <div className="mt-2 flex flex-wrap gap-1.5 sm:mt-3 sm:gap-2">
-          {BAG_LAYERS.map((layer) => (
+          {layers.map((layer) => (
             <button
               key={layer.id}
               type="button"
@@ -60,7 +63,7 @@ export function ColorSelector({
 
       <div>
         <h4 className="text-[10px] font-medium tracking-widest text-warm-gray uppercase sm:text-xs">
-          カラー — {BAG_LAYERS.find((l) => l.id === activeLayer)?.label}
+          カラー — {layers.find((l) => l.id === activeLayer)?.label}
         </h4>
         <div className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-3 sm:grid-cols-6 sm:gap-2">
           {COLORS.map((color) => {
@@ -102,7 +105,7 @@ export function ColorSelector({
           onChange={(e) => onColorRequestChange(e.target.value)}
           rows={3}
           maxLength={500}
-          placeholder="例：本体 PANTONE 19-4052（Classic Blue）／持ち手 PANTONE 18-1663"
+          placeholder="例：フロント PANTONE 19-4052（Classic Blue）／持ち手 PANTONE 18-1663"
           className="mt-2 w-full resize-y rounded-lg border border-stone bg-white px-3 py-2 text-xs text-charcoal placeholder:text-warm-gray/60 focus:border-gold focus:outline-none sm:text-sm"
         />
       </div>

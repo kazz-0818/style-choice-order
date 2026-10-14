@@ -19,13 +19,19 @@ interface ViewSwitcherProps {
 /** 提案書の「OTHER VIEWS」：正面・背面・側面・上面・底面を切り替え */
 export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherProps) {
   const { layerColors, size, specs, templateId } = customization
-  const fills = {
-    body: getColorHex(layerColors.body),
+  const fillsFor = (view: BagView) => ({
+    body: getColorHex(
+      view === 'back' && templateId === 'tote'
+        ? layerColors.back
+        : view === 'top' && templateId === 'tote'
+          ? layerColors.side
+          : layerColors.body,
+    ),
     handle: getColorHex(layerColors.handle),
     metal: getColorHex(layerColors.metal),
     accent: getColorHex(layerColors.accent),
     bottom: getColorHex(layerColors.bottom),
-  }
+  })
 
   return (
     <div className="w-[36px] shrink-0 sm:mt-4 sm:w-auto">
@@ -50,7 +56,7 @@ export function ViewSwitcher({ customization, active, onSelect }: ViewSwitcherPr
                 type={templateId}
                 view={view.id}
                 size={size}
-                fills={fills}
+                fills={fillsFor(view.id)}
                 studs={specs.studs === 'four'}
                 charm={specs.charm === 'charm' || specs.charm === 'both'}
                 opening={specs.opening}

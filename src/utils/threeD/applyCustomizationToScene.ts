@@ -85,6 +85,9 @@ const PLAIN_STYLE: MaterialStyle = { roughness: 0.75, metalness: 0 }
 /** メッシュ → 色を決めるレイヤー */
 const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   body: 'body',
+  front: 'body',
+  back: 'back',
+  'top-panel': 'body',
   'drum-body': 'body',
   'drum-side': 'side',
   'drum-zip-teeth': 'metal',
@@ -131,8 +134,8 @@ const LAYER_OF: Partial<Record<MeshName, BagLayer>> = {
   'puller2-slider': 'metal',
   'puller2-ring': 'metal',
   'puller2-bar': 'metal',
-  pocket: 'accent',
-  'pocket-back': 'accent',
+  pocket: 'body',
+  'pocket-back': 'back',
   charm: 'accent',
   'puller-tassel': 'accent',
   'puller2-tassel': 'accent',
@@ -143,6 +146,9 @@ function textureExtent(name: MeshName, scale: [number, number, number]): [number
   const [sx, sy, sz] = scale
   switch (name) {
     case 'body':
+    case 'front':
+    case 'back':
+    case 'top-panel':
     case 'side':
     case 'bottom':
     case 'belt':
@@ -241,13 +247,21 @@ function shade(hex: string, factor: number): string {
   return `#${new Color(hex).multiplyScalar(factor).getHexString()}`
 }
 
+/** トートだけ前後を別色。他型はフロント色が前後・天面をまとめて塗る */
+function colorLayerOf(name: MeshName, templateId: string): BagLayer | undefined {
+  if (name === 'front' || name === 'pocket') return 'body'
+  if (name === 'back' || name === 'pocket-back') return templateId === 'tote' ? 'back' : 'body'
+  if (name === 'top-panel') return templateId === 'tote' ? 'side' : 'body'
+  return LAYER_OF[name]
+}
+
 /** GLB シーンへ型・サイズ・素材・各パーツ仕様・カラーを反映する。 */
 export function applyCustomizationToScene(
   root: Object3D,
   customization: BagCustomization,
 ): void {
   const layout = computeBagLayout(customization)
-  const { layerColors, specs, materialId } = customization
+  const { layerColors, specs, materialId, templateId } = customization
   const bodyStyle = MATERIAL_STYLE[materialId] ?? MATERIAL_STYLE['genuine-leather']
 
   root.scale.setScalar(layout.rootScale)
@@ -340,7 +354,7 @@ export function applyCustomizationToScene(
       return
     }
 
-    const layer = LAYER_OF[name]
+    const layer = colorLayerOf(name, templateId)
     if (!layer) return
     const hex = getColorHex(layerColors[layer])
     if (layer === 'metal') {
@@ -352,7 +366,10 @@ export function applyCustomizationToScene(
     const extent = isBand ? ([1, 1] as [number, number]) : textureExtent(name, target.scale)
     // ファー・ボア：本体まわりは毛層（シェル）を重ねてふわふわにする
     const furry =
-      materialId === 'fur' && !!extent && !isBand && ['body', 'side', 'bottom', 'accent'].includes(layer)
+      materialId === 'fur' &&
+      !!extent &&
+      !isBand &&
+      ['body', 'back', 'side', 'bottom', 'accent'].includes(layer)
     // ファーの下地は柄のない無地（毛の隙間から暗い斑点が見えないよう、毛の根元に近い色でそろえる）
     paint(
       mesh,

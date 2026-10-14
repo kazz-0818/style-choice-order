@@ -181,7 +181,11 @@ function extractPanel(bodyGeo, keep, scale) {
   for (let i = 0; i < pos.count; i += 3) {
     const cx = (pos.getX(i) + pos.getX(i + 1) + pos.getX(i + 2)) / 3
     const cy = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / 3
-    if (!keep(cx, cy)) continue
+    const cz = (pos.getZ(i) + pos.getZ(i + 1) + pos.getZ(i + 2)) / 3
+    const nx = (nor.getX(i) + nor.getX(i + 1) + nor.getX(i + 2)) / 3
+    const ny = (nor.getY(i) + nor.getY(i + 1) + nor.getY(i + 2)) / 3
+    const nz = (nor.getZ(i) + nor.getZ(i + 1) + nor.getZ(i + 2)) / 3
+    if (!keep(cx, cy, cz, nx, ny, nz)) continue
     for (let k = 0; k < 3; k++) {
       outPos.push(pos.getX(i + k) * scale, pos.getY(i + k) * scale, pos.getZ(i + k) * scale)
       outNor.push(nor.getX(i + k), nor.getY(i + k), nor.getZ(i + k))
@@ -248,9 +252,35 @@ function clipBandPanel(bodyGeo, yLo, yHi, scale) {
   return g
 }
 
-/** 左右端（マチ） */
+const BOT_Y = -TOP + 0.2
+
+/** 左右マチ（前後面の角はフロント／バックへ譲る） */
 const sideGeometry = (bodyGeo) =>
-  extractPanel(bodyGeo, (cx) => Math.abs(cx) > W / 2 - RX - 0.03, 1.006)
+  extractPanel(
+    bodyGeo,
+    (_cx, cy, _cz, nx, _ny, nz) => Math.abs(nx) > 0.45 && Math.abs(nz) <= 0.5 && cy >= BOT_Y,
+    1.006,
+  )
+
+/** 前面いち面（角の丸みまで前の色） */
+const frontGeometry = (bodyGeo) =>
+  extractPanel(
+    bodyGeo,
+    (_cx, cy, _cz, _nx, ny, nz) => nz > 0.2 && cy >= BOT_Y && ny <= 0.55,
+    1.01,
+  )
+
+/** 背面いち面 */
+const backGeometry = (bodyGeo) =>
+  extractPanel(
+    bodyGeo,
+    (_cx, cy, _cz, _nx, ny, nz) => nz < -0.2 && cy >= BOT_Y && ny <= 0.55,
+    1.01,
+  )
+
+/** 天面 */
+const topPanelGeometry = (bodyGeo) =>
+  extractPanel(bodyGeo, (_cx, _cy, _cz, _nx, ny) => ny > 0.55, 1.01)
 
 /** 底まわり（底面〜下端の丸み。前後面の下端にも回り込む） */
 const bottomGeometry = (bodyGeo) => clipBandPanel(bodyGeo, -TOP - 1, -TOP + 0.2, 1.012)
@@ -832,6 +862,9 @@ function createBagScene() {
 
   const bodyGeo = bodyGeometry()
   const body = mesh('body', bodyGeo, mat(0x1e2a3a, 0.6, 0.05, 'body'))
+  const front = mesh('front', frontGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'front'))
+  const back = mesh('back', backGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'back'))
+  const topPanel = mesh('top-panel', topPanelGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'top-panel'))
   const side = mesh('side', sideGeometry(bodyGeo), mat(0x1e2a3a, 0.6, 0.05, 'side'))
 
   const bottom = mesh('bottom', bottomGeometry(bodyGeo), mat(0x4a3428, 0.6, 0.05, 'bottom'))
@@ -929,6 +962,9 @@ function createBagScene() {
 
   scene.add(
     body,
+    front,
+    back,
+    topPanel,
     side,
     bottom,
     handle,

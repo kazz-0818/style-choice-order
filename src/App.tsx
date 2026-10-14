@@ -22,6 +22,7 @@ function App() {
       templateId: id,
       specs: resolveSpecsForTemplate(id, prev.specs),
     }))
+    if (id !== 'tote') setActiveLayer((prev) => (prev === 'back' ? 'body' : prev))
   }
 
   return (

@@ -7,7 +7,7 @@ export type BagTemplateId =
   | 'tote'
   | 'top-handle'
 
-export type BagLayer = 'body' | 'handle' | 'side' | 'bottom' | 'metal' | 'accent'
+export type BagLayer = 'body' | 'back' | 'handle' | 'side' | 'bottom' | 'metal' | 'accent'
 
 export type ColorCategory = 'basic' | 'accent' | 'neutral'
 
@@ -35,6 +35,7 @@ export interface PartOption {
 
 export interface LayerColors {
   body: string
+  back: string
   handle: string
   side: string
   bottom: string
@@ -94,7 +95,8 @@ export interface LayerMeta {
 }
 
 export const BAG_LAYERS: LayerMeta[] = [
-  { id: 'body', label: '本体' },
+  { id: 'body', label: 'フロント' },
+  { id: 'back', label: 'バック' },
   { id: 'handle', label: '持ち手' },
   { id: 'side', label: 'サイド' },
   { id: 'bottom', label: '底' },
@@ -102,8 +104,15 @@ export const BAG_LAYERS: LayerMeta[] = [
   { id: 'accent', label: '装飾' },
 ]
 
+/** トートだけ前後を別色。他型はフロントが前後・天面をまとめて塗る */
+export function getLayersForTemplate(templateId: BagTemplateId): LayerMeta[] {
+  if (templateId === 'tote') return BAG_LAYERS
+  return BAG_LAYERS.filter((layer) => layer.id !== 'back')
+}
+
 export const DEFAULT_LAYER_COLORS: LayerColors = {
   body: 'navy',
+  back: 'navy',
   handle: 'brown',
   side: 'navy',
   bottom: 'dark-brown',

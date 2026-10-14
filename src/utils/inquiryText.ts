@@ -3,7 +3,7 @@ import { templateMap } from '../data/bagTemplates'
 import { getColorName } from '../data/colors'
 import { hardwareMap, materialMap } from '../data/parts'
 import { getSpecSummaryRows } from '../data/specs'
-import { BAG_LAYERS, type BagCustomization } from '../types/bag'
+import { getLayersForTemplate, type BagCustomization } from '../types/bag'
 
 export function buildInquiryText(customization: BagCustomization): string {
   const template = templateMap[customization.templateId]
@@ -14,9 +14,9 @@ export function buildInquiryText(customization: BagCustomization): string {
     .map((row) => `${row.label}：${row.value}`)
     .join('\n')
 
-  const colorLines = BAG_LAYERS.map(
-    (layer) => `${layer.label}：${getColorName(customization.layerColors[layer.id])}`,
-  ).join('\n')
+  const colorLines = getLayersForTemplate(customization.templateId)
+    .map((layer) => `${layer.label}：${getColorName(customization.layerColors[layer.id])}`)
+    .join('\n')
 
   const colorRequest = (customization.colorRequest ?? '').trim()
 

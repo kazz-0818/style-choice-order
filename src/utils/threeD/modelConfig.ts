@@ -4,6 +4,9 @@ export const CUSTOM_BAG_MODEL_URL = '/models/custom-bag.glb'
 /** GLB内メッシュ名（scripts/generate-bag-glb.mjs と一致させる） */
 export const MESH_NAMES = [
   'body',
+  'front',
+  'back',
+  'top-panel',
   'side',
   'bottom',
   'handle',

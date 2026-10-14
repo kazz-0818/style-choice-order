@@ -3,7 +3,7 @@ import { templateMap } from '../data/bagTemplates'
 import { getColorName } from '../data/colors'
 import { hardwareMap, materialMap } from '../data/parts'
 import { getSpecSummaryRows } from '../data/specs'
-import { BAG_LAYERS, type BagCustomization } from '../types/bag'
+import { getLayersForTemplate, type BagCustomization } from '../types/bag'
 import { InquirySendButton } from './InquirySendButton'
 
 interface OptionSummaryProps {
@@ -18,7 +18,7 @@ export function OptionSummary({ customization, step, bare = false }: OptionSumma
     { label: '素材', value: materialMap[customization.materialId]?.name },
     ...getSpecSummaryRows(customization),
     { label: '金具のカラー・素材', value: hardwareMap[customization.hardwareColorId]?.name },
-    ...BAG_LAYERS.map((layer) => ({
+    ...getLayersForTemplate(customization.templateId).map((layer) => ({
       label: `${layer.label}カラー`,
       value: getColorName(customization.layerColors[layer.id]),
     })),

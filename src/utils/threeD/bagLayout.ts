@@ -386,7 +386,11 @@ export function computeBagLayout(customization: BagCustomization): BagLayout {
       ]
 
   const meshes = {
-    body: layout([0, 0, 0], [sx, sy, sz], !isCyl),
+    // 前後・天面・マチ・底のパネルで色を分けるため、箱型の下地本体は隠す
+    body: layout([0, 0, 0], [sx, sy, sz], false),
+    front: layout([0, 0, 0], [sx, sy, sz], !isCyl),
+    back: layout([0, 0, 0], [sx, sy, sz], !isCyl),
+    'top-panel': layout([0, 0, 0], [sx, sy, sz], !isCyl),
     side: layout([0, 0, 0], [sx, sy, sz], !isCyl),
     bottom: layout([0, 0, 0], [sx, sy, sz], !isCyl),
     'drum-body': layout([0, 0, 0], [sx, sy, sz], isCyl),

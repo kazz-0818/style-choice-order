@@ -4,6 +4,9 @@ import { MODEL as M } from '../../data/bagShapes'
 /** 上すぼまり（台形・A字）を実行時に適用する本体系メッシュ */
 export const TAPER_MESHES = new Set<string>([
   'body',
+  'front',
+  'back',
+  'top-panel',
   'side',
   'bottom',
   'belt',
@@ -23,7 +26,7 @@ export const TAPER_MESHES = new Set<string>([
 ])
 
 /** サイドのへこみ（マチの折り込み）を適用する本体系メッシュ */
-export const DENT_MESHES = new Set<string>(['body', 'side', 'bottom'])
+export const DENT_MESHES = new Set<string>(['body', 'front', 'back', 'top-panel', 'side', 'bottom'])
 
 const smooth = (a: number, b: number, v: number) => {
   const t = Math.max(0, Math.min(1, (v - a) / (b - a)))
